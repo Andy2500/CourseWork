@@ -53,7 +53,7 @@ public class User implements Serializable {
         this.hashpsd = hashpsd;
         this.phone = phone;
         String command = "Insert Into Users (PersonID,Login,Email,Name,HashPassword,Phone,Photo, CountOfOrders, CountOFOffers, Experience, Rank, LastOnlineDate)"
-                + "Values (MAX(PersonID+1)," + login + "," + email + "," + name + "," + hashpsd + "," + phone + ",NULL,0,0,0,0," + Service.getNowMomentInUTC();
+                + "Values ((Select Max(PersonID) From Users) + 1,'" + login + "','" + email + "','" + name + "','" + hashpsd + "','" + phone + "',NULL,0,0,0,0,'" + Service.getNowMomentInUTC() + "')";
         Service.execCommand(command);
     }
 
