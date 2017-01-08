@@ -25,8 +25,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class Service {
-    private static String url = "jdbc:sqlserver://aimserver.database.windows.net:1433;database=aimsDB;user=HSEadmin@aimserver;password=hsepassword16);encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;";
-
+    private static String url = "jdbc:sqlserver://coursew.database.windows.net:1433;database=CourseWID;user=HSEadmin@coursew;password=hsepassword16);encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;";
     public static String makeToken(String login) {
         return login + getNowMomentInUTC();
     }

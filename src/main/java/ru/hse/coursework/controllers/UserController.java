@@ -26,7 +26,8 @@ public class UserController {
             user.setToken(token);
             return new DefaultClass(true, token);
         } catch (Exception ex) {
-            return new DefaultClass(false, ex.getMessage());
+            DefaultClass defaultClass = new DefaultClass(false, ex.getMessage());
+            return defaultClass;
         }
     }
 
