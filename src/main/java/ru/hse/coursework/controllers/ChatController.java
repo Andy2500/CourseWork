@@ -6,15 +6,16 @@ import ru.hse.coursework.models.Service.DefaultClass;
 import ru.hse.coursework.models.Service.Service;
 import ru.hse.coursework.models.User.User;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 
 @Path("/chat")
 public class ChatController {
 
     @GET
     @Path("/md/t={token}&id1={ID_1}&id2={ID_2}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public DefaultClass makeDialog(@PathParam("token") String token,
                                    @PathParam("ID_1") int PersonID_1,
                                    @PathParam("ID_2") int PersonID_2) {
@@ -33,6 +34,8 @@ public class ChatController {
 
     @GET
     @Path("/gam/t={token}&id1={ID}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Dialog getDialog(@PathParam("token") String token,
                             @PathParam("ID") int DialogID) {
         try {
@@ -51,6 +54,8 @@ public class ChatController {
 
     @GET
     @Path("/sm/t={token}&p={PersonID}&d={DialogID}&tx={text}&da={date}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public DefaultClass sendMessage(@PathParam("token") String token,
                                     @PathParam("PersonID") int personID,
                                     @PathParam("DialogID") int dialogID,
@@ -72,6 +77,8 @@ public class ChatController {
 
     @GET
     @Path("/glm/t={token}&p={PersonID}&d={DialogID}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Message getLastMessage(@PathParam("token") String token,
                                   @PathParam("PersonID") int personID,
                                   @PathParam("DialogID") int dialogID) {

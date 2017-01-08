@@ -6,15 +6,16 @@ import ru.hse.coursework.models.Service.DefaultClass;
 import ru.hse.coursework.models.Service.Service;
 import ru.hse.coursework.models.User.User;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 
 @Path("/res")
 public class ResponseController {
 
     @GET
     @Path("/mr/t={token}&p={personID}&t={text}&m={mark}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public DefaultClass makeResponse(@PathParam("token") String token,
                                      @PathParam("personID") int personID,
                                      @PathParam("text") String text,
@@ -32,6 +33,8 @@ public class ResponseController {
 
     @GET
     @Path("/grby/t={token}&i={ID}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getResponseInfo(@PathParam("token") String token,
                                     @PathParam("ID") int ID) {
         try {
@@ -51,6 +54,8 @@ public class ResponseController {
 
     @GET
     @Path("/cr/t={token}&r={responseID}&t={text}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public DefaultClass commentResponse(@PathParam("token") String token,
                                         @PathParam("responseID") int responseID,
                                         @PathParam("text") String text) {
@@ -68,6 +73,8 @@ public class ResponseController {
 
     @GET
     @Path("/dc/t={token}&r={commentID}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public DefaultClass deleteComment(@PathParam("token") String token,
                                       @PathParam("commentID") int commentID) {
         try {

@@ -12,15 +12,16 @@ import ru.hse.coursework.models.Service.DefaultClass;
 import ru.hse.coursework.models.Service.Service;
 import ru.hse.coursework.models.User.User;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 
 
 @Path("/pack")
 public class PackageController {
     @GET
     @Path("/mof/t={token}&s={source}&d={destination}&da={date}&t={text}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public DefaultClass makeOffer(@PathParam("token") String token,
                                   @PathParam("source") String source,
                                   @PathParam("destination") String destination,
@@ -41,6 +42,8 @@ public class PackageController {
 
     @GET
     @Path("/mor/t={token}&s={source}&d={destination}&da={date}&t={text}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public DefaultClass makeOrder(@PathParam("token") String token,
                                   @PathParam("source") String source,
                                   @PathParam("destination") String destination,
@@ -62,6 +65,8 @@ public class PackageController {
 
     @GET
     @Path("/dor/t={token}&id={ID}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public DefaultClass deleteOrderByID(@PathParam("token") String token,
                                         @PathParam("ID") int OrderID) {
         try {
@@ -78,6 +83,8 @@ public class PackageController {
 
     @GET
     @Path("/dof/t={token}&id={ID}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public DefaultClass deleteOfferByID(@PathParam("token") String token,
                                         @PathParam("ID") int OfferID) {
         try {
@@ -94,6 +101,8 @@ public class PackageController {
 
     @GET
     @Path("/gofi/t={token}&o={offerID}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public PackageOffer getOfferInfo(@PathParam("token") String token,
                                      @PathParam("offerID") int offerID) {
         try {
@@ -113,6 +122,8 @@ public class PackageController {
 
     @GET
     @Path("/gorfi/t={token}&o={orderID}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public PackageOrder getOrderInfo(@PathParam("token") String token,
                                      @PathParam("orderID") int orderID) {
         try {
@@ -132,6 +143,8 @@ public class PackageController {
 
     @GET
     @Path("/gpi/t={token}&o={packageID}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Package getPackageInfo(@PathParam("token") String token,
                                   @PathParam("packageID") int packageID){
         try {
@@ -151,6 +164,8 @@ public class PackageController {
 
     @GET
     @Path("/gofby/t={token}&s={source}&d={destination}&sda={startdate}&eda={enddate}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Offers getOffersByParams(@PathParam("token") String token,
                                     @PathParam("source") String source,
                                     @PathParam("destination") String destination,
@@ -173,6 +188,8 @@ public class PackageController {
 
     @GET
     @Path("/gorby/t={token}&s={source}&d={destination}&sda={startdate}&eda={enddate}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Orders getOrdersByParams(@PathParam("token") String token,
                                     @PathParam("source") String source,
                                     @PathParam("destination") String destination,
@@ -195,6 +212,8 @@ public class PackageController {
 
     @GET
     @Path("/guor/t={token}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Orders getUserOrders(@PathParam("token") String token) {
         try {
             User user = User.getUserByToken(token);
@@ -213,6 +232,8 @@ public class PackageController {
 
     @GET
     @Path("/guof/t={token}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Offers getUserOffers(@PathParam("token") String token) {
         try {
             User user = User.getUserByToken(token);
@@ -231,6 +252,8 @@ public class PackageController {
 
     @GET
     @Path("/gup/t={token}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Packages getUserPackages(@PathParam("token") String token){
         try {
             User user = User.getUserByToken(token);
@@ -250,6 +273,8 @@ public class PackageController {
     //соглашение на сделку(отправка реквеста)
     @GET
     @Path("/aor/t={token}&o={orderID}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public DefaultClass acceptOrder(@PathParam("token") String token,
                                     @PathParam("orderID") int orderID) {
         try {
@@ -268,6 +293,8 @@ public class PackageController {
 
     @GET
     @Path("/aof/t={token}&o={offerID}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public DefaultClass acceptOffer(@PathParam("token") String token,
                                     @PathParam("offerID") int offerID) {
         try {
@@ -286,6 +313,8 @@ public class PackageController {
     //заключение сделки(вы создатель вам предложили)
     @GET
     @Path("/cofr/t={token}&rid={requestID}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public DefaultClass closeOfferRequest(@PathParam("token") String token,
                                           @PathParam("requestID") int requestID) {
         try {
@@ -309,6 +338,8 @@ public class PackageController {
 
     @GET
     @Path("/corr/t={token}&rid={requestID}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public DefaultClass closeOrderRequest(@PathParam("token") String token,
                                           @PathParam("requestID") int requestID) {
         try {
