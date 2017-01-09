@@ -27,6 +27,7 @@ public class UserController {
             return new DefaultClass(true, token);
         } catch (Exception ex) {
             DefaultClass defaultClass = new DefaultClass(false, ex.getMessage());
+
             return defaultClass;
         }
     }
