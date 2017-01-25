@@ -194,8 +194,8 @@ public class UserController {
     @GET
     @Path("/gpf/t={token}")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.TEXT_PLAIN)
-    public String getProfile(@PathParam("token") String token) {
+    @Produces(MediaType.APPLICATION_JSON)
+    public UserProfile getProfile(@PathParam("token") String token) {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
@@ -203,22 +203,11 @@ public class UserController {
             userProfile.setDefaultClass(new DefaultClass(true, token));
             user.setToken(token);
             user.setLastOnlineDate();
-            String json = userProfile.getJson();
-            return json;
+            return userProfile;
         } catch (Exception ex) {
             UserProfile userProfile = new UserProfile();
             userProfile.setDefaultClass(new DefaultClass(false, ex.getMessage()));
-            String json = "";
-            try
-            {
-                json = userProfile.getJson();
-            }
-            catch (Exception e)
-            {
-
-            }
-
-            return json;
+            return userProfile;
         }
     }
 }

@@ -1,6 +1,5 @@
 package ru.hse.coursework.models.Packages.Offer;
 
-import org.codehaus.jackson.node.ObjectNode;
 import ru.hse.coursework.models.Service.Service;
 import ru.hse.coursework.models.User.User;
 
@@ -11,9 +10,9 @@ import java.util.ArrayList;
 @XmlRootElement
 public class OfferRequest implements Serializable{
 
-    private int personID;
-    private int offerID;
-    private int requestID;
+    private Integer personID;
+    private Integer offerID;
+    private Integer requestID;
 
     private User person;
 
@@ -26,16 +25,6 @@ public class OfferRequest implements Serializable{
 
         String command = "Insert Into OfferRequests (RequestID, PersonID, OfferID) Values ((Select Max(RequestID) From OfferRequests) + 1," + personID + "," + offerID + ")";
         Service.execCommand(command);
-    }
-
-    public ObjectNode getJSONNode()
-    {
-        return null;
-    }
-
-    public String getJSON()
-    {
-        return null;
     }
 
     public static OfferRequest getRequestByID(int ID) throws Exception {

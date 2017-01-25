@@ -1,6 +1,5 @@
 package ru.hse.coursework.models.Packages.Order;
 
-import org.codehaus.jackson.node.ObjectNode;
 import ru.hse.coursework.models.Service.DefaultClass;
 import ru.hse.coursework.models.Service.Service;
 import ru.hse.coursework.models.User.User;
@@ -44,16 +43,6 @@ public class PackageOrder implements Serializable {
         Service.execCommand(command);
         command = "Update Users Set CountOfOrders = CountOfOrders + 1 Where PersonID = " + personID;
         Service.execCommand(command);
-    }
-
-    public ObjectNode getJSONNode()
-    {
-        return null;
-    }
-
-    public String getJSON()
-    {
-        return null;
     }
 
     public static PackageOrder getOrderByID(int ID) throws Exception {

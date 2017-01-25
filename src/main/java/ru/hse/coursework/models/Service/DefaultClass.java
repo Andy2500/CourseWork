@@ -1,8 +1,5 @@
 package ru.hse.coursework.models.Service;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ObjectNode;
-
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
@@ -27,36 +24,6 @@ public class DefaultClass implements Serializable {
     public DefaultClass(boolean operationOutput, String token) {
         this.operationOutput = operationOutput;
         this.token = token;
-    }
-
-    /*
-    public ObjectNode getJSONNode()
-    {
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode Node = mapper.createObjectNode();
-        Node.put("token",token);
-        Node.put("operationOutput",operationOutput.toString());
-        return Node;
-    }
-    */
-
-    public String getJSON()
-    {
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode Node = mapper.createObjectNode();
-        Node.put("token",token);
-        Node.put("operationOutput",operationOutput.toString());
-        try {
-            return mapper.writeValueAsString(Node);
-        }catch (Exception ex)
-        {
-            return null;
-        }
-    }
-
-    @Override
-    public String toString() {
-        return  "{\"defaultClass\":" + this.getJSON() + "}";
     }
 
     public boolean getOperationOutput() {

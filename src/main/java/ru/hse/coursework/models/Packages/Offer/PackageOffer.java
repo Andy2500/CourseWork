@@ -12,8 +12,8 @@ import java.util.Date;
 
 @XmlRootElement
 public class PackageOffer implements Serializable {
-    private int offerID;
-    private int personID;
+    private Integer offerID;
+    private Integer personID;
 
     private String source;
     private String destination;

@@ -1,7 +1,5 @@
 package ru.hse.coursework.models.Response;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ObjectNode;
 import ru.hse.coursework.models.Service.Service;
 import ru.hse.coursework.models.User.User;
 
@@ -13,9 +11,9 @@ import java.util.Date;
 @XmlRootElement
 public class Comment implements Serializable {
 
-    private int commentID;
-    private int responseID;
-    private int personID;
+    private Integer commentID;
+    private Integer responseID;
+    private Integer personID;
     private String text;
     private Date date;
 
@@ -32,22 +30,6 @@ public class Comment implements Serializable {
         String command = "Insert Into Comments (CommentID, ResponseID, PersonID, Text, Date)" +
                 "Values ((Select MAX(CommentID) FROM Comments) + 1, " + responseID + ", " + personID + ",'" + text + "','" + Service.getNowMomentInUTC() + "')";
         Service.execCommand(command);
-    }
-
-    public String getJSON()      {
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode Node = mapper.createObjectNode();
-        Node.put("commentID", commentID);
-        Node.put("responseID", responseID);
-        Node.put("text", text);
-        Node.put("date", date.toString());
-
-        try {
-            return mapper.writeValueAsString(Node);
-        }catch (Exception ex)
-        {
-            return null;
-        }
     }
 
     public static void deleteComment(int commentID) throws Exception {

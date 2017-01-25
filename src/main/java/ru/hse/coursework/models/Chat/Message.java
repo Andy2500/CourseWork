@@ -1,6 +1,5 @@
 package ru.hse.coursework.models.Chat;
 
-import org.codehaus.jackson.node.ObjectNode;
 import ru.hse.coursework.models.Service.DefaultClass;
 import ru.hse.coursework.models.Service.Service;
 
@@ -12,9 +11,9 @@ import java.util.Date;
 @XmlRootElement
 public class Message implements Serializable {
 
-    private int messageID;
-    private int personID;
-    private int dialogID;
+    private Integer messageID;
+    private Integer personID;
+    private Integer dialogID;
     private String text;
     private Date date;
 
@@ -31,16 +30,6 @@ public class Message implements Serializable {
         String command = "Insert Into Messages (MessageID, DialogID, PersonID, Text, Date)"
                 + "Values ((Select Max(MessageID) From Messages) + 1 ," + dialogID + "," + personID + ",'" + text + "','" + Service.getNowMomentInUTC() + "')";
         Service.execCommand(command);
-    }
-
-    public ObjectNode getJSONNode()
-    {
-        return null;
-    }
-
-    public String getJSON()
-    {
-        return null;
     }
 
     public static Message getLastMessagesByDialogID(int dialogID) throws Exception {

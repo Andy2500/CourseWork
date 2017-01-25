@@ -1,6 +1,5 @@
 package ru.hse.coursework.models.Packages;
 
-import org.codehaus.jackson.node.ObjectNode;
 import ru.hse.coursework.models.Service.DefaultClass;
 import ru.hse.coursework.models.Service.Service;
 import ru.hse.coursework.models.User.User;
@@ -12,9 +11,9 @@ import java.util.Date;
 @XmlRootElement
 public class Package implements Serializable{
 
-    private int consumerID;
-    private int producerID;
-    private int packageID;
+    private Integer consumerID;
+    private Integer producerID;
+    private Integer packageID;
 
     private String source;
     private String destination;
@@ -43,16 +42,6 @@ public class Package implements Serializable{
         String command = "Insert Into Packages (PackageID, ConsumerID, ProducerID, Source, Destination, StartDate, EndDate, Text, PublishDate)"
                 + "Values ((Select Max(PackageID) From Packages) + 1," + consumerID + "," + producerID + ",'" + source + "','" + destination + "','" + startDate + "','" + endDate +"','" + text + "','" +Service.getNowMomentInUTC() +"')";
         Service.execCommand(command);
-    }
-
-    public ObjectNode getJSONNode()
-    {
-        return null;
-    }
-
-    public String getJSON()
-    {
-        return null;
     }
 
     public static Package getPackageByID(int ID) throws Exception {

@@ -1,6 +1,5 @@
 package ru.hse.coursework.models.Packages.Order;
 
-import org.codehaus.jackson.node.ObjectNode;
 import ru.hse.coursework.models.Service.DefaultClass;
 import ru.hse.coursework.models.Service.Service;
 
@@ -22,16 +21,6 @@ public class Orders implements Serializable {
     public static Orders getOrdersByID(int ID) throws Exception {
         String query = "Select * From Orders Where OrderID = " + ID;
         return Service.getOrdersByQuery(query);
-    }
-
-    public ObjectNode getJSONNode()
-    {
-        return null;
-    }
-
-    public String getJSON()
-    {
-        return null;
     }
 
     public void setDefaultClass(DefaultClass defaultClass) {

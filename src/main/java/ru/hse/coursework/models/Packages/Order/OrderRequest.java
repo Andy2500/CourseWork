@@ -1,6 +1,5 @@
 package ru.hse.coursework.models.Packages.Order;
 
-import org.codehaus.jackson.node.ObjectNode;
 import ru.hse.coursework.models.Service.Service;
 import ru.hse.coursework.models.User.User;
 
@@ -27,16 +26,6 @@ public class OrderRequest implements Serializable{
 
         String command = "Insert Into OrderRequests (RequestID, PersonID, OrderID) Values ((Select Max(RequestID) From OrderRequests) + 1," + personID + "," + orderID + ")";
         Service.execCommand(command);
-    }
-
-    public ObjectNode getJSONNode()
-    {
-        return null;
-    }
-
-    public String getJSON()
-    {
-        return null;
     }
 
     public static void deleteRequest(int requestID) throws Exception {

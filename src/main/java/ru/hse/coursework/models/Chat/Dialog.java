@@ -1,6 +1,5 @@
 package ru.hse.coursework.models.Chat;
 
-import org.codehaus.jackson.node.ObjectNode;
 import ru.hse.coursework.models.Service.DefaultClass;
 import ru.hse.coursework.models.Service.Service;
 
@@ -11,9 +10,9 @@ import java.util.ArrayList;
 @XmlRootElement
 public class Dialog implements Serializable {
 
-    private int dialogID;
-    private int personID_1;
-    private int personID_2;
+    private Integer dialogID;
+    private Integer personID_1;
+    private Integer personID_2;
 
     private ArrayList<Message> messages;
 
@@ -29,16 +28,6 @@ public class Dialog implements Serializable {
 
         String command = "Insert Into Dialogs (DialogID, PersonID_1, PersonID_2) Values ((Select Max(DialogID) From Dialogs) + 1," + PersonID_1 + "," + PersonID_2 + ")";
         Service.execCommand(command);
-    }
-
-    public ObjectNode getJSONNode()
-    {
-        return null;
-    }
-
-    public String getJSON()
-    {
-        return null;
     }
 
     public static Dialog getDialogByID(int ID) throws Exception {

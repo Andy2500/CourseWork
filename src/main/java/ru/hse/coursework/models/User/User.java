@@ -1,17 +1,14 @@
 package ru.hse.coursework.models.User;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ObjectNode;
 import ru.hse.coursework.models.Service.DefaultClass;
 import ru.hse.coursework.models.Service.Service;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 
 @XmlRootElement
-public class User {
+public class User implements Serializable {
 
     private int personID;
 
@@ -22,10 +19,10 @@ public class User {
     private String phone;
     private String token;
 
-    private int countOfOrders;
-    private int countOfOffers;
-    private int experience;
-    private int rank;
+    private Integer countOfOrders;
+    private Integer countOfOffers;
+    private Integer experience;
+    private Integer rank;
 
     private Date lastOnlineDate;
     private DefaultClass defaultClass;
@@ -94,26 +91,6 @@ public class User {
         this.hashpsd = null;
         this.token = null;
         this.defaultClass = null;
-    }
-
-
-    public String getJSON() {
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode userNode = mapper.createObjectNode();
-        userNode.put("personID", personID);
-        userNode.put("login", login);
-        userNode.put("email", email);
-        userNode.put("name", name);
-        userNode.put("countOfOffers", countOfOffers);
-        userNode.put("countOfOrders", countOfOrders);
-        userNode.put("experience", experience);
-        userNode.put("lastOnlineDate", lastOnlineDate.toString());
-        userNode.put("rank", rank);
-        try {
-            return mapper.writeValueAsString(userNode);
-        } catch (Exception ex) {
-            return null;
-        }
     }
 
     //получение пользователя по ID
@@ -255,5 +232,45 @@ public class User {
 
     public Date getLastOnlineDate() {
         return lastOnlineDate;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPersonID(int personID) {
+        this.personID = personID;
+    }
+
+    public void setHashpsd(String hashpsd) {
+        this.hashpsd = hashpsd;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void setCountOfOrders(Integer countOfOrders) {
+        this.countOfOrders = countOfOrders;
+    }
+
+    public void setCountOfOffers(Integer countOfOffers) {
+        this.countOfOffers = countOfOffers;
+    }
+
+    public void setExperience(Integer experience) {
+        this.experience = experience;
+    }
+
+    public void setRank(Integer rank) {
+        this.rank = rank;
+    }
+
+    public void setLastOnlineDate(Date lastOnlineDate) {
+        this.lastOnlineDate = lastOnlineDate;
+    }
+
+    public void setDefaultClass(DefaultClass defaultClass) {
+        this.defaultClass = defaultClass;
     }
 }
