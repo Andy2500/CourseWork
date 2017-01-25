@@ -1,10 +1,10 @@
 package ru.hse.coursework.models.Packages.Offer;
 
+import org.codehaus.jackson.node.ObjectNode;
 import ru.hse.coursework.models.Service.DefaultClass;
 import ru.hse.coursework.models.Service.Service;
 
 import javax.xml.bind.annotation.XmlRootElement;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -14,8 +14,18 @@ public class Offers implements Serializable {
     private ArrayList<PackageOffer> offers;
     private DefaultClass defaultClass;
 
+    public ObjectNode getJSONNode()
+    {
+        return null;
+    }
+
+    public String getJSON()
+    {
+        return null;
+    }
+
     public static Offers getOffersByParams(String source, String destination, String startDate, String endDate) throws Exception {
-        String query = "Select * From Offers Where (Source = ' " + source + "') AND (Destination = '" + destination + "') AND (Date > '" + startDate + "') AND (Date < '" + endDate + "')";
+        String query = "Select * From Offers Where (Source = ' " + source + "') AND (Destination = '" + destination + "') AND (StartDate >= '" + startDate + "') AND (EndDate <= '" + endDate + "')";
         return Service.getOffersByQuery(query);
     }
 

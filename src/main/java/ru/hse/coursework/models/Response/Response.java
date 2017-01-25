@@ -1,10 +1,14 @@
 package ru.hse.coursework.models.Response;
 
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.ArrayNode;
+import org.codehaus.jackson.node.ObjectNode;
 import ru.hse.coursework.models.Service.DefaultClass;
 import ru.hse.coursework.models.Service.Service;
 import ru.hse.coursework.models.User.*;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,8 +39,45 @@ public class Response implements Serializable {
         this.defaultClass = new DefaultClass(true, "");
 
         String command = "Insert Into Responses (ResponseID, PersonID, CriticID, Text, Mark, Date)" +
-                "Values ((Select Max(ResponseID) From Responses) + 1, " + personID + "," + criticID + ",'" + text + "'," + mark + ",'" + Service.getNowMomentInUTC() + "')";
+                "Values ((Select MAX(ResponseID) FROM Responses) + 1, " + personID + "," + criticID + ",'" + text + "'," + mark + ",'" + Service.getNowMomentInUTC() + "')";
         Service.execCommand(command);
+    }
+
+    public String getJSON() {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode Node = mapper.createObjectNode();
+        Node.put("criticID", criticID);
+        Node.put("personID", personID);
+        Node.put("mark", mark);
+        Node.put("text", text);
+        Node.put("date", date.toString());
+
+        String criticjson = "";
+        if (critic != null) {
+            criticjson = critic.getJSON();
+        }
+
+        String commentjson = "{";
+        if (comments != null) {
+            for (int i = 0; i < comments.size(); i++) {
+                commentjson = commentjson + "\"comment_" + i + "\":" + comments.get(i).getJSON() + "},";
+            }
+
+            commentjson = commentjson.substring(0, commentjson.length() - 2);
+        }
+
+        commentjson += "}";
+
+        String nodemapper;
+        String nodestring = "";
+        try {
+            nodemapper = mapper.writeValueAsString(Node);
+            nodestring = nodemapper.substring(1, nodemapper.length() - 1);
+        } catch (Exception ex) {
+        }
+
+        String resultjson = "{" + nodestring + ", \"critic\":" + criticjson + ",\"comments\":" + commentjson + "}";
+        return resultjson;
     }
 
     public static Response getResponseByID(int ID) throws Exception {
@@ -120,5 +161,10 @@ public class Response implements Serializable {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    @Override
+    public String toString() {
+        return "{\"response\":" + this.getJSON() + ", \"defaultClass\": " + defaultClass.getJSON() + "}";
     }
 }

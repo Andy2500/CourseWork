@@ -1,5 +1,6 @@
 package ru.hse.coursework.models.Packages.Order;
 
+import org.codehaus.jackson.node.ObjectNode;
 import ru.hse.coursework.models.Service.DefaultClass;
 import ru.hse.coursework.models.Service.Service;
 import ru.hse.coursework.models.User.User;
@@ -17,8 +18,11 @@ public class PackageOrder implements Serializable {
 
     private String source;
     private String destination;
-    private String date;
+
     private String text;
+
+    private Date startDate;
+    private Date endDate;
     private Date publishDate;
 
     private ArrayList<OrderRequest> requests;
@@ -28,17 +32,28 @@ public class PackageOrder implements Serializable {
     public PackageOrder() {
     }
 
-    public PackageOrder(int personID, String source, String destination, String date, String text) throws Exception {
+    public PackageOrder(int personID, String source, String destination, Date startDate, Date endDate, String text) throws Exception {
         this.source = source;
         this.destination = destination;
-        this.date = date;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.text = text;
         this.personID = personID;
-        String command = "Insert Into Orders (OrderID, Source, Destination, Date, Text, Photo, PersonID)" +
-                "Values ((Select Max(OrderID) From Orders) + 1, '" + source + "', '" + destination + "',' " + Service.getNowMomentInUTC() + "','" + text + ")";
+        String command = "Insert Into Orders (OrderID, PersonID, Source, Destination, StartDate, EndDate, Text, Photo, PublishDate)" +
+                "Values ((Select Max(OrderID) From Orders) + 1,"+ personID +  ",'" + source + "', '" + destination + "',' " + Service.makeSqlDateString(startDate) + "',' " + Service.makeSqlDateString(endDate)+ "',' "+ text + "', NULL,'" + Service.getNowMomentInUTC() +"')";
         Service.execCommand(command);
         command = "Update Users Set CountOfOrders = CountOfOrders + 1 Where PersonID = " + personID;
         Service.execCommand(command);
+    }
+
+    public ObjectNode getJSONNode()
+    {
+        return null;
+    }
+
+    public String getJSON()
+    {
+        return null;
     }
 
     public static PackageOrder getOrderByID(int ID) throws Exception {
@@ -78,10 +93,6 @@ public class PackageOrder implements Serializable {
         return destination;
     }
 
-    public String getDate() {
-        return date;
-    }
-
     public String getText() {
         return text;
     }
@@ -100,10 +111,6 @@ public class PackageOrder implements Serializable {
 
     public void setDestination(String destination) {
         this.destination = destination;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
     }
 
     public void setText(String text) {
@@ -132,5 +139,21 @@ public class PackageOrder implements Serializable {
 
     public void setPublishDate(Date publishDate) {
         this.publishDate = publishDate;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 }

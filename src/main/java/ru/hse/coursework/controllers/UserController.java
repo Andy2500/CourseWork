@@ -21,14 +21,19 @@ public class UserController {
                                  @PathParam("name") String name,
                                  @PathParam("phone") String phone) {
         try {
+            User.exists(login, phone, email);
+            login = login.toLowerCase();
+            email = email.toLowerCase();
+            phone = phone.toLowerCase();
             User user = new User(login, email, name, hashpsd, phone);
             String token = Service.makeToken(user.getLogin());
+            user = User.getUserByToken("");
             user.setToken(token);
+            user.setLastOnlineDate();
+
             return new DefaultClass(true, token);
         } catch (Exception ex) {
-            DefaultClass defaultClass = new DefaultClass(false, ex.getMessage());
-
-            return defaultClass;
+            return new DefaultClass(false, ex.getMessage());
         }
     }
 
@@ -39,8 +44,13 @@ public class UserController {
     public DefaultClass login(@PathParam("login") String login, @PathParam("hashpsd") String hashpsd) {
         try {
             User user = User.getUserByLogin(login);
+            if(!user.getHashpsd().equals(hashpsd))
+            {
+                throw new Exception("Hashpsd error");
+            }
             String token = Service.makeToken(user.getLogin());
             user.setToken(token);
+            user.setLastOnlineDate();
             return new DefaultClass(true, token);
         } catch (Exception ex) {
             return new DefaultClass(false, ex.getMessage());
@@ -59,6 +69,7 @@ public class UserController {
             token = Service.makeToken(user.getLogin());
             user.setHashpsd(newpsd, lastpsd);
             user.setToken(token);
+            user.setLastOnlineDate();
             return new DefaultClass(true, token);
         } catch (Exception ex) {
             return new DefaultClass(false, ex.getMessage());
@@ -77,6 +88,7 @@ public class UserController {
             token = Service.makeToken(user.getLogin());
             user.setEmail(newEmail, lastEmail);
             user.setToken(token);
+            user.setLastOnlineDate();
             return new DefaultClass(true, token);
         } catch (Exception ex) {
             return new DefaultClass(false, ex.getMessage());
@@ -95,6 +107,7 @@ public class UserController {
             token = Service.makeToken(user.getLogin());
             user.setPhone(newPhone, lastPhone);
             user.setToken(token);
+            user.setLastOnlineDate();
             return new DefaultClass(true, token);
         } catch (Exception ex) {
             return new DefaultClass(false, ex.getMessage());
@@ -132,6 +145,7 @@ public class UserController {
             token = Service.makeToken(user.getLogin());
             user.setLogin(login);
             user.setToken(token);
+            user.setLastOnlineDate();
             return new DefaultClass(true, token);
         } catch (Exception ex) {
             return new DefaultClass(false, ex.getMessage());
@@ -149,6 +163,7 @@ public class UserController {
             token = Service.makeToken(user.getLogin());
             user.setName(name);
             user.setToken(token);
+            user.setLastOnlineDate();
             return new DefaultClass(true, token);
         } catch (Exception ex) {
             return new DefaultClass(false, ex.getMessage());
@@ -164,10 +179,10 @@ public class UserController {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
-            user.setToken(token);
-
             UserProfile userProfile = UserProfile.getUserProfileByID(ID);
             userProfile.setDefaultClass(new DefaultClass(true, token));
+            user.setToken(token);
+            user.setLastOnlineDate();
             return userProfile;
         } catch (Exception ex) {
             UserProfile userProfile = new UserProfile();
@@ -179,18 +194,31 @@ public class UserController {
     @GET
     @Path("/gpf/t={token}")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public UserProfile getProfile(@PathParam("token") String token) {
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getProfile(@PathParam("token") String token) {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
             UserProfile userProfile = UserProfile.getUserProfileByUser(user);
             userProfile.setDefaultClass(new DefaultClass(true, token));
-            return userProfile;
+            user.setToken(token);
+            user.setLastOnlineDate();
+            String json = userProfile.getJson();
+            return json;
         } catch (Exception ex) {
             UserProfile userProfile = new UserProfile();
             userProfile.setDefaultClass(new DefaultClass(false, ex.getMessage()));
-            return userProfile;
+            String json = "";
+            try
+            {
+                json = userProfile.getJson();
+            }
+            catch (Exception e)
+            {
+
+            }
+
+            return json;
         }
     }
 }

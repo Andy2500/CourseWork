@@ -19,21 +19,21 @@ import javax.ws.rs.core.MediaType;
 @Path("/pack")
 public class PackageController {
     @GET
-    @Path("/mof/t={token}&s={source}&d={destination}&da={date}&t={text}")
+    @Path("/mof/t={token}&s={source}&d={destination}&sd={startdate}&ed={enddate}&t={text}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public DefaultClass makeOffer(@PathParam("token") String token,
                                   @PathParam("source") String source,
                                   @PathParam("destination") String destination,
-                                  @PathParam("date") String date,
+                                  @PathParam("startdate") String startDate,
+                                  @PathParam("enddate") String endDate,
                                   @PathParam("text") String text) {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
+            new PackageOffer(user.getPersonID(), source, destination, Service.dateFromString(startDate), Service.dateFromString(endDate), text);
             user.setToken(token);
-
-            new PackageOffer(user.getPersonID(), source, destination, date, text);
-
+            user.setLastOnlineDate();
             return new DefaultClass(true, token);
         } catch (Exception ex) {
             return new DefaultClass(false, ex.getMessage());
@@ -41,21 +41,22 @@ public class PackageController {
     }
 
     @GET
-    @Path("/mor/t={token}&s={source}&d={destination}&da={date}&t={text}")
+    @Path("/mor/t={token}&s={source}&d={destination}&sd={startdate}&ed={enddate}&t={text}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public DefaultClass makeOrder(@PathParam("token") String token,
                                   @PathParam("source") String source,
                                   @PathParam("destination") String destination,
-                                  @PathParam("date") String date,
+                                  @PathParam("startdate") String startDate,
+                                  @PathParam("enddate") String endDate,
                                   @PathParam("text") String text) {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
-            user.setToken(token);
 
-            new PackageOrder(user.getPersonID(), source, destination, date, text);
+            new PackageOrder(user.getPersonID(), source, destination, Service.dateFromString(startDate), Service.dateFromString(endDate), text);
             user.setToken(token);
+            user.setLastOnlineDate();
 
             return new DefaultClass(true, token);
         } catch (Exception ex) {
@@ -72,9 +73,10 @@ public class PackageController {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
-            user.setToken(token);
 
             PackageOrder.deletePackageOrder(OrderID);
+            user.setToken(token);
+            user.setLastOnlineDate();
             return new DefaultClass(true, token);
         } catch (Exception ex) {
             return new DefaultClass(false, ex.getMessage());
@@ -90,9 +92,9 @@ public class PackageController {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
-            user.setToken(token);
-
             PackageOffer.deletePackageOffer(OfferID);
+            user.setToken(token);
+            user.setLastOnlineDate();
             return new DefaultClass(true, token);
         } catch (Exception ex) {
             return new DefaultClass(false, ex.getMessage());
@@ -108,9 +110,12 @@ public class PackageController {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
-            user.setToken(token);
+
             PackageOffer offer = PackageOffer.getOfferByID(offerID);
             offer.setDefaultClass(new DefaultClass(true, token));
+
+            user.setToken(token);
+            user.setLastOnlineDate();
             return offer;
 
         } catch (Exception ex) {
@@ -129,10 +134,10 @@ public class PackageController {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
-            user.setToken(token);
-
             PackageOrder order = PackageOrder.getOrderByID(orderID);
             order.setDefaultClass(new DefaultClass(true, token));
+            user.setToken(token);
+            user.setLastOnlineDate();
             return order;
         } catch (Exception ex) {
             PackageOrder order = new PackageOrder();
@@ -150,10 +155,10 @@ public class PackageController {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
-            user.setToken(token);
-
             Package _package = Package.getPackageByID(packageID);
             _package.setDefaultClass(new DefaultClass(true, token));
+            user.setToken(token);
+            user.setLastOnlineDate();
             return _package;
         } catch (Exception ex) {
             Package _package = new Package();
@@ -174,10 +179,10 @@ public class PackageController {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
-            user.setToken(token);
-
             Offers offers = Offers.getOffersByParams(source, destination, startdate, enddate);
             offers.setDefaultClass(new DefaultClass(true, token));
+            user.setToken(token);
+            user.setLastOnlineDate();
             return offers;
         } catch (Exception ex) {
             Offers offers = new Offers();
@@ -198,10 +203,10 @@ public class PackageController {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
-            user.setToken(token);
-
             Orders orders = Orders.getOrdersByParams(source, destination, startdate, enddate);
             orders.setDefaultClass(new DefaultClass(true, token));
+            user.setToken(token);
+            user.setLastOnlineDate();
             return orders;
         } catch (Exception ex) {
             Orders orders = new Orders();
@@ -218,10 +223,10 @@ public class PackageController {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
-            user.setToken(token);
-
             Orders orders = Orders.getOrdersByID(user.getPersonID());
             orders.setDefaultClass(new DefaultClass(true, token));
+            user.setToken(token);
+            user.setLastOnlineDate();
             return orders;
         } catch (Exception ex) {
             Orders orders = new Orders();
@@ -238,10 +243,10 @@ public class PackageController {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
-            user.setToken(token);
-
             Offers offers = Offers.getOffersByID(user.getPersonID());
             offers.setDefaultClass(new DefaultClass(true, token));
+            user.setToken(token);
+            user.setLastOnlineDate();
             return offers;
         } catch (Exception ex) {
             Offers offers = new Offers();
@@ -258,10 +263,10 @@ public class PackageController {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
-            user.setToken(token);
-
             Packages packages = Packages.getPackagesByUserID(user.getPersonID());
             packages.setDefaultClass(new DefaultClass(true, token));
+            user.setToken(token);
+            user.setLastOnlineDate();
             return packages;
         } catch (Exception ex) {
             Packages packages = new Packages();
@@ -280,9 +285,10 @@ public class PackageController {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
-            user.setToken(token);
-
             new OrderRequest(user.getPersonID(), orderID);
+
+            user.setToken(token);
+            user.setLastOnlineDate();
 
             return new DefaultClass(true, token);
         } catch (Exception ex) {
@@ -300,9 +306,10 @@ public class PackageController {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
-            user.setToken(token);
-
             new OfferRequest(user.getPersonID(), offerID);
+
+            user.setToken(token);
+            user.setLastOnlineDate();
 
             return new DefaultClass(true, token);
         } catch (Exception ex) {
@@ -320,15 +327,17 @@ public class PackageController {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
-            user.setToken(token);
 
             OfferRequest request = OfferRequest.getRequestByID(requestID);
             PackageOffer offer = PackageOffer.getOfferByID(request.getOfferID());
 
-            new Package(request.getPersonID(), offer.getPersonID(), offer.getSource(), offer.getDestination(), offer.getDate(), offer.getText());
+            new Package(request.getPersonID(), offer.getPersonID(), offer.getSource(), offer.getDestination(), offer.getStartDate(), offer.getEndDate(), offer.getText());
 
             PackageOffer.deletePackageOffer(offer.getOfferID());
             OfferRequest.deleteRequest(requestID);
+
+            user.setToken(token);
+            user.setLastOnlineDate();
 
             return new DefaultClass(true, token);
         } catch (Exception ex) {
@@ -344,16 +353,19 @@ public class PackageController {
                                           @PathParam("requestID") int requestID) {
         try {
             User user = User.getUserByToken(token);
+
             token = Service.makeToken(user.getLogin());
-            user.setToken(token);
 
             OrderRequest request = OrderRequest.getRequestByID(requestID);
             PackageOrder order = PackageOrder.getOrderByID(request.getOrderID());
 
-            new Package(order.getPersonID(), request.getPersonID(), order.getSource(), order.getDestination(), order.getDate(), order.getText());
+            new Package(order.getPersonID(), request.getPersonID(), order.getSource(), order.getDestination(), order.getStartDate(), order.getEndDate(), order.getText());
 
             PackageOrder.deletePackageOrder(order.getOrderID());
             OrderRequest.deleteRequest(requestID);
+
+            user.setToken(token);
+            user.setLastOnlineDate();
 
             return new DefaultClass(true, token);
         } catch (Exception ex) {

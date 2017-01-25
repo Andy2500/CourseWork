@@ -1,5 +1,6 @@
 package ru.hse.coursework.models.Chat;
 
+import org.codehaus.jackson.node.ObjectNode;
 import ru.hse.coursework.models.Service.DefaultClass;
 import ru.hse.coursework.models.Service.Service;
 
@@ -26,8 +27,18 @@ public class Dialog implements Serializable {
         this.personID_1 = PersonID_1;
         this.personID_2 = PersonID_2;
 
-        String command = "Insert Into Dialogs (DialogID, PersonID_1, PersonID_2) ((Select Max(DialogID) From Dialogs)," + PersonID_1 + "," + PersonID_2 + ")";
+        String command = "Insert Into Dialogs (DialogID, PersonID_1, PersonID_2) Values ((Select Max(DialogID) From Dialogs) + 1," + PersonID_1 + "," + PersonID_2 + ")";
         Service.execCommand(command);
+    }
+
+    public ObjectNode getJSONNode()
+    {
+        return null;
+    }
+
+    public String getJSON()
+    {
+        return null;
     }
 
     public static Dialog getDialogByID(int ID) throws Exception {

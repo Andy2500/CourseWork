@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
   <artifact type="exploded-war" name="api:war exploded">
-    <output-path>$PROJECT_DIR$/target/api</output-path>
+    <output-path>$PROJECT_DIR$/target/CourseWork</output-path>
     <root id="root">
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
@@ -21,11 +21,11 @@
           <element id="library" level="project" name="Maven: org.codehaus.jackson:jackson-mapper-asl:1.7.1" />
           <element id="library" level="project" name="Maven: org.codehaus.jackson:jackson-jaxrs:1.7.1" />
           <element id="library" level="project" name="Maven: org.codehaus.jackson:jackson-xc:1.7.1" />
-          <element id="library" level="project" name="Maven: com.microsoft.sqlserver:sqljdbc:4.0" />
+          <element id="library" level="project" name="sqljdbc4" />
         </element>
       </element>
       <element id="directory" name="META-INF">
-        <element id="file-copy" path="$PROJECT_DIR$/target/api/META-INF/MANIFEST.MF" />
+        <element id="file-copy" path="$PROJECT_DIR$/target/CourseWork/META-INF/MANIFEST.MF" />
       </element>
       <element id="javaee-facet-resources" facet="api/web/Web" />
     </root>

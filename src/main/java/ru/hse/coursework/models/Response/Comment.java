@@ -1,5 +1,7 @@
 package ru.hse.coursework.models.Response;
 
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.ObjectNode;
 import ru.hse.coursework.models.Service.Service;
 import ru.hse.coursework.models.User.User;
 
@@ -11,24 +13,41 @@ import java.util.Date;
 @XmlRootElement
 public class Comment implements Serializable {
 
-    private int CommentID;
-    private int ResponseID;
-    private int PersonID;
-    private String Text;
-    private User commenter;
+    private int commentID;
+    private int responseID;
+    private int personID;
+    private String text;
     private Date date;
+
+    private User commenter;
 
     public Comment() {
     }
 
     public Comment(int responseID, int personID, String text) throws Exception {
-        ResponseID = responseID;
-        PersonID = personID;
-        Text = text;
+        this.responseID = responseID;
+        this.personID = personID;
+        this.text = text;
 
         String command = "Insert Into Comments (CommentID, ResponseID, PersonID, Text, Date)" +
-                "Values (Max(CommentID) + 1, " + responseID + ", " + personID + ",'" + text + "','" + Service.getNowMomentInUTC() + "')";
+                "Values ((Select MAX(CommentID) FROM Comments) + 1, " + responseID + ", " + personID + ",'" + text + "','" + Service.getNowMomentInUTC() + "')";
         Service.execCommand(command);
+    }
+
+    public String getJSON()      {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode Node = mapper.createObjectNode();
+        Node.put("commentID", commentID);
+        Node.put("responseID", responseID);
+        Node.put("text", text);
+        Node.put("date", date.toString());
+
+        try {
+            return mapper.writeValueAsString(Node);
+        }catch (Exception ex)
+        {
+            return null;
+        }
     }
 
     public static void deleteComment(int commentID) throws Exception {
@@ -42,19 +61,19 @@ public class Comment implements Serializable {
     }
 
     public int getCommentID() {
-        return CommentID;
+        return commentID;
     }
 
     public int getResponseID() {
-        return ResponseID;
+        return responseID;
     }
 
     public int getPersonID() {
-        return PersonID;
+        return personID;
     }
 
     public String getText() {
-        return Text;
+        return text;
     }
 
     public User getCommenter() {
@@ -62,7 +81,7 @@ public class Comment implements Serializable {
     }
 
     public void setCommentID(int commentID) {
-        CommentID = commentID;
+        this.commentID = commentID;
     }
 
     public void setCommenter(User commenter) {
@@ -70,15 +89,15 @@ public class Comment implements Serializable {
     }
 
     public void setResponseID(int responseID) {
-        ResponseID = responseID;
+        this.responseID = responseID;
     }
 
     public void setPersonID(int personID) {
-        PersonID = personID;
+        this.personID = personID;
     }
 
     public void setText(String text) {
-        Text = text;
+        this.text = text;
     }
 
     public Date getDate() {

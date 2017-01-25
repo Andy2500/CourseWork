@@ -24,6 +24,7 @@ public class ResponseController {
             User critic = User.getUserByToken(token);
             token = Service.makeToken(critic.getLogin());
             critic.setToken(token);
+            critic.setLastOnlineDate();
             new Response(critic.getPersonID(), personID, text, mark);
             return new DefaultClass(true, token);
         } catch (Exception ex) {
@@ -40,9 +41,9 @@ public class ResponseController {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
-            user.setToken(token);
-
             Response response = Response.getResponseByID(ID);
+            user.setToken(token);
+            user.setLastOnlineDate();
             response.setDefaultClass(new DefaultClass(true, token));
             return response;
         } catch (Exception ex) {
@@ -62,9 +63,9 @@ public class ResponseController {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
-            user.setToken(token);
-
             new Comment(responseID, user.getPersonID(), text);
+            user.setToken(token);
+            user.setLastOnlineDate();
             return new DefaultClass(true, token);
         } catch (Exception ex) {
             return new DefaultClass(false, ex.getMessage());
@@ -81,6 +82,7 @@ public class ResponseController {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
             user.setToken(token);
+            user.setLastOnlineDate();
             Comment.deleteComment(commentID);
             return new DefaultClass(true, token);
         } catch (Exception ex) {

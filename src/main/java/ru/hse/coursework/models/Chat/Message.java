@@ -1,5 +1,6 @@
 package ru.hse.coursework.models.Chat;
 
+import org.codehaus.jackson.node.ObjectNode;
 import ru.hse.coursework.models.Service.DefaultClass;
 import ru.hse.coursework.models.Service.Service;
 
@@ -11,29 +12,39 @@ import java.util.Date;
 @XmlRootElement
 public class Message implements Serializable {
 
+    private int messageID;
     private int personID;
     private int dialogID;
     private String text;
     private Date date;
-    private int messageID;
+
 
     private DefaultClass defaultClass;
 
     public Message() {
     }
 
-    public Message(int personID, int dialogID, String text, Date date) throws Exception {
+    public Message(int personID, int dialogID, String text) throws Exception {
         this.personID = personID;
         this.dialogID = dialogID;
         this.text = text;
-        this.date = date;
         String command = "Insert Into Messages (MessageID, DialogID, PersonID, Text, Date)"
-                + "Values ((Select Max(MessageID) From Messages) + 1 ," + dialogID + "," + personID + ",'" + text + ",'" + Service.getNowMomentInUTC() + "')";
+                + "Values ((Select Max(MessageID) From Messages) + 1 ," + dialogID + "," + personID + ",'" + text + "','" + Service.getNowMomentInUTC() + "')";
         Service.execCommand(command);
     }
 
+    public ObjectNode getJSONNode()
+    {
+        return null;
+    }
+
+    public String getJSON()
+    {
+        return null;
+    }
+
     public static Message getLastMessagesByDialogID(int dialogID) throws Exception {
-        String query = "Select * From Messages Where MessageID = (Select Max(MessageID) From Messages Where DialogID = " + dialogID + "))";
+        String query = "Select * From Messages Where MessageID = (Select Max(MessageID) From Messages ) AND DialogID = " + dialogID + "";
         return Service.getMessageByQuery(query);
     }
 

@@ -1,5 +1,6 @@
 package ru.hse.coursework.models.Service;
 
+import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 import ru.hse.coursework.models.Chat.Dialog;
 import ru.hse.coursework.models.Chat.Message;
 import ru.hse.coursework.models.Packages.Offer.OfferRequest;
@@ -14,44 +15,86 @@ import ru.hse.coursework.models.Response.Comment;
 import ru.hse.coursework.models.Response.Response;
 import ru.hse.coursework.models.User.User;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 
 public class Service {
-    private static String url = "jdbc:sqlserver://coursew.database.windows.net:1433;database=CourseWID;user=HSEadmin@coursew;password=hsepassword16);encrypt=true;trustServerCertificate=true;hostNameInCertificate=*.database.windows.net;loginTimeout=30;";
-    public static String makeToken(String login) {
-        return login + getNowMomentInUTC();
+
+
+    public static String makeToken(String login) throws Exception {
+        String str = login + Service.getNowMomentInUTC();
+        MessageDigest messageDigest;
+
+        messageDigest = MessageDigest.getInstance("MD5");
+        messageDigest.reset();
+        messageDigest.update(str.getBytes());
+        byte[] digest = messageDigest.digest();
+
+        BigInteger bigInt = new BigInteger(1, digest);
+        String md5Hex = bigInt.toString(16);
+
+        while (md5Hex.length() < 32) {
+            md5Hex = "0" + md5Hex;
+        }
+
+        return md5Hex;
     }
 
     public static void execCommand(String command) throws Exception {
-        Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+        SQLServerDataSource ds = new SQLServerDataSource();
+        ds.setServerName("coursew.database.windows.net");
+        ds.setPortNumber(1433);
+        ds.setDatabaseName("CourseWID");
+        ds.setEncrypt(true);
+        ds.setPassword("hsepassword16)");
+        ds.setUser("HSEADMIN");
+        ds.setHostNameInCertificate("*.database.windows.net");
+        ds.setTrustServerCertificate(false);
+        ds.setLoginTimeout(1000);
 
-        Connection connection = DriverManager.getConnection(url);
+        Connection connection = ds.getConnection();
         Statement statement = connection.createStatement();
 
-        if (connection == null) {
-            throw new Exception("Database Connection Error");
-        }
-
-        if (!statement.execute(command)) {
-            throw new Exception("Database Query Error");
-        }
+        statement.execute(command);
     }
 
     public static Date dateFromString(String date) throws ParseException {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss:SSS");
+        String[] sp = date.split(":");
+        int l = sp[3].length();
+        String nilstr = "";
+
+        for (int i = l; i < 3; i++) {
+            nilstr += "0";
+        }
+
+        sp[3] = sp[3] + nilstr;
+        date = sp[0] + ":" + sp[1] + ":" + sp[2] + ":" + sp[3];
         return dateFormat.parse(date);
     }
 
-    public static Date getNowMomentInUTC() {
-        return null;
+    public static String makeSqlDateString(Date date) {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss:SSS");
+        return dateFormat.format(date);
+    }
+
+    public static String getNowMomentInUTC() {
+        GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+        String date = calendar.get(Calendar.YEAR) + "."
+                + (calendar.get(Calendar.MONTH) + 1) + "."
+                + calendar.get(Calendar.DAY_OF_MONTH) + " "
+                + calendar.get(Calendar.HOUR_OF_DAY) + ":"
+                + calendar.get(Calendar.MINUTE) + ":"
+                + calendar.get(Calendar.SECOND) + ":"
+                + calendar.get(Calendar.MILLISECOND);
+        return date;
     }
 
     public static User getUserByQuery(String query) throws Exception {
@@ -59,21 +102,19 @@ public class Service {
 
         ResultSet resultSet = getSelectResultSet(query);
 
-        if (resultSet != null) {
-            while (resultSet.next()) {
-                user = new User(resultSet.getInt("personID"),
-                        resultSet.getInt("countOfOrders"),
-                        resultSet.getInt("countOfOffers"),
-                        resultSet.getInt("experience"),
-                        resultSet.getInt("rank"),
-                        resultSet.getDate("lastOnlineDate"),
-                        resultSet.getString("login"),
-                        resultSet.getString("email"),
-                        resultSet.getString("name"),
-                        resultSet.getString("HashPassword"),
-                        resultSet.getString("Phone"),
-                        resultSet.getString("Token"));
-            }
+        while (resultSet.next()) {
+            user = new User(resultSet.getInt("personID"),
+                    resultSet.getInt("countOfOrders"),
+                    resultSet.getInt("countOfOffers"),
+                    resultSet.getInt("experience"),
+                    resultSet.getInt("rank"),
+                    resultSet.getDate("lastOnlineDate"),
+                    resultSet.getString("login"),
+                    resultSet.getString("email"),
+                    resultSet.getString("name"),
+                    resultSet.getString("HashPassword"),
+                    resultSet.getString("Phone"),
+                    resultSet.getString("Token"));
         }
 
         return user;
@@ -86,7 +127,7 @@ public class Service {
         if (resultSet != null) {
             while (resultSet.next()) {
                 Response response = new Response();
-                response.setResponseID(resultSet.getInt("RequestID"));
+                response.setResponseID(resultSet.getInt("ResponseID"));
                 response.setComments(Comment.getCommentsByResponseID(response.getResponseID()));
                 response.setPersonID(resultSet.getInt("PersonID"));
                 response.setCriticID(resultSet.getInt("CriticID"));
@@ -107,7 +148,7 @@ public class Service {
 
         if (resultSet != null) {
             while (resultSet.next()) {
-                response.setResponseID(resultSet.getInt("RequestID"));
+                response.setResponseID(resultSet.getInt("ResponseID"));
                 response.setComments(Comment.getCommentsByResponseID(response.getResponseID()));
                 response.setPersonID(resultSet.getInt("PersonID"));
                 response.setCriticID(resultSet.getInt("CriticID"));
@@ -152,7 +193,8 @@ public class Service {
                 offer.setPersonID(resultSet.getInt("PersonID"));
                 offer.setPerson(User.getUserByID(offer.getPersonID()));
                 offer.getPerson().clear();
-                offer.setDate(resultSet.getString("Date"));
+                offer.setStartDate(resultSet.getDate("StartDate"));
+                offer.setEndDate(resultSet.getDate("EndDate"));
                 offer.setDestination(resultSet.getString("Destination"));
                 offer.setSource(resultSet.getString("Source"));
                 offer.setPublishDate(resultSet.getDate("PublishDate"));
@@ -175,7 +217,8 @@ public class Service {
                 order.setPersonID(resultSet.getInt("PersonID"));
                 order.setPerson(User.getUserByID(order.getPersonID()));
                 order.getPerson().clear();
-                order.setDate(resultSet.getString("Date"));
+                order.setStartDate(resultSet.getDate("StartDate"));
+                order.setEndDate(resultSet.getDate("EndDate"));
                 order.setDestination(resultSet.getString("Destination"));
                 order.setSource(resultSet.getString("Source"));
                 order.setPublishDate(resultSet.getDate("PublishDate"));
@@ -202,7 +245,8 @@ public class Service {
             Package _package = new Package();
             _package.setText(resultSet.getString("Text"));
             _package.setConsumerID(resultSet.getInt("ConsumerID"));
-            _package.setDate(resultSet.getString("Date"));
+            _package.setStartDate(resultSet.getDate("StartDate"));
+            _package.setEndDate(resultSet.getDate("EndDate"));
             _package.setDestination(resultSet.getString("Destination"));
             _package.setPackageID(resultSet.getInt("PackageID"));
             _package.setProducerID(resultSet.getInt("ProducerID"));
@@ -252,7 +296,7 @@ public class Service {
 
     public static ArrayList<Message> getMessagesByQuery(String query) throws Exception {
         ResultSet resultSet = getSelectResultSet(query);
-        ArrayList<Message> messages = new ArrayList<Message>();
+        ArrayList<Message> messages = new ArrayList<>();
 
         while (resultSet.next()) {
             Message message = new Message();
@@ -280,7 +324,8 @@ public class Service {
                 order.getPerson().clear();
                 order.setOrderID(resultSet.getInt("OrderID"));
                 order.setRequests(OrderRequest.getRequestsByOrderID(order.getOrderID()));
-                order.setDate(resultSet.getString("Date"));
+                order.setStartDate(resultSet.getDate("StartDate"));
+                order.setEndDate(resultSet.getDate("EndDate"));
                 order.setDestination(resultSet.getString("Destination"));
                 order.setSource(resultSet.getString("Source"));
                 order.setPublishDate(resultSet.getDate("PublishDate"));
@@ -298,7 +343,8 @@ public class Service {
                 offer.setText(resultSet.getString("Text"));
                 offer.setPersonID(resultSet.getInt("PersonID"));
                 offer.setPerson(User.getUserByID(offer.getPersonID()));
-                offer.setDate(resultSet.getString("Date"));
+                offer.setStartDate(resultSet.getDate("StartDate"));
+                offer.setEndDate(resultSet.getDate("EndDate"));
                 offer.setDestination(resultSet.getString("Destination"));
                 offer.setSource(resultSet.getString("Source"));
                 offer.setOfferID(resultSet.getInt("OfferID"));
@@ -318,7 +364,8 @@ public class Service {
         while (resultSet.next()) {
             _package.setText(resultSet.getString("Text"));
             _package.setConsumerID(resultSet.getInt("ConsumerID"));
-            _package.setDate(resultSet.getString("Date"));
+            _package.setStartDate(resultSet.getDate("StartDate"));
+            _package.setEndDate(resultSet.getDate("EndDate"));
             _package.setDestination(resultSet.getString("Destination"));
             _package.setPackageID(resultSet.getInt("PackageID"));
             _package.setProducerID(resultSet.getInt("ProducerID"));
@@ -333,7 +380,7 @@ public class Service {
 
     public static ArrayList<OfferRequest> getOfferRequestsByQuery(String query) throws Exception {
         ResultSet resultSet = getSelectResultSet(query);
-        ArrayList<OfferRequest> requests = new ArrayList<OfferRequest>();
+        ArrayList<OfferRequest> requests = new ArrayList<>();
 
         if (resultSet != null) {
             while (resultSet.next()) {
@@ -352,7 +399,7 @@ public class Service {
 
     public static ArrayList<OrderRequest> getOrderRequestsByQuery(String query) throws Exception {
         ResultSet resultSet = getSelectResultSet(query);
-        ArrayList<OrderRequest> requests = new ArrayList<OrderRequest>();
+        ArrayList<OrderRequest> requests = new ArrayList<>();
 
         if (resultSet != null) {
             while (resultSet.next()) {
@@ -401,17 +448,31 @@ public class Service {
         return request;
     }
 
-    private static ResultSet getSelectResultSet(String query) throws Exception {
-        Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+    /*
+    public static int getIntByQuery(String query) throws Exception {
+        ResultSet resultSet = getSelectResultSet(query);
+        return resultSet.getInt(0);
+    }
+    */
 
-        Connection connection = DriverManager.getConnection(url);
+    private static ResultSet getSelectResultSet(String query) throws Exception {
+        SQLServerDataSource ds = new SQLServerDataSource();
+        ds.setServerName("coursew.database.windows.net");
+        ds.setPortNumber(1433);
+        ds.setDatabaseName("CourseWID");
+        ds.setEncrypt(true);
+        ds.setPassword("hsepassword16)");
+        ds.setUser("HSEADMIN");
+        ds.setHostNameInCertificate("*.database.windows.net");
+        ds.setTrustServerCertificate(false);
+        ds.setLoginTimeout(1000);
+
+        Connection connection = ds.getConnection();
         Statement statement = connection.createStatement();
         ResultSet resultSet;
-        try {
-            resultSet = statement.executeQuery(query);
-        } catch (Exception ex) {
-            throw new Exception("Database Query Error");
-        }
+
+        resultSet = statement.executeQuery(query);
+
         return resultSet;
     }
 }

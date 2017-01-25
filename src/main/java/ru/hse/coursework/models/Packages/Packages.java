@@ -1,5 +1,6 @@
 package ru.hse.coursework.models.Packages;
 
+import org.codehaus.jackson.node.ObjectNode;
 import ru.hse.coursework.models.Service.DefaultClass;
 import ru.hse.coursework.models.Service.Service;
 
@@ -14,8 +15,18 @@ public class Packages implements Serializable{
     private DefaultClass defaultClass;
 
     public static Packages getPackagesByUserID(int ID) throws Exception {
-        String query = "Select * From Packages Where PersonID = " + ID;
+        String query = "Select * From Packages Where (ProducerID = " + ID +") OR ( ConsumerID = " + ID + ")";
         return Service.getPackagesByQuery(query);
+    }
+
+    public ObjectNode getJSONNode()
+    {
+        return null;
+    }
+
+    public String getJSON()
+    {
+        return null;
     }
 
     public ArrayList<Package> getPackages() {
