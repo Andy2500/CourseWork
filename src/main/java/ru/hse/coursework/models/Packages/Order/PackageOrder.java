@@ -17,6 +17,7 @@ public class PackageOrder implements Serializable {
 
     private String source;
     private String destination;
+    private String photo;
 
     private String text;
 
@@ -144,5 +145,13 @@ public class PackageOrder implements Serializable {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 }

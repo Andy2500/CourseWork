@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.hse.coursework</groupId>
-    <artifactId>CourseWork</artifactId>
+    <artifactId>api</artifactId>
     <packaging>war</packaging>
     <version>1.0</version>
     <name>api</name>
@@ -40,7 +40,7 @@
     </dependencies>
 
     <build>
-        <finalName>CourseWork</finalName>
+        <finalName>api</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>

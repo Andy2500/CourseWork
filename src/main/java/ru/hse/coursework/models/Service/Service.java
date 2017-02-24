@@ -115,6 +115,12 @@ public class Service {
                     resultSet.getString("HashPassword"),
                     resultSet.getString("Phone"),
                     resultSet.getString("Token"));
+            byte[] ph = resultSet.getBytes("Photo");
+            if (ph != null) {
+                String pho = javax.xml.bind.DatatypeConverter.printBase64Binary(ph);
+                user.setPhoto(pho);
+            }
+
         }
 
         return user;
@@ -123,9 +129,10 @@ public class Service {
     public static ArrayList<Response> getResponsesByQuery(String query) throws Exception {
         ArrayList<Response> responses = new ArrayList<Response>();
         ResultSet resultSet = getSelectResultSet(query);
-
+        int i = 0;
         if (resultSet != null) {
             while (resultSet.next()) {
+                i++;
                 Response response = new Response();
                 response.setResponseID(resultSet.getInt("ResponseID"));
                 response.setComments(Comment.getCommentsByResponseID(response.getResponseID()));
@@ -222,12 +229,11 @@ public class Service {
                 order.setDestination(resultSet.getString("Destination"));
                 order.setSource(resultSet.getString("Source"));
                 order.setPublishDate(resultSet.getDate("PublishDate"));
-
-                /*
-                byte[] photoArray = resultSet.getBytes("Photo");
-                BASE64Encoder encoder = new BASE64Encoder();
-                order.setPhoto(encoder.encode(photoArray));
-                */
+                byte[] ph = resultSet.getBytes("Photo");
+                if (ph != null) {
+                    String pho = javax.xml.bind.DatatypeConverter.printBase64Binary(ph);
+                    order.setPhoto(pho);
+                }
 
                 orderArrayList.add(order);
             }
@@ -251,6 +257,13 @@ public class Service {
             _package.setPackageID(resultSet.getInt("PackageID"));
             _package.setProducerID(resultSet.getInt("ProducerID"));
             _package.setSource(resultSet.getString("Source"));
+            byte[] ph = resultSet.getBytes("Photo");
+
+            if (ph != null) {
+                String pho = javax.xml.bind.DatatypeConverter.printBase64Binary(ph);
+                _package.setPhoto(pho);
+            }
+
             _package.setProducer(User.getUserByID(_package.getProducerID()));
             _package.setConsumer(User.getUserByID(_package.getConsumerID()));
             _package.getConsumer().clear();
@@ -370,6 +383,13 @@ public class Service {
             _package.setPackageID(resultSet.getInt("PackageID"));
             _package.setProducerID(resultSet.getInt("ProducerID"));
             _package.setSource(resultSet.getString("Source"));
+            byte[] ph = resultSet.getBytes("Photo");
+
+            if (ph != null) {
+                String pho = javax.xml.bind.DatatypeConverter.printBase64Binary(ph);
+                _package.setPhoto(pho);
+            }
+
             _package.setProducer(User.getUserByID(_package.getProducerID()));
             _package.setConsumer(User.getUserByID(_package.getConsumerID()));
             _package.getConsumer().clear();
@@ -447,13 +467,6 @@ public class Service {
 
         return request;
     }
-
-    /*
-    public static int getIntByQuery(String query) throws Exception {
-        ResultSet resultSet = getSelectResultSet(query);
-        return resultSet.getInt(0);
-    }
-    */
 
     private static ResultSet getSelectResultSet(String query) throws Exception {
         SQLServerDataSource ds = new SQLServerDataSource();

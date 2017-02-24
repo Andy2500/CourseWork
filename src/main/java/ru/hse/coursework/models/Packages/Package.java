@@ -17,6 +17,7 @@ public class Package implements Serializable{
 
     private String source;
     private String destination;
+    private String photo;
 
     private Date startDate;
     private Date endDate;
@@ -143,5 +144,13 @@ public class Package implements Serializable{
 
     public void setPublishDate(Date publishDate) {
         this.publishDate = publishDate;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 }

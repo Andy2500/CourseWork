@@ -6,15 +6,6 @@ import java.io.Serializable;
 @XmlRootElement
 public class DefaultClass implements Serializable {
 
-
-    public void setOperationOutput(boolean operationOutput) {
-        this.operationOutput = operationOutput;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
     private Boolean operationOutput;
     private String token;
 
@@ -36,6 +27,14 @@ public class DefaultClass implements Serializable {
 
     public boolean isOperationOutput() {
         return operationOutput;
+    }
+
+    public void setOperationOutput(boolean operationOutput) {
+        this.operationOutput = operationOutput;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
 }

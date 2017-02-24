@@ -18,11 +18,12 @@ public class User implements Serializable {
     private String hashpsd;
     private String phone;
     private String token;
+    private String photo;
 
-    private Integer countOfOrders;
-    private Integer countOfOffers;
-    private Integer experience;
-    private Integer rank;
+    private int countOfOrders;
+    private int countOfOffers;
+    private int experience;
+    private int rank;
 
     private Date lastOnlineDate;
     private DefaultClass defaultClass;
@@ -50,7 +51,7 @@ public class User implements Serializable {
         User user = Service.getUserByQuery(query);
 
         if (user.getPersonID() != 0) {
-            throw new Exception("User Name Error");
+            throw new Exception("Login Error");
         }
 
         query = "Select * From Users Where Phone = '" + phone + "'";
@@ -272,5 +273,29 @@ public class User implements Serializable {
 
     public void setDefaultClass(DefaultClass defaultClass) {
         this.defaultClass = defaultClass;
+    }
+
+    public void setCountOfOrders(int countOfOrders) {
+        this.countOfOrders = countOfOrders;
+    }
+
+    public void setCountOfOffers(int countOfOffers) {
+        this.countOfOffers = countOfOffers;
+    }
+
+    public void setExperience(int experience) {
+        this.experience = experience;
+    }
+
+    public void setRank(int rank) {
+        this.rank = rank;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 }
