@@ -35,7 +35,7 @@ public class ResponseController {
     }
 
     @POST
-    @Path("/grby/")
+    @Path("/gri/")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getResponseInfo(@HeaderParam("token") String token,
                                     @HeaderParam("ID") int ID) {
