@@ -17,13 +17,15 @@ public class PackageOrder implements Serializable {
 
     private String source;
     private String destination;
-    private String photo;
 
     private String text;
 
     private Date startDate;
     private Date endDate;
     private Date publishDate;
+
+    private Integer watches;
+    private Float length;
 
     private ArrayList<OrderRequest> requests;
     private User person;
@@ -32,22 +34,27 @@ public class PackageOrder implements Serializable {
     public PackageOrder() {
     }
 
-    public PackageOrder(int personID, String source, String destination, Date startDate, Date endDate, String text) throws Exception {
+    public PackageOrder(int personID, String source, String destination, Date startDate, Date endDate, String text, float length) throws Exception {
         this.source = source;
         this.destination = destination;
         this.startDate = startDate;
         this.endDate = endDate;
         this.text = text;
         this.personID = personID;
-        String command = "Insert Into Orders (OrderID, PersonID, Source, Destination, StartDate, EndDate, Text, Photo, PublishDate)" +
-                "Values ((Select Max(OrderID) From Orders) + 1,"+ personID +  ",'" + source + "', '" + destination + "',' " + Service.makeSqlDateString(startDate) + "',' " + Service.makeSqlDateString(endDate)+ "',' "+ text + "', NULL,'" + Service.getNowMomentInUTC() +"')";
+        this.watches = 0;
+        this.length = length;
+
+        String command = "Insert Into Orders (OrderID, PersonID, Source, Destination, StartDate, EndDate, Text, Photo, PublishDate, Length, Watches)" +
+                "Values ((Select Max(OrderID) From Orders) + 1," + personID + ",'" + source + "', '" + destination + "',' " + Service.makeSqlDateString(startDate) + "',' " + Service.makeSqlDateString(endDate) + "',' " + text + "', NULL,'" + Service.getNowMomentInUTC() + "', " + length + ", 0)";
         Service.execCommand(command);
         command = "Update Users Set CountOfOrders = CountOfOrders + 1 Where PersonID = " + personID;
         Service.execCommand(command);
     }
 
     public static PackageOrder getOrderByID(int ID) throws Exception {
-        String query = "Select * From Orders Where OrderID = " + ID;
+        String query = "Update Orders Set Watches = Watches + 1 Where OrderID = " + ID;
+        Service.execCommand(query);
+        query = "Select * From Orders Where OrderID = " + ID;
         return Service.getOrderByQuery(query);
     }
 
@@ -147,11 +154,19 @@ public class PackageOrder implements Serializable {
         this.endDate = endDate;
     }
 
-    public String getPhoto() {
-        return photo;
+    public Integer getWatches() {
+        return watches;
     }
 
-    public void setPhoto(String photo) {
-        this.photo = photo;
+    public void setWatches(Integer watches) {
+        this.watches = watches;
+    }
+
+    public Float getLength() {
+        return length;
+    }
+
+    public void setLength(Float length) {
+        this.length = length;
     }
 }

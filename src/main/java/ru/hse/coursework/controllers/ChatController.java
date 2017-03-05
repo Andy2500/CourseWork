@@ -2,6 +2,7 @@ package ru.hse.coursework.controllers;
 
 import ru.hse.coursework.models.Chat.Dialog;
 import ru.hse.coursework.models.Chat.Message;
+import ru.hse.coursework.models.Chat.Messages;
 import ru.hse.coursework.models.Service.DefaultClass;
 import ru.hse.coursework.models.Service.Service;
 import ru.hse.coursework.models.User.User;
@@ -19,13 +20,12 @@ public class ChatController {
     @Path("/md/")
     @Produces(MediaType.APPLICATION_JSON)
     public DefaultClass makeDialog(@HeaderParam("token") String token,
-                                   @HeaderParam("ID_1") int PersonID_1,
-                                   @HeaderParam("ID_2") int PersonID_2) {
+                                   @HeaderParam("ID_2") int personID_2) {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
 
-            new Dialog(user.getPersonID(), PersonID_2);
+            new Dialog(user.getPersonID(), personID_2);
             user.setToken(token);
             user.setLastOnlineDate();
             return new DefaultClass(true, token);
@@ -38,12 +38,12 @@ public class ChatController {
     @Path("/gam/")
     @Produces(MediaType.APPLICATION_JSON)
     public Dialog getDialog(@HeaderParam("token") String token,
-                            @HeaderParam("ID") int DialogID) {
+                            @HeaderParam("dialogID") int dialogID) {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
 
-            Dialog dialog = Dialog.getDialogByID(DialogID);
+            Dialog dialog = Dialog.getDialogByID(dialogID);
             dialog.setDefaultClass(new DefaultClass(true, token));
             user.setToken(token);
             user.setLastOnlineDate();
@@ -59,7 +59,7 @@ public class ChatController {
     @Path("/sm/")
     @Produces(MediaType.APPLICATION_JSON)
     public DefaultClass sendMessage(@HeaderParam("token") String token,
-                                    @HeaderParam("DialogID") int dialogID,
+                                    @HeaderParam("dialogID") int dialogID,
                                     @HeaderParam("text") String text) {
         try {
             User user = User.getUserByToken(token);
@@ -78,21 +78,21 @@ public class ChatController {
     @POST
     @Path("/glm/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Message getLastMessage(@HeaderParam("token") String token,
-                                  @HeaderParam("DialogID") int dialogID) {
+    public Messages getLastMessage(@HeaderParam("token") String token,
+                                   @HeaderParam("dialogID") int dialogID) {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
 
-            Message message = Message.getLastMessagesByDialogID(dialogID);
-            message.setDefaultClass(new DefaultClass(true, token));
+            Messages messages = Messages.getLastMessagesByDialogID(dialogID);
+            messages.setDefaultClass(new DefaultClass(true, token));
             user.setToken(token);
             user.setLastOnlineDate();
-            return message;
+            return messages;
         } catch (Exception ex) {
-            Message message = new Message();
-            message.setDefaultClass(new DefaultClass(false, ex.getMessage()));
-            return message;
+            Messages messages = new Messages();
+            messages.setDefaultClass(new DefaultClass(false, ex.getMessage()));
+            return messages;
         }
     }
 

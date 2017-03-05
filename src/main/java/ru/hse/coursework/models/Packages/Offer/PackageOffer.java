@@ -1,6 +1,5 @@
 package ru.hse.coursework.models.Packages.Offer;
 
-import org.codehaus.jackson.node.ObjectNode;
 import ru.hse.coursework.models.Service.DefaultClass;
 import ru.hse.coursework.models.Service.Service;
 import ru.hse.coursework.models.User.User;
@@ -24,6 +23,9 @@ public class PackageOffer implements Serializable {
     private Date endDate;
     private Date publishDate;
 
+    private Integer watches;
+    private Float length;
+
     private ArrayList<OfferRequest> requests;
     private DefaultClass defaultClass;
     private User person;
@@ -31,32 +33,26 @@ public class PackageOffer implements Serializable {
     public PackageOffer() {
     }
 
-    public PackageOffer(int personID, String source, String destination, Date startDate, Date endDate, String text) throws Exception {
+    public PackageOffer(int personID, String source, String destination, Date startDate, Date endDate, String text, float length) throws Exception {
         this.source = source;
         this.destination = destination;
         this.startDate = startDate;
         this.endDate = endDate;
         this.text = text;
         this.personID = personID;
-        String command = "Insert Into Offers (OfferID, PersonID, Source, Destination, StartDate, EndDate, Text, PublishDate)" +
-                "Values ((Select Max(OfferID) From Offers) + 1, "+ personID + ",'" + source + "', '" + destination + "','" + Service.makeSqlDateString(startDate) + "','" + Service.makeSqlDateString(endDate) + "','"+ text +"','"+ Service.getNowMomentInUTC() +  "')";
+        this.watches = 0;
+        this.length = length;
+        String command = "Insert Into Offers (OfferID, PersonID, Source, Destination, StartDate, EndDate, Text, PublishDate, Length, Watches)" +
+                "Values ((Select Max(OfferID) From Offers) + 1, " + personID + ",'" + source + "', '" + destination + "','" + Service.makeSqlDateString(startDate) + "','" + Service.makeSqlDateString(endDate) + "','" + text + "','" + Service.getNowMomentInUTC() + "', " + length + ", 0 )";
         Service.execCommand(command);
         command = "Update Users Set CountOfOffers = CountOfOffers + 1 Where PersonID = " + personID;
         Service.execCommand(command);
     }
 
-    public ObjectNode getJSONNode()
-    {
-        return null;
-    }
-
-    public String getJSON()
-    {
-        return null;
-    }
-
     public static PackageOffer getOfferByID(int ID) throws Exception {
-        String query = "Select * From Offers Where OfferID = " + ID;
+        String query = "Update Offers Set Watches = Watches + 1 Where OfferID = " + ID;
+        Service.execCommand(query);
+        query = "Select * From Offers Where OfferID = " + ID;
         return Service.getOfferByQuery(query);
     }
 
@@ -154,5 +150,21 @@ public class PackageOffer implements Serializable {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+    public Float getLength() {
+        return length;
+    }
+
+    public void setLength(Float length) {
+        this.length = length;
+    }
+
+    public Integer getWatches() {
+        return watches;
+    }
+
+    public void setWatches(Integer watches) {
+        this.watches = watches;
     }
 }

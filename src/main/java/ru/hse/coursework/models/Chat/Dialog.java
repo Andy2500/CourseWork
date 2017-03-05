@@ -18,7 +18,6 @@ public class Dialog implements Serializable {
 
     private DefaultClass defaultClass;
 
-
     public Dialog() {
     }
 

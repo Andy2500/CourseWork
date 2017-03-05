@@ -14,6 +14,7 @@ public class Package implements Serializable{
     private Integer consumerID;
     private Integer producerID;
     private Integer packageID;
+    private Integer status; //0 - подтерждено с двух сторон, 1 - назначена встреча, 2 - подтверждено исполнителем,
 
     private String source;
     private String destination;
@@ -39,9 +40,8 @@ public class Package implements Serializable{
         this.startDate = startDate;
         this.endDate = endDate;
         this.text = text;
-
-        String command = "Insert Into Packages (PackageID, ConsumerID, ProducerID, Source, Destination, StartDate, EndDate, Text, PublishDate)"
-                + "Values ((Select Max(PackageID) From Packages) + 1," + consumerID + "," + producerID + ",'" + source + "','" + destination + "','" + startDate + "','" + endDate +"','" + text + "','" +Service.getNowMomentInUTC() +"')";
+        String command = "Insert Into Packages (PackageID, ConsumerID, ProducerID, Source, Destination, StartDate, EndDate, Text, PublishDate, Status)"
+                + "Values ((Select Max(PackageID) From Packages) + 1," + consumerID + "," + producerID + ",'" + source + "','" + destination + "','" + startDate + "','" + endDate + "','" + text + "','" + Service.getNowMomentInUTC() + "', 0)";
         Service.execCommand(command);
     }
 
@@ -152,5 +152,13 @@ public class Package implements Serializable{
 
     public void setPhoto(String photo) {
         this.photo = photo;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }

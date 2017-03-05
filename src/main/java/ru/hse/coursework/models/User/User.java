@@ -113,6 +113,7 @@ public class User implements Serializable {
         if (user.getPersonID() == 0) {
             throw new Exception("Token Error");
         }
+
         return user;
     }
 
@@ -295,7 +296,10 @@ public class User implements Serializable {
         return photo;
     }
 
-    public void setPhoto(String photo) {
+    public void setPhoto(String photo) throws Exception {
         this.photo = photo;
+        String query = "Update Users Set Photo = ? Where PersonID = " + personID;
+
+        Service.loadPhoto(query, javax.xml.bind.DatatypeConverter.parseBase64Binary(photo));
     }
 }

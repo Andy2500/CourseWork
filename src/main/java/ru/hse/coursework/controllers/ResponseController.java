@@ -38,11 +38,11 @@ public class ResponseController {
     @Path("/gri/")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getResponseInfo(@HeaderParam("token") String token,
-                                    @HeaderParam("ID") int ID) {
+                                    @HeaderParam("responseID") int responseID) {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
-            Response response = Response.getResponseByID(ID);
+            Response response = Response.getResponseByID(responseID);
             user.setToken(token);
             user.setLastOnlineDate();
             response.setDefaultClass(new DefaultClass(true, token));

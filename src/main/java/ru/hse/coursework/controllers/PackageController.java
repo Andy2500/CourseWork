@@ -28,13 +28,14 @@ public class PackageController {
     public DefaultClass makeOffer(@HeaderParam("token") String token,
                                   @HeaderParam("source") String source,
                                   @HeaderParam("destination") String destination,
-                                  @HeaderParam("startdate") String startDate,
-                                  @HeaderParam("enddate") String endDate,
-                                  @HeaderParam("text") String text) {
+                                  @HeaderParam("startDate") String startDate,
+                                  @HeaderParam("endDate") String endDate,
+                                  @HeaderParam("text") String text,
+                                  @HeaderParam("length") float length) {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
-            new PackageOffer(user.getPersonID(), source, destination, Service.dateFromString(startDate), Service.dateFromString(endDate), text);
+            new PackageOffer(user.getPersonID(), source, destination, Service.dateFromString(startDate), Service.dateFromString(endDate), text, length);
             user.setToken(token);
             user.setLastOnlineDate();
             return new DefaultClass(true, token);
@@ -50,14 +51,15 @@ public class PackageController {
     public DefaultClass makeOrder(@HeaderParam("token") String token,
                                   @HeaderParam("source") String source,
                                   @HeaderParam("destination") String destination,
-                                  @HeaderParam("startdate") String startDate,
-                                  @HeaderParam("enddate") String endDate,
-                                  @HeaderParam("text") String text) {
+                                  @HeaderParam("startDate") String startDate,
+                                  @HeaderParam("endDate") String endDate,
+                                  @HeaderParam("text") String text,
+                                  @HeaderParam("length") int length) {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
 
-            new PackageOrder(user.getPersonID(), source, destination, Service.dateFromString(startDate), Service.dateFromString(endDate), text);
+            new PackageOrder(user.getPersonID(), source, destination, Service.dateFromString(startDate), Service.dateFromString(endDate), text, length);
             user.setToken(token);
             user.setLastOnlineDate();
 
@@ -71,12 +73,12 @@ public class PackageController {
     @Path("/dor/")
     @Produces(MediaType.APPLICATION_JSON)
     public DefaultClass deleteOrderByID(@HeaderParam("token") String token,
-                                        @HeaderParam("ID") int OrderID) {
+                                        @HeaderParam("orderID") int orderID) {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
 
-            PackageOrder.deletePackageOrder(OrderID);
+            PackageOrder.deletePackageOrder(orderID);
             user.setToken(token);
             user.setLastOnlineDate();
             return new DefaultClass(true, token);
@@ -89,11 +91,11 @@ public class PackageController {
     @Path("/dof/")
     @Produces(MediaType.APPLICATION_JSON)
     public DefaultClass deleteOfferByID(@HeaderParam("token") String token,
-                                        @HeaderParam("ID") int OfferID) {
+                                        @HeaderParam("offerID") int offerID) {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
-            PackageOffer.deletePackageOffer(OfferID);
+            PackageOffer.deletePackageOffer(offerID);
             user.setToken(token);
             user.setLastOnlineDate();
             return new DefaultClass(true, token);
@@ -171,12 +173,12 @@ public class PackageController {
     public Offers getOffersByParams(@HeaderParam("token") String token,
                                     @HeaderParam("source") String source,
                                     @HeaderParam("destination") String destination,
-                                    @HeaderParam("startdate") String startdate,
-                                    @HeaderParam("enddate") String enddate) {
+                                    @HeaderParam("startDate") String startDate,
+                                    @HeaderParam("endDate") String endDate) {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
-            Offers offers = Offers.getOffersByParams(source, destination, startdate, enddate);
+            Offers offers = Offers.getOffersByParams(source, destination, startDate, endDate);
             offers.setDefaultClass(new DefaultClass(true, token));
             user.setToken(token);
             user.setLastOnlineDate();
@@ -194,12 +196,12 @@ public class PackageController {
     public Orders getOrdersByParams(@HeaderParam("token") String token,
                                     @HeaderParam("source") String source,
                                     @HeaderParam("destination") String destination,
-                                    @HeaderParam("startdate") String startdate,
-                                    @HeaderParam("enddate") String enddate) {
+                                    @HeaderParam("startDate") String startDate,
+                                    @HeaderParam("endDate") String endDate) {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
-            Orders orders = Orders.getOrdersByParams(source, destination, startdate, enddate);
+            Orders orders = Orders.getOrdersByParams(source, destination, startDate, endDate);
             orders.setDefaultClass(new DefaultClass(true, token));
             user.setToken(token);
             user.setLastOnlineDate();

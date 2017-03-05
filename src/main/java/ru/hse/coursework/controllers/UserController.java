@@ -166,11 +166,11 @@ public class UserController {
     @Path("/gupf/")
     @Produces(MediaType.APPLICATION_JSON)
     public UserProfile getUserProfile(@HeaderParam("token") String token,
-                                      @HeaderParam("ID") int ID) {
+                                      @HeaderParam("personID") int personID) {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
-            UserProfile userProfile = UserProfile.getUserProfileByID(ID);
+            UserProfile userProfile = UserProfile.getUserProfileByID(personID);
             userProfile.setDefaultClass(new DefaultClass(true, token));
             user.setToken(token);
             user.setLastOnlineDate();

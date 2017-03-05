@@ -18,6 +18,7 @@ import ru.hse.coursework.models.User.User;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.DateFormat;
@@ -26,7 +27,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Service {
-
 
     public static String makeToken(String login) throws Exception {
         String str = login + Service.getNowMomentInUTC();
@@ -205,6 +205,8 @@ public class Service {
                 offer.setDestination(resultSet.getString("Destination"));
                 offer.setSource(resultSet.getString("Source"));
                 offer.setPublishDate(resultSet.getDate("PublishDate"));
+                offer.setWatches(resultSet.getInt("Watches"));
+                offer.setLength(resultSet.getFloat("Length"));
                 offerArrayList.add(offer);
             }
         }
@@ -229,12 +231,8 @@ public class Service {
                 order.setDestination(resultSet.getString("Destination"));
                 order.setSource(resultSet.getString("Source"));
                 order.setPublishDate(resultSet.getDate("PublishDate"));
-                byte[] ph = resultSet.getBytes("Photo");
-                if (ph != null) {
-                    String pho = javax.xml.bind.DatatypeConverter.printBase64Binary(ph);
-                    order.setPhoto(pho);
-                }
-
+                order.setWatches(resultSet.getInt("Watches"));
+                order.setLength(resultSet.getFloat("Length"));
                 orderArrayList.add(order);
             }
         }
@@ -257,6 +255,7 @@ public class Service {
             _package.setPackageID(resultSet.getInt("PackageID"));
             _package.setProducerID(resultSet.getInt("ProducerID"));
             _package.setSource(resultSet.getString("Source"));
+
             byte[] ph = resultSet.getBytes("Photo");
 
             if (ph != null) {
@@ -286,6 +285,7 @@ public class Service {
                 message.setDate(resultSet.getDate("Date"));
                 message.setDialogID(resultSet.getInt("DialogID"));
                 message.setMessageID(resultSet.getInt("MessageID"));
+                message.setWatched(resultSet.getInt("Watched"));
             }
         }
 
@@ -318,6 +318,7 @@ public class Service {
             message.setDate(resultSet.getDate("Date"));
             message.setDialogID(resultSet.getInt("DialogID"));
             message.setMessageID(resultSet.getInt("MessageID"));
+            message.setWatched(resultSet.getInt("Watched"));
             messages.add(message);
         }
 
@@ -342,6 +343,8 @@ public class Service {
                 order.setDestination(resultSet.getString("Destination"));
                 order.setSource(resultSet.getString("Source"));
                 order.setPublishDate(resultSet.getDate("PublishDate"));
+                order.setWatches(resultSet.getInt("Watches"));
+                order.setLength(resultSet.getFloat("Length"));
             }
         }
         return order;
@@ -363,6 +366,8 @@ public class Service {
                 offer.setOfferID(resultSet.getInt("OfferID"));
                 offer.setPublishDate(resultSet.getDate("PublishDate"));
                 offer.setRequests(OfferRequest.getRequestsByOfferID(offer.getOfferID()));
+                offer.setWatches(resultSet.getInt("Watches"));
+                offer.setLength(resultSet.getFloat("Length"));
                 offer.getPerson().clear();
             }
         }
@@ -488,4 +493,23 @@ public class Service {
 
         return resultSet;
     }
+
+    public static void loadPhoto(String command, byte[] array) throws Exception {
+        SQLServerDataSource ds = new SQLServerDataSource();
+        ds.setServerName("coursew.database.windows.net");
+        ds.setPortNumber(1433);
+        ds.setDatabaseName("CourseWID");
+        ds.setEncrypt(true);
+        ds.setPassword("hsepassword16)");
+        ds.setUser("HSEADMIN");
+        ds.setHostNameInCertificate("*.database.windows.net");
+        ds.setTrustServerCertificate(false);
+        ds.setLoginTimeout(1000);
+
+        Connection connection = ds.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement("?");
+        preparedStatement.setBytes(1, array);
+        preparedStatement.execute(command);
+    }
+
 }

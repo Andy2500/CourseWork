@@ -16,7 +16,7 @@ public class Message implements Serializable {
     private Integer dialogID;
     private String text;
     private Date date;
-
+    private int watched; //1 - просмотрено, 0 - не просмотренно
 
     private DefaultClass defaultClass;
 
@@ -27,14 +27,14 @@ public class Message implements Serializable {
         this.personID = personID;
         this.dialogID = dialogID;
         this.text = text;
-        String command = "Insert Into Messages (MessageID, DialogID, PersonID, Text, Date)"
-                + "Values ((Select Max(MessageID) From Messages) + 1 ," + dialogID + "," + personID + ",'" + text + "','" + Service.getNowMomentInUTC() + "')";
+        String command = "Insert Into Messages (MessageID, DialogID, PersonID, Text, Date, Watched)"
+                + "Values ((Select Max(MessageID) From Messages) + 1 ," + dialogID + "," + personID + ",'" + text + "','" + Service.getNowMomentInUTC() + "', 0 )";
         Service.execCommand(command);
     }
 
-    public static Message getLastMessagesByDialogID(int dialogID) throws Exception {
-        String query = "Select * From Messages Where MessageID = (Select Max(MessageID) From Messages ) AND DialogID = " + dialogID + "";
-        return Service.getMessageByQuery(query);
+    public static ArrayList<Message> getLastMessagesByDialogID(int dialogID) throws Exception {
+        String query = "Select * From Messages Where Watched = 0 AND DialogID = " + dialogID + "";
+        return Service.getMessagesByQuery(query);
     }
 
     public static ArrayList<Message> getMessagesByDialogID(int ID) throws Exception {
@@ -89,5 +89,13 @@ public class Message implements Serializable {
 
     public void setMessageID(int messageID) {
         this.messageID = messageID;
+    }
+
+    public int getWatched() {
+        return watched;
+    }
+
+    public void setWatched(int watched) {
+        this.watched = watched;
     }
 }
