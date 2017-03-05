@@ -431,9 +431,8 @@ public class PackageController {
 
             Package _package = Package.getPackageByID(packageID);
 
-            Package.deletePackage(packageID, user.getPersonID());
-
             new PackageOrder(_package.getConsumerID(), _package.getSource(), _package.getDestination(), _package.getStartDate(), _package.getEndDate(), _package.getText(), _package.getLength());
+            Package.deletePackage(packageID, user.getPersonID(), _package.getConsumerID());
 
             user.setToken(token);
             user.setLastOnlineDate();
@@ -507,9 +506,7 @@ public class PackageController {
 
             Package _package = Package.getPackageByID(packageID);
 
-            //Deleting
-
-            new PackageOrder(_package.getConsumerID(), _package.getSource(), _package.getDestination(), _package.getStartDate(), _package.getEndDate(), _package.getText(), _package.getLength());
+            Package.deletePackage(packageID, user.getPersonID(), _package.getProducerID());
 
             user.setToken(token);
             user.setLastOnlineDate();

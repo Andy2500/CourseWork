@@ -63,10 +63,12 @@ public class Package implements Serializable {
         Service.execCommand(query);
     }
 
-    public static void deletePackage(int packageID, int personID) throws Exception {
+    public static void deletePackage(int packageID, int personID, int personID2) throws Exception {
         String command = "Delete From Orders Where OrderID = " + packageID;
         Service.execCommand(command);
-        command = "Update Users Set CountOfOrders = CountOfOrders - 1 Where PersonID = " + personID;
+        command = "Update Users Set CountOfPackages = CountOfPackages - 1 Where PersonID = " + personID;
+        Service.execCommand(command);
+        command = "Update Users Set CountOfPackages = CountOfPackages - 1 Where PersonID = " + personID2;
         Service.execCommand(command);
     }
 
