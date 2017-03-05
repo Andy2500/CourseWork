@@ -255,6 +255,7 @@ public class Service {
             _package.setPackageID(resultSet.getInt("PackageID"));
             _package.setProducerID(resultSet.getInt("ProducerID"));
             _package.setSource(resultSet.getString("Source"));
+            _package.setLength(resultSet.getFloat("Length"));
 
             byte[] ph = resultSet.getBytes("Photo");
 
@@ -388,6 +389,7 @@ public class Service {
             _package.setPackageID(resultSet.getInt("PackageID"));
             _package.setProducerID(resultSet.getInt("ProducerID"));
             _package.setSource(resultSet.getString("Source"));
+            _package.setLength(resultSet.getFloat("Length"));
             byte[] ph = resultSet.getBytes("Photo");
 
             if (ph != null) {

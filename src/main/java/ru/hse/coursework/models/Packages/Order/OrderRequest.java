@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 @XmlRootElement
-public class OrderRequest implements Serializable{
+public class OrderRequest implements Serializable {
 
     private int requestID;
     private int personID;

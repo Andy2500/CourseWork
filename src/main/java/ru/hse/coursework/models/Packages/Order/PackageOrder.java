@@ -58,11 +58,10 @@ public class PackageOrder implements Serializable {
         return Service.getOrderByQuery(query);
     }
 
-    public static void deletePackageOrder(int ID) throws Exception {
-        PackageOrder order = Service.getOrderByQuery("Select * From Orders Where OrderID =" + ID);
-        String command = "Delete From Orders Where OrderID = " + ID;
+    public static void deletePackageOrder(int packageID, int personID) throws Exception {
+        String command = "Delete From Orders Where OrderID = " + packageID;
         Service.execCommand(command);
-        command = "Update Users Set CountOfOrders = CountOfOrders - 1 Where PersonID = " + order.getPersonID();
+        command = "Update Users Set CountOfOrders = CountOfOrders - 1 Where PersonID = " + personID;
         Service.execCommand(command);
     }
 

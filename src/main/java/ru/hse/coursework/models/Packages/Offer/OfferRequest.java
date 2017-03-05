@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 @XmlRootElement
-public class OfferRequest implements Serializable{
+public class OfferRequest implements Serializable {
 
     private Integer personID;
     private Integer offerID;

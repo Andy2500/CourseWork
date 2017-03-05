@@ -9,12 +9,13 @@ import java.io.Serializable;
 import java.util.Date;
 
 @XmlRootElement
-public class Package implements Serializable{
+public class Package implements Serializable {
 
     private Integer consumerID;
     private Integer producerID;
     private Integer packageID;
     private Integer status; //0 - подтерждено с двух сторон, 1 - назначена встреча, 2 - подтверждено исполнителем,
+    private Float length;
 
     private String source;
     private String destination;
@@ -30,9 +31,10 @@ public class Package implements Serializable{
     private User producer;
     private DefaultClass defaultClass;
 
-    public Package(){
+    public Package() {
     }
-    public Package(int consumerID, int producerID, String source, String destination, Date startDate, Date endDate, String text) throws Exception {
+
+    public Package(int consumerID, int producerID, String source, String destination, Date startDate, Date endDate, String text, float length) throws Exception {
         this.consumerID = consumerID;
         this.producerID = producerID;
         this.source = source;
@@ -40,14 +42,32 @@ public class Package implements Serializable{
         this.startDate = startDate;
         this.endDate = endDate;
         this.text = text;
-        String command = "Insert Into Packages (PackageID, ConsumerID, ProducerID, Source, Destination, StartDate, EndDate, Text, PublishDate, Status)"
-                + "Values ((Select Max(PackageID) From Packages) + 1," + consumerID + "," + producerID + ",'" + source + "','" + destination + "','" + startDate + "','" + endDate + "','" + text + "','" + Service.getNowMomentInUTC() + "', 0)";
+        this.length = length;
+        String command = "Insert Into Packages (PackageID, ConsumerID, ProducerID, Source, Destination, StartDate, EndDate, Text, PublishDate, Status, Length)"
+                + "Values ((Select Max(PackageID) From Packages) + 1," + consumerID + "," + producerID + ",'" + source + "','" + destination + "','" + startDate + "','" + endDate + "','" + text + "','" + Service.getNowMomentInUTC() + "', 0, " + length + ")";
         Service.execCommand(command);
     }
 
     public static Package getPackageByID(int ID) throws Exception {
         String query = "Select * From Packages Where PackageID = " + ID;
         return Service.getPackageByQuery(query);
+    }
+
+    public static void setEvent(Date date, int packageID) throws Exception {
+        String query = "Update Packages Set Event = " + Service.makeSqlDateString(date) + " Where PackageID = " + packageID;
+        Service.execCommand(query);
+    }
+
+    public static void setStatus(int status, int packageID) throws Exception {
+        String query = "Update Packages Set Status = " + status + " Where PackageID = " + packageID;
+        Service.execCommand(query);
+    }
+
+    public static void deletePackage(int packageID, int personID) throws Exception {
+        String command = "Delete From Orders Where OrderID = " + packageID;
+        Service.execCommand(command);
+        command = "Update Users Set CountOfOrders = CountOfOrders - 1 Where PersonID = " + personID;
+        Service.execCommand(command);
     }
 
     public void setConsumerID(int consumerID) {
@@ -160,5 +180,13 @@ public class Package implements Serializable{
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public Float getLength() {
+        return length;
+    }
+
+    public void setLength(Float length) {
+        this.length = length;
     }
 }

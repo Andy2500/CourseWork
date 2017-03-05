@@ -8,6 +8,7 @@ import ru.hse.coursework.models.Packages.Order.Orders;
 import ru.hse.coursework.models.Packages.Order.PackageOrder;
 import ru.hse.coursework.models.Packages.Package;
 import ru.hse.coursework.models.Packages.Packages;
+import ru.hse.coursework.models.Packages.Requests;
 import ru.hse.coursework.models.Service.DefaultClass;
 import ru.hse.coursework.models.Service.Service;
 import ru.hse.coursework.models.User.User;
@@ -17,7 +18,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-
 
 @Path("/pack")
 public class PackageController {
@@ -78,7 +78,8 @@ public class PackageController {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
 
-            PackageOrder.deletePackageOrder(orderID);
+            PackageOrder.deletePackageOrder(orderID, user.getPersonID());
+
             user.setToken(token);
             user.setLastOnlineDate();
             return new DefaultClass(true, token);
@@ -322,7 +323,7 @@ public class PackageController {
             OfferRequest request = OfferRequest.getRequestByID(requestID);
             PackageOffer offer = PackageOffer.getOfferByID(request.getOfferID());
 
-            new Package(request.getPersonID(), offer.getPersonID(), offer.getSource(), offer.getDestination(), offer.getStartDate(), offer.getEndDate(), offer.getText());
+            new Package(request.getPersonID(), offer.getPersonID(), offer.getSource(), offer.getDestination(), offer.getStartDate(), offer.getEndDate(), offer.getText(), offer.getLength());
 
             PackageOffer.deletePackageOffer(offer.getOfferID());
             OfferRequest.deleteRequest(requestID);
@@ -349,14 +350,169 @@ public class PackageController {
             OrderRequest request = OrderRequest.getRequestByID(requestID);
             PackageOrder order = PackageOrder.getOrderByID(request.getOrderID());
 
-            new Package(order.getPersonID(), request.getPersonID(), order.getSource(), order.getDestination(), order.getStartDate(), order.getEndDate(), order.getText());
+            new Package(order.getPersonID(), request.getPersonID(), order.getSource(), order.getDestination(), order.getStartDate(), order.getEndDate(), order.getText(), order.getLength());
 
-            PackageOrder.deletePackageOrder(order.getOrderID());
+            PackageOrder.deletePackageOrder(order.getOrderID(), user.getPersonID());
             OrderRequest.deleteRequest(requestID);
 
             user.setToken(token);
             user.setLastOnlineDate();
 
+            return new DefaultClass(true, token);
+        } catch (Exception ex) {
+            return new DefaultClass(false, ex.getMessage());
+        }
+    }
+
+    @POST
+    @Path("/gur/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Requests getUserRequests(@HeaderParam("token") String token) {
+        try {
+            User user = User.getUserByToken(token);
+            token = Service.makeToken(user.getLogin());
+
+            Requests requests = Requests.getRequestsByPersonID(user.getPersonID());
+
+            user.setToken(token);
+            user.setLastOnlineDate();
+            requests.setDefaultClass(new DefaultClass(true, token));
+            return requests;
+        } catch (Exception ex) {
+            Requests requests = new Requests();
+            requests.setDefaultClass(new DefaultClass(false, ex.getMessage()));
+            return requests;
+        }
+    }
+
+    @POST
+    @Path("/me/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public DefaultClass makeEvent(@HeaderParam("token") String token, @HeaderParam("packageID") int packageID, @HeaderParam("Date") String date) {
+        try {
+            User user = User.getUserByToken(token);
+            token = Service.makeToken(user.getLogin());
+
+            Package.setEvent(Service.dateFromString(date), packageID);
+
+            user.setToken(token);
+            user.setLastOnlineDate();
+            return new DefaultClass(true, token);
+        } catch (Exception ex) {
+            return new DefaultClass(false, ex.getMessage());
+        }
+    }
+
+    @POST
+    @Path("/ae/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public DefaultClass acceptEvent(@HeaderParam("token") String token, @HeaderParam("packageID") int packageID) {
+        try {
+            User user = User.getUserByToken(token);
+            token = Service.makeToken(user.getLogin());
+
+            Package.setStatus(2, packageID);
+
+            user.setToken(token);
+            user.setLastOnlineDate();
+            return new DefaultClass(true, token);
+        } catch (Exception ex) {
+            return new DefaultClass(false, ex.getMessage());
+        }
+    }
+
+    @POST
+    @Path("/de/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public DefaultClass declineEvent(@HeaderParam("token") String token, @HeaderParam("packageID") int packageID) {
+        try {
+            User user = User.getUserByToken(token);
+            token = Service.makeToken(user.getLogin());
+
+            Package _package = Package.getPackageByID(packageID);
+
+            Package.deletePackage(packageID, user.getPersonID());
+
+            new PackageOrder(_package.getConsumerID(), _package.getSource(), _package.getDestination(), _package.getStartDate(), _package.getEndDate(), _package.getText(), _package.getLength());
+
+            user.setToken(token);
+            user.setLastOnlineDate();
+            return new DefaultClass(true, token);
+        } catch (Exception ex) {
+            return new DefaultClass(false, ex.getMessage());
+        }
+    }
+
+    @POST
+    @Path("/tp/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public DefaultClass transferPackage(@HeaderParam("token") String token, @HeaderParam("packageID") int packageID) {
+        try {
+            User user = User.getUserByToken(token);
+            token = Service.makeToken(user.getLogin());
+
+            Package.setStatus(3, packageID);
+
+            user.setToken(token);
+            user.setLastOnlineDate();
+            return new DefaultClass(true, token);
+        } catch (Exception ex) {
+            return new DefaultClass(false, ex.getMessage());
+        }
+    }
+
+    @POST
+    @Path("/pf/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public DefaultClass proofFinish(@HeaderParam("token") String token, @HeaderParam("packageID") int packageID) {
+        try {
+            User user = User.getUserByToken(token);
+            token = Service.makeToken(user.getLogin());
+
+            Package.setStatus(4, packageID);
+
+            user.setToken(token);
+            user.setLastOnlineDate();
+            return new DefaultClass(true, token);
+        } catch (Exception ex) {
+            return new DefaultClass(false, ex.getMessage());
+        }
+    }
+
+    @POST
+    @Path("/cp/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public DefaultClass closePackage(@HeaderParam("token") String token, @HeaderParam("packageID") int packageID) {
+        try {
+            User user = User.getUserByToken(token);
+            token = Service.makeToken(user.getLogin());
+
+            Package.setStatus(5, packageID);
+
+            user.setToken(token);
+            user.setLastOnlineDate();
+            return new DefaultClass(true, token);
+        } catch (Exception ex) {
+            return new DefaultClass(false, ex.getMessage());
+        }
+    }
+
+    @POST
+    @Path("/dp/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public DefaultClass deletePackage(@HeaderParam("token") String token, @HeaderParam("packageID") int packageID) {
+        try {
+            User user = User.getUserByToken(token);
+            token = Service.makeToken(user.getLogin());
+
+            Package _package = Package.getPackageByID(packageID);
+
+            //Deleting
+
+            new PackageOrder(_package.getConsumerID(), _package.getSource(), _package.getDestination(), _package.getStartDate(), _package.getEndDate(), _package.getText(), _package.getLength());
+
+            user.setToken(token);
+            user.setLastOnlineDate();
             return new DefaultClass(true, token);
         } catch (Exception ex) {
             return new DefaultClass(false, ex.getMessage());

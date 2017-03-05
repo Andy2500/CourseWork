@@ -8,13 +8,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 @XmlRootElement
-public class Packages implements Serializable{
+public class Packages implements Serializable {
 
     private ArrayList<Package> packages;
     private DefaultClass defaultClass;
 
     public static Packages getPackagesByUserID(int ID) throws Exception {
-        String query = "Select * From Packages Where (ProducerID = " + ID +") OR ( ConsumerID = " + ID + ")";
+        String query = "Select * From Packages Where (ProducerID = " + ID + ") OR ( ConsumerID = " + ID + ")";
         return Service.getPackagesByQuery(query);
     }
 
