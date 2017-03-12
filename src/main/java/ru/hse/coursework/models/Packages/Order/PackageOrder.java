@@ -44,8 +44,8 @@ public class PackageOrder implements Serializable {
         this.watches = 0;
         this.length = length;
 
-        String command = "Insert Into Orders (OrderID, PersonID, Source, Destination, StartDate, EndDate, Text, Photo, PublishDate, Length, Watches)" +
-                "Values ((Select Max(OrderID) From Orders) + 1," + personID + ",'" + source + "', '" + destination + "',' " + Service.makeSqlDateString(startDate) + "',' " + Service.makeSqlDateString(endDate) + "',' " + text + "', NULL,'" + Service.getNowMomentInUTC() + "', " + length + ", 0)";
+        String command = "Insert Into Orders (OrderID, PersonID, Source, Destination, StartDate, EndDate, Text, PublishDate, Length, Watches)" +
+                "Values ((Select Max(OrderID) From Orders) + 1," + personID + ",'" + source + "', '" + destination + "',' " + Service.makeSqlDateString(startDate) + "',' " + Service.makeSqlDateString(endDate) + "',' " + text + "','" + Service.getNowMomentInUTC() + "', " + length + ", 0)";
         Service.execCommand(command);
         command = "Update Users Set CountOfOrders = CountOfOrders + 1 Where PersonID = " + personID;
         Service.execCommand(command);

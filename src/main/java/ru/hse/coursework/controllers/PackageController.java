@@ -179,7 +179,7 @@ public class PackageController {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
-            Offers offers = Offers.getOffersByParams(source, destination, startDate, endDate);
+            Offers offers = Offers.getOffersByParams(source, destination, Service.dateFromString(startDate), Service.dateFromString(endDate));
             offers.setDefaultClass(new DefaultClass(true, token));
             user.setToken(token);
             user.setLastOnlineDate();
@@ -202,7 +202,7 @@ public class PackageController {
         try {
             User user = User.getUserByToken(token);
             token = Service.makeToken(user.getLogin());
-            Orders orders = Orders.getOrdersByParams(source, destination, startDate, endDate);
+            Orders orders = Orders.getOrdersByParams(source, destination, Service.dateFromString(startDate), Service.dateFromString(endDate));
             orders.setDefaultClass(new DefaultClass(true, token));
             user.setToken(token);
             user.setLastOnlineDate();

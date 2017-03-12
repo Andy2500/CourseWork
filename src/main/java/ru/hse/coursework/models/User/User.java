@@ -22,7 +22,7 @@ public class User implements Serializable {
 
     private int countOfOrders;
     private int countOfOffers;
-    private int experience;
+    private int countOfPackages;
     private int rank;
 
     private Date lastOnlineDate;
@@ -31,11 +31,11 @@ public class User implements Serializable {
     public User() {
     }
 
-    public User(int personID, int countOfOrders, int countOfOffers, int experience, int rank, Date lastOnlineDate, String login, String email, String name, String hashpsd, String phone, String token) {
+    public User(int personID, int countOfOrders, int countOfOffers, int countOfPackages, int rank, Date lastOnlineDate, String login, String email, String name, String hashpsd, String phone, String token) {
         this.personID = personID;
         this.countOfOrders = countOfOrders;
         this.countOfOffers = countOfOffers;
-        this.experience = experience;
+        this.countOfPackages = countOfPackages;
         this.rank = rank;
         this.lastOnlineDate = lastOnlineDate;
         this.login = login;
@@ -224,10 +224,6 @@ public class User implements Serializable {
         return countOfOffers;
     }
 
-    public int getExperience() {
-        return experience;
-    }
-
     public int getRank() {
         return rank;
     }
@@ -260,9 +256,6 @@ public class User implements Serializable {
         this.countOfOffers = countOfOffers;
     }
 
-    public void setExperience(Integer experience) {
-        this.experience = experience;
-    }
 
     public void setRank(Integer rank) {
         this.rank = rank;
@@ -284,10 +277,6 @@ public class User implements Serializable {
         this.countOfOffers = countOfOffers;
     }
 
-    public void setExperience(int experience) {
-        this.experience = experience;
-    }
-
     public void setRank(int rank) {
         this.rank = rank;
     }
@@ -301,5 +290,13 @@ public class User implements Serializable {
         String query = "Update Users Set Photo = ? Where PersonID = " + personID;
 
         Service.loadPhoto(query, javax.xml.bind.DatatypeConverter.parseBase64Binary(photo));
+    }
+
+    public int getCountOfPackages() {
+        return countOfPackages;
+    }
+
+    public void setCountOfPackages(int countOfPackages) {
+        this.countOfPackages = countOfPackages;
     }
 }

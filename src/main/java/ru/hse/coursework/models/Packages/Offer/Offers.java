@@ -6,6 +6,7 @@ import ru.hse.coursework.models.Service.Service;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 
 @XmlRootElement
 public class Offers implements Serializable {
@@ -13,8 +14,8 @@ public class Offers implements Serializable {
     private ArrayList<PackageOffer> offers;
     private DefaultClass defaultClass;
 
-    public static Offers getOffersByParams(String source, String destination, String startDate, String endDate) throws Exception {
-        String query = "Select * From Offers Where (Source = ' " + source + "') AND (Destination = '" + destination + "') AND (StartDate >= '" + startDate + "') AND (EndDate <= '" + endDate + "')";
+    public static Offers getOffersByParams(String source, String destination, Date startDate, Date endDate) throws Exception {
+        String query = "Select * From Offers Where (Source = '" + source + "') AND (Destination = '" + destination + "') AND (StartDate >= '" + Service.makeSqlDateString(startDate) + "') AND (EndDate <= '" + Service.makeSqlDateString(endDate) + " 23:59')";
         return Service.getOffersByQuery(query);
     }
 

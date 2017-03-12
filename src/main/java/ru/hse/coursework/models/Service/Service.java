@@ -68,20 +68,25 @@ public class Service {
     public static Date dateFromString(String date) throws ParseException {
         DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss:SSS");
         String[] sp = date.split(":");
-        int l = sp[3].length();
-        String nilstr = "";
+        if (sp.length == 4) {
+            int l = sp[3].length();
+            String nilstr = "";
 
-        for (int i = l; i < 3; i++) {
-            nilstr += "0";
+            for (int i = l; i < 3; i++) {
+                nilstr += "0";
+            }
+
+            sp[3] = sp[3] + nilstr;
+            date = sp[0] + ":" + sp[1] + ":" + sp[2] + ":" + sp[3];
+            return dateFormat.parse(date);
+        } else {
+            dateFormat = new SimpleDateFormat("yyyy.MM.dd");
+            return dateFormat.parse(date);
         }
-
-        sp[3] = sp[3] + nilstr;
-        date = sp[0] + ":" + sp[1] + ":" + sp[2] + ":" + sp[3];
-        return dateFormat.parse(date);
     }
 
     public static String makeSqlDateString(Date date) {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss:SSS");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
         return dateFormat.format(date);
     }
 
@@ -106,7 +111,7 @@ public class Service {
             user = new User(resultSet.getInt("personID"),
                     resultSet.getInt("countOfOrders"),
                     resultSet.getInt("countOfOffers"),
-                    resultSet.getInt("experience"),
+                    resultSet.getInt("countOfPackages"),
                     resultSet.getInt("rank"),
                     resultSet.getDate("lastOnlineDate"),
                     resultSet.getString("login"),
@@ -196,6 +201,7 @@ public class Service {
         if (resultSet != null) {
             while (resultSet.next()) {
                 PackageOffer offer = new PackageOffer();
+                offer.setOfferID(resultSet.getInt("OfferID"));
                 offer.setText(resultSet.getString("Text"));
                 offer.setPersonID(resultSet.getInt("PersonID"));
                 offer.setPerson(User.getUserByID(offer.getPersonID()));
