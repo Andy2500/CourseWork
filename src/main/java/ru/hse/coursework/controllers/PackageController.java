@@ -323,7 +323,7 @@ public class PackageController {
             OfferRequest request = OfferRequest.getRequestByID(requestID);
             PackageOffer offer = PackageOffer.getOfferByID(request.getOfferID());
 
-            new Package(request.getPersonID(), offer.getPersonID(), offer.getSource(), offer.getDestination(), offer.getStartDate(), offer.getEndDate(), offer.getText(), offer.getLength());
+            new Package(request.getPersonID(), offer.getPersonID(), offer.getSource(), offer.getDestination(), offer.getStartDate(), offer.getEndDate(), offer.getText(), offer.getLength(), null);
 
             PackageOffer.deletePackageOffer(offer.getOfferID());
             OfferRequest.deleteRequest(requestID);
@@ -350,7 +350,7 @@ public class PackageController {
             OrderRequest request = OrderRequest.getRequestByID(requestID);
             PackageOrder order = PackageOrder.getOrderByID(request.getOrderID());
 
-            new Package(order.getPersonID(), request.getPersonID(), order.getSource(), order.getDestination(), order.getStartDate(), order.getEndDate(), order.getText(), order.getLength());
+            new Package(order.getPersonID(), request.getPersonID(), order.getSource(), order.getDestination(), order.getStartDate(), order.getEndDate(), order.getText(), order.getLength(), null);
 
             PackageOrder.deletePackageOrder(order.getOrderID(), user.getPersonID());
             OrderRequest.deleteRequest(requestID);

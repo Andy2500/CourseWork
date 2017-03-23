@@ -12,11 +12,11 @@ import java.util.Date;
 @XmlRootElement
 public class Response implements Serializable {
 
-    private Integer criticID;
-    private Integer personID;
-    private Integer responseID;
+    private int criticID;
+    private int personID;
+    private int responseID;
 
-    private Integer mark;
+    private int mark;
     private String text;
     private Date date;
 

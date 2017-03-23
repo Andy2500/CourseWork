@@ -19,7 +19,7 @@ public class Package implements Serializable {
 
     private String source;
     private String destination;
-    private String photo;
+    private Date event;
 
     private Date startDate;
     private Date endDate;
@@ -34,7 +34,7 @@ public class Package implements Serializable {
     public Package() {
     }
 
-    public Package(int consumerID, int producerID, String source, String destination, Date startDate, Date endDate, String text, float length) throws Exception {
+    public Package(int consumerID, int producerID, String source, String destination, Date startDate, Date endDate, String text, float length, Date event) throws Exception {
         this.consumerID = consumerID;
         this.producerID = producerID;
         this.source = source;
@@ -43,8 +43,18 @@ public class Package implements Serializable {
         this.endDate = endDate;
         this.text = text;
         this.length = length;
-        String command = "Insert Into Packages (PackageID, ConsumerID, ProducerID, Source, Destination, StartDate, EndDate, Text, PublishDate, Status, Length)"
-                + "Values ((Select Max(PackageID) From Packages) + 1," + consumerID + "," + producerID + ",'" + source + "','" + destination + "','" + startDate + "','" + endDate + "','" + text + "','" + Service.getNowMomentInUTC() + "', 0, " + length + ")";
+
+        String command = "";
+
+        if (event != null) {
+
+            command = "Insert Into Packages (PackageID, ConsumerID, ProducerID, Source, Destination, StartDate, EndDate, Text, PublishDate, Status, Length, Event)"
+                    + "Values ((Select Max(PackageID) From Packages) + 1," + consumerID + "," + producerID + ",'" + source + "','" + destination + "','" + startDate + "','" + endDate + "','" + text + "','" + Service.getNowMomentInUTC() + "', 0, " + length + "," + Service.makeSqlDateString(event) + ")";
+        } else {
+            command = "Insert Into Packages (PackageID, ConsumerID, ProducerID, Source, Destination, StartDate, EndDate, Text, PublishDate, Status, Length)"
+                    + "Values ((Select Max(PackageID) From Packages) + 1," + consumerID + "," + producerID + ",'" + source + "','" + destination + "','" + startDate + "','" + endDate + "','" + text + "','" + Service.getNowMomentInUTC() + "', 0, " + length + ")";
+        }
+
         Service.execCommand(command);
     }
 
@@ -168,14 +178,6 @@ public class Package implements Serializable {
         this.publishDate = publishDate;
     }
 
-    public String getPhoto() {
-        return photo;
-    }
-
-    public void setPhoto(String photo) {
-        this.photo = photo;
-    }
-
     public Integer getStatus() {
         return status;
     }
@@ -190,5 +192,13 @@ public class Package implements Serializable {
 
     public void setLength(Float length) {
         this.length = length;
+    }
+
+    public Date getEvent() {
+        return event;
+    }
+
+    public void setEvent(Date event) {
+        this.event = event;
     }
 }

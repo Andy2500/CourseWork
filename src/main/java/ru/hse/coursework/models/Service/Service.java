@@ -13,6 +13,7 @@ import ru.hse.coursework.models.Packages.Package;
 import ru.hse.coursework.models.Packages.Packages;
 import ru.hse.coursework.models.Response.Comment;
 import ru.hse.coursework.models.Response.Response;
+import ru.hse.coursework.models.User.Event;
 import ru.hse.coursework.models.User.User;
 
 import java.math.BigInteger;
@@ -262,14 +263,6 @@ public class Service {
             _package.setProducerID(resultSet.getInt("ProducerID"));
             _package.setSource(resultSet.getString("Source"));
             _package.setLength(resultSet.getFloat("Length"));
-
-            byte[] ph = resultSet.getBytes("Photo");
-
-            if (ph != null) {
-                String pho = javax.xml.bind.DatatypeConverter.printBase64Binary(ph);
-                _package.setPhoto(pho);
-            }
-
             _package.setProducer(User.getUserByID(_package.getProducerID()));
             _package.setConsumer(User.getUserByID(_package.getConsumerID()));
             _package.getConsumer().clear();
@@ -396,13 +389,6 @@ public class Service {
             _package.setProducerID(resultSet.getInt("ProducerID"));
             _package.setSource(resultSet.getString("Source"));
             _package.setLength(resultSet.getFloat("Length"));
-            byte[] ph = resultSet.getBytes("Photo");
-
-            if (ph != null) {
-                String pho = javax.xml.bind.DatatypeConverter.printBase64Binary(ph);
-                _package.setPhoto(pho);
-            }
-
             _package.setProducer(User.getUserByID(_package.getProducerID()));
             _package.setConsumer(User.getUserByID(_package.getConsumerID()));
             _package.getConsumer().clear();
@@ -481,6 +467,23 @@ public class Service {
         return request;
     }
 
+    public static ArrayList<Event> getEventsByQuery(String query) throws Exception {
+        ResultSet resultSet = getSelectResultSet(query);
+        ArrayList<Event> events = new ArrayList<Event>();
+
+        if (resultSet != null) {
+            while (resultSet.next()) {
+                Event event = new Event();
+                event.setDate(resultSet.getDate("Date"));
+                event.setEventID(resultSet.getInt("EventID"));
+                event.setPersonID(resultSet.getInt("PersonID"));
+                event.setText(resultSet.getString("Text"));
+                events.add(event);
+            }
+        }
+        return events;
+    }
+
     private static ResultSet getSelectResultSet(String query) throws Exception {
         SQLServerDataSource ds = new SQLServerDataSource();
         ds.setServerName("coursew.database.windows.net");
@@ -519,5 +522,4 @@ public class Service {
         preparedStatement.setBytes(1, array);
         preparedStatement.execute(command);
     }
-
 }

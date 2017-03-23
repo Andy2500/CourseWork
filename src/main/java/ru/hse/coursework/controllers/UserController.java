@@ -2,6 +2,8 @@ package ru.hse.coursework.controllers;
 
 import ru.hse.coursework.models.Service.DefaultClass;
 import ru.hse.coursework.models.Service.Service;
+import ru.hse.coursework.models.User.Event;
+import ru.hse.coursework.models.User.Events;
 import ru.hse.coursework.models.User.User;
 import ru.hse.coursework.models.User.UserProfile;
 
@@ -10,6 +12,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.Date;
 
 @Path("/user")
 public class UserController {
@@ -198,6 +201,24 @@ public class UserController {
             UserProfile userProfile = new UserProfile();
             userProfile.setDefaultClass(new DefaultClass(false, ex.getMessage()));
             return userProfile;
+        }
+    }
+
+    @POST
+    @Path("/ge/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Events getEvents(@HeaderParam("token") String token, @HeaderParam("date") Date fromDate) {
+        try {
+            User user = User.getUserByToken(token);
+            token = Service.makeToken(user.getLogin());
+            Events events = new Events(Event.getEventsByPersonIDFromDate(user.getPersonID(), fromDate), new DefaultClass(true, token));
+            user.setToken(token);
+            user.setLastOnlineDate();
+            return events;
+        } catch (Exception ex) {
+            Events events = new Events();
+            events.setDefaultClass(new DefaultClass(false, ex.getMessage()));
+            return events;
         }
     }
 //
