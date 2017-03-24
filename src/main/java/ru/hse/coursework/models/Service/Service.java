@@ -522,4 +522,11 @@ public class Service {
         preparedStatement.setBytes(1, array);
         preparedStatement.execute(command);
     }
+
+    public static Date get3DayBeforeDate(Date date) {
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_MONTH, -3);
+        return calendar.getTime();
+    }
 }
