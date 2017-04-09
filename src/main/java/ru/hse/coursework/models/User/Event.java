@@ -3,9 +3,11 @@ package ru.hse.coursework.models.User;
 
 import ru.hse.coursework.models.Service.Service;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Date;
 
+@XmlRootElement
 public class Event {
     private int eventID;
     private int personID;
@@ -13,12 +15,12 @@ public class Event {
     private String text;
 
     public static ArrayList<Event> getEventsByPersonIDFromDate(int personID, Date date) throws Exception {
-        String query = "Select * From Packages Where PersonID = " + personID + "AND Date > '" + Service.makeSqlDateString(date) + "'";
+        String query = "Select * From Events Where PersonID = " + personID + "AND Date > '" + Service.makeSqlDateString(date) + "'";
         return Service.getEventsByQuery(query);
     }
 
     public static void writeEvent(String text, int personID) throws Exception {
-        String command = "Insert Into Events (EventID, PersonID, Date, String) Values ((Select Max(EventID) From Events) + 1, " + personID + ",'" + Service.makeSqlDateString(new Date()) + "','" + text + "')";
+        String command = "Insert Into Events (EventID, PersonID, Date, Text) Values ((Select Max(EventID) From Events) + 1, " + personID + ",'" + Service.makeSqlDateString(new Date()) + "','" + text + "')";
         Service.execCommand(command);
     }
 

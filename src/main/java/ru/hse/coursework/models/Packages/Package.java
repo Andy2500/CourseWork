@@ -11,11 +11,13 @@ import java.util.Date;
 @XmlRootElement
 public class Package implements Serializable {
 
-    private Integer consumerID;
-    private Integer producerID;
-    private Integer packageID;
-    private Integer status; //0 - подтерждено с двух сторон, 1 - назначена встреча, 2 - подтверждено исполнителем,
-    private Float length;
+    private int consumerID;
+    private int producerID;
+    private int packageID;
+    private int status; //0 - подтерждено с двух сторон, 1 - назначена встреча, 2 - подтверждено исполнителем,
+    private float length;
+    private int producerStatus; //1 - подтвердил передачу посылки, 2 - подтвердил закрытие сделки
+    private int consumerStatus; //1 - подтвердил передачу посылки, 2 - подтвердил закрытие сделки
 
     private String source;
     private String destination;
@@ -64,12 +66,19 @@ public class Package implements Serializable {
     }
 
     public static void setEvent(Date date, int packageID) throws Exception {
-        String query = "Update Packages Set Event = " + Service.makeSqlDateString(date) + " Where PackageID = " + packageID;
+        String query = "Update Packages Set Event = '" + Service.makeSqlDateString(date) + "' Where PackageID = " + packageID;
         Service.execCommand(query);
     }
 
     public static void setStatus(int status, int packageID) throws Exception {
         String query = "Update Packages Set Status = " + status + " Where PackageID = " + packageID;
+        Service.execCommand(query);
+    }
+
+    public static void updateStatus(int producerStatus, int packageID, int personID) throws Exception {
+        String query = "Update Packages Set ProducerStatus = " + producerStatus + " Where PackageID = " + packageID + "AND ProducerID = " + personID;
+        Service.execCommand(query);
+        query = "Update Packages Set ConsumerStatus = " + producerStatus + " Where PackageID = " + packageID + "AND ConsumerID = " + personID;
         Service.execCommand(query);
     }
 
@@ -200,5 +209,21 @@ public class Package implements Serializable {
 
     public void setEvent(Date event) {
         this.event = event;
+    }
+
+    public int getProducerStatus() {
+        return producerStatus;
+    }
+
+    public int getConsumerStatus() {
+        return consumerStatus;
+    }
+
+    public void setProducerStatus(int producerStatus) {
+        this.producerStatus = producerStatus;
+    }
+
+    public void setConsumerStatus(int consumerStatus) {
+        this.consumerStatus = consumerStatus;
     }
 }

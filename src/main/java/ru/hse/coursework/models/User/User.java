@@ -31,7 +31,7 @@ public class User implements Serializable {
     public User() {
     }
 
-    public User(int personID, int countOfOrders, int countOfOffers, int countOfPackages, int rank, Date lastOnlineDate, String login, String email, String name, String hashpsd, String phone, String token) {
+    public User(int personID, int countOfOrders, int countOfOffers, int countOfPackages, int rank, Date lastOnlineDate, String login, String email, String name, String hashpsd, String phone, String token, String photo) {
         this.personID = personID;
         this.countOfOrders = countOfOrders;
         this.countOfOffers = countOfOffers;
@@ -44,6 +44,7 @@ public class User implements Serializable {
         this.hashpsd = hashpsd;
         this.phone = phone;
         this.token = token;
+        this.photo = photo;
     }
 
     public static void exists(String login, String phone, String email) throws Exception {
@@ -75,7 +76,7 @@ public class User implements Serializable {
         this.name = name;
         this.hashpsd = hashpsd;
         this.phone = phone;
-        String command = "Insert Into Users (PersonID,Login,Email,Name,HashPassword,Phone,Photo, CountOfOrders, CountOFOffers, Experience, Rank, LastOnlineDate, Token)"
+        String command = "Insert Into Users (PersonID,Login,Email,Name,HashPassword,Phone,Photo, CountOfOrders, CountOfOffers, CountOfPackages, Rank, LastOnlineDate, Token)"
                 + "Values ((Select MAX(PersonID) FROM Users) + 1,'" + login + "','" + email + "','" + name + "','" + hashpsd + "','" + phone + "',NULL,0,0,0,0,'" + Service.getNowMomentInUTC() + "', '')";
         Service.execCommand(command);
     }
@@ -103,6 +104,11 @@ public class User implements Serializable {
             throw new Exception("ID Error");
         }
         return user;
+    }
+
+    public static String getUserPhoto(int ID) throws Exception {
+        String query = "Select Photo From Users Where PersonID = " + ID;
+        return Service.getPhotoByQuery(query);
     }
 
     //получение пользователя по токену
@@ -288,7 +294,6 @@ public class User implements Serializable {
     public void setPhoto(String photo) throws Exception {
         this.photo = photo;
         String query = "Update Users Set Photo = ? Where PersonID = " + personID;
-
         Service.loadPhoto(query, javax.xml.bind.DatatypeConverter.parseBase64Binary(photo));
     }
 

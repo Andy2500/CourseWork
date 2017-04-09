@@ -30,7 +30,8 @@ import java.util.*;
 public class Service {
 
     public static String makeToken(String login) throws Exception {
-        String str = login + Service.getNowMomentInUTC();
+        // String str = login + Service.getNowMomentInUTC();
+        String str = login;
         MessageDigest messageDigest;
 
         messageDigest = MessageDigest.getInstance("MD5");
@@ -87,8 +88,14 @@ public class Service {
     }
 
     public static String makeSqlDateString(Date date) {
+        DateFormat format = new SimpleDateFormat("HH:mm:ss:SSS");
         DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
-        return dateFormat.format(date);
+
+        if (format.format(date).equals("00:00:00:000")) {
+            return dateFormat.format(date);
+        } else {
+            return dateFormat.format(date) + " " + format.format(date);
+        }
     }
 
     public static String getNowMomentInUTC() {
@@ -109,24 +116,35 @@ public class Service {
         ResultSet resultSet = getSelectResultSet(query);
 
         while (resultSet.next()) {
-            user = new User(resultSet.getInt("personID"),
-                    resultSet.getInt("countOfOrders"),
-                    resultSet.getInt("countOfOffers"),
-                    resultSet.getInt("countOfPackages"),
-                    resultSet.getInt("rank"),
-                    resultSet.getDate("lastOnlineDate"),
-                    resultSet.getString("login"),
-                    resultSet.getString("email"),
-                    resultSet.getString("name"),
-                    resultSet.getString("HashPassword"),
-                    resultSet.getString("Phone"),
-                    resultSet.getString("Token"));
             byte[] ph = resultSet.getBytes("Photo");
             if (ph != null) {
                 String pho = javax.xml.bind.DatatypeConverter.printBase64Binary(ph);
-                user.setPhoto(pho);
+                user = new User(resultSet.getInt("personID"),
+                        resultSet.getInt("countOfOrders"),
+                        resultSet.getInt("countOfOffers"),
+                        resultSet.getInt("countOfPackages"),
+                        resultSet.getInt("rank"),
+                        resultSet.getDate("lastOnlineDate"),
+                        resultSet.getString("login"),
+                        resultSet.getString("email"),
+                        resultSet.getString("name"),
+                        resultSet.getString("HashPassword"),
+                        resultSet.getString("Phone"),
+                        resultSet.getString("Token"), pho);
+            } else {
+                user = new User(resultSet.getInt("personID"),
+                        resultSet.getInt("countOfOrders"),
+                        resultSet.getInt("countOfOffers"),
+                        resultSet.getInt("countOfPackages"),
+                        resultSet.getInt("rank"),
+                        resultSet.getDate("lastOnlineDate"),
+                        resultSet.getString("login"),
+                        resultSet.getString("email"),
+                        resultSet.getString("name"),
+                        resultSet.getString("HashPassword"),
+                        resultSet.getString("Phone"),
+                        resultSet.getString("Token"), null);
             }
-
         }
 
         return user;
@@ -484,6 +502,20 @@ public class Service {
         return events;
     }
 
+    public static String getPhotoByQuery(String query) throws Exception {
+        ResultSet resultSet = getSelectResultSet(query);
+
+        if (resultSet != null) {
+            while (resultSet.next()) {
+                byte[] ph = resultSet.getBytes("Photo");
+                if (ph != null) {
+                    return javax.xml.bind.DatatypeConverter.printBase64Binary(ph);
+                }
+            }
+        }
+        return "";
+    }
+
     private static ResultSet getSelectResultSet(String query) throws Exception {
         SQLServerDataSource ds = new SQLServerDataSource();
         ds.setServerName("coursew.database.windows.net");
@@ -494,7 +526,7 @@ public class Service {
         ds.setUser("HSEADMIN");
         ds.setHostNameInCertificate("*.database.windows.net");
         ds.setTrustServerCertificate(false);
-        ds.setLoginTimeout(1000);
+        ds.setLoginTimeout(100);
 
         Connection connection = ds.getConnection();
         Statement statement = connection.createStatement();
@@ -518,9 +550,13 @@ public class Service {
         ds.setLoginTimeout(1000);
 
         Connection connection = ds.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement("?");
+        PreparedStatement preparedStatement = connection.prepareStatement(command);
         preparedStatement.setBytes(1, array);
-        preparedStatement.execute(command);
+        try {
+            preparedStatement.executeQuery();
+        } catch (Exception ex) {
+
+        }
     }
 
     public static Date get3DayBeforeDate(Date date) {

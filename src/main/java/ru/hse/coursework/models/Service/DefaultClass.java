@@ -7,14 +7,14 @@ import java.io.Serializable;
 public class DefaultClass implements Serializable {
 
     private Boolean operationOutput;
-    private String token;
+    private String message;
 
     public DefaultClass() {
     }
 
-    public DefaultClass(boolean operationOutput, String token) {
+    public DefaultClass(boolean operationOutput, String message) {
         this.operationOutput = operationOutput;
-        this.token = token;
+        this.message = message;
     }
 
     public boolean getOperationOutput() {
@@ -22,7 +22,7 @@ public class DefaultClass implements Serializable {
     }
 
     public String getToken() {
-        return token;
+        return message;
     }
 
     public boolean isOperationOutput() {
@@ -33,8 +33,8 @@ public class DefaultClass implements Serializable {
         this.operationOutput = operationOutput;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setToken(String message) {
+        this.message = message;
     }
 
 }

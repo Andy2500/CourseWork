@@ -1,22 +1,22 @@
 package ru.hse.coursework.models.User;
 
-
 import ru.hse.coursework.models.Service.DefaultClass;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
+import java.io.Serializable;
 
 @XmlRootElement
-public class Events {
-    private ArrayList<Event> events;
+public class UserInfo implements Serializable {
+    private int personID;
     private DefaultClass defaultClass;
 
-    public Events(ArrayList<Event> events, DefaultClass defaultClass) {
-        this.events = events;
-        this.defaultClass = defaultClass;
+    public UserInfo() {
+
     }
 
-    public Events() {
+    public UserInfo(int personID, DefaultClass defaultClass) {
+        this.personID = personID;
+        this.defaultClass = defaultClass;
     }
 
     public DefaultClass getDefaultClass() {
@@ -27,12 +27,11 @@ public class Events {
         this.defaultClass = defaultClass;
     }
 
-    public ArrayList<Event> getEvents() {
-        return events;
+    public int getPersonID() {
+        return personID;
     }
 
-    public void setEvents(ArrayList<Event> events) {
-        this.events = events;
+    public void setPersonID(int personID) {
+        this.personID = personID;
     }
-
 }
