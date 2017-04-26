@@ -49,7 +49,6 @@ public class ChatController {
         try {
             User user = User.getUserByID(id);
             if (Service.makeToken(user.getToken() + date).equals(token)) {
-
                 Dialog dialog = Dialog.getDialogByID(dialogID);
                 dialog.setDefaultClass(new DefaultClass(true, token));
                 user.setToken(token);

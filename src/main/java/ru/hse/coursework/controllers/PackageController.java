@@ -40,7 +40,7 @@ public class PackageController {
                 new PackageOffer(user.getPersonID(), source, destination, Service.dateFromString(startDate), Service.dateFromString(endDate), text, length);
                 user.setLastOnlineDate();
                 Event.writeEvent("Вы создали заказ: " + source + "->" + destination, user.getPersonID());
-                return new DefaultClass(true, token);
+                return new DefaultClass(true, "");
             }
             throw new Exception("token error");
         } catch (Exception ex) {
@@ -429,7 +429,7 @@ public class PackageController {
             if (Service.makeToken(user.getToken() + date).equals(token)) {
 
                 PackageOffer offer = PackageOffer.getOfferByID(offerID);
-                offer.setDefaultClass(new DefaultClass(true, token));
+                offer.setDefaultClass(new DefaultClass(true, ""));
 
                 user.setLastOnlineDate();
                 return offer;
@@ -455,7 +455,7 @@ public class PackageController {
             User user = User.getUserByID(id);
             if (Service.makeToken(user.getToken() + date).equals(token)) {
                 PackageOrder order = PackageOrder.getOrderByID(orderID);
-                order.setDefaultClass(new DefaultClass(true, token));
+                order.setDefaultClass(new DefaultClass(true, ""));
 
                 user.setLastOnlineDate();
                 return order;
@@ -480,7 +480,7 @@ public class PackageController {
             User user = User.getUserByID(id);
             if (Service.makeToken(user.getToken() + date).equals(token)) {
                 Package _package = Package.getPackageByID(packageID);
-                _package.setDefaultClass(new DefaultClass(true, token));
+                _package.setDefaultClass(new DefaultClass(true, ""));
 
                 user.setLastOnlineDate();
                 return _package;
@@ -508,7 +508,7 @@ public class PackageController {
             User user = User.getUserByID(id);
             if (Service.makeToken(user.getToken() + date).equals(token)) {
                 Offers offers = Offers.getOffersByParams(source, destination, Service.dateFromString(startDate), Service.dateFromString(endDate));
-                offers.setDefaultClass(new DefaultClass(true, token));
+                offers.setDefaultClass(new DefaultClass(true, ""));
 
                 user.setLastOnlineDate();
                 return offers;
@@ -536,7 +536,7 @@ public class PackageController {
             User user = User.getUserByID(id);
             if (Service.makeToken(user.getToken() + date).equals(token)) {
                 Orders orders = Orders.getOrdersByParams(source, destination, Service.dateFromString(startDate), Service.dateFromString(endDate));
-                orders.setDefaultClass(new DefaultClass(true, token));
+                orders.setDefaultClass(new DefaultClass(true, ""));
 
                 user.setLastOnlineDate();
                 return orders;
@@ -560,7 +560,7 @@ public class PackageController {
             User user = User.getUserByID(id);
             if (Service.makeToken(user.getToken() + date).equals(token)) {
                 Orders orders = Orders.getOrdersByID(user.getPersonID());
-                orders.setDefaultClass(new DefaultClass(true, token));
+                orders.setDefaultClass(new DefaultClass(true, ""));
 
                 user.setLastOnlineDate();
                 return orders;
@@ -584,7 +584,7 @@ public class PackageController {
             User user = User.getUserByID(id);
             if (Service.makeToken(user.getToken() + date).equals(token)) {
                 Offers offers = Offers.getOffersByID(user.getPersonID());
-                offers.setDefaultClass(new DefaultClass(true, token));
+                offers.setDefaultClass(new DefaultClass(true, ""));
 
                 user.setLastOnlineDate();
                 return offers;
@@ -608,7 +608,7 @@ public class PackageController {
             User user = User.getUserByID(id);
             if (Service.makeToken(user.getToken() + date).equals(token)) {
                 Packages packages = Packages.getPackagesByUserID(user.getPersonID());
-                packages.setDefaultClass(new DefaultClass(true, token));
+                packages.setDefaultClass(new DefaultClass(true, ""));
 
                 user.setLastOnlineDate();
                 return packages;
@@ -635,7 +635,7 @@ public class PackageController {
                 Requests requests = Requests.getRequestsByPersonID(user.getPersonID());
 
                 user.setLastOnlineDate();
-                requests.setDefaultClass(new DefaultClass(true, token));
+                requests.setDefaultClass(new DefaultClass(true, ""));
                 return requests;
             }
             throw new Exception("token error");

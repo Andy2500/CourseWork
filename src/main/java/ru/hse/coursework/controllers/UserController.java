@@ -209,7 +209,7 @@ public class UserController {
     public UserProfile getUserProfile(@FormParam("token") String token,
                                       @FormParam("personID") int id,
                                       @FormParam("date") String date,
-                                      @FormParam("personID") int personID) {
+                                      @FormParam("userID") int personID) {
         try {
             User user = User.getUserByID(id);
             if (Service.makeToken(user.getToken() + date).equals(token)) {
