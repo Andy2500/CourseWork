@@ -30,8 +30,9 @@ public class ResponseController {
             if (Service.makeToken(user.getToken() + date).equals(token)) {
 
                 User.setLastOnlineDate(id);
-
                 new Response(user.getPersonID(), personID, text, mark);
+                User.addMark(personID, mark);
+
                 return new DefaultClass(true, token);
             }
 

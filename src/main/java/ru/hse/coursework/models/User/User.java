@@ -27,7 +27,8 @@ public class User implements Serializable {
     private int countOfPackages;
     private int countOfResponses;
     private int sumOfResponses;
-    private int status; //-1 - заблокирован, 0 - не подтвержден, 1 - подтвержден, 2 - исполнитель, 3 - модератор
+
+    private int status; //1 - заблокирован, 0 - не подтвержден, 1 - подтвержден, 2 - исполнитель, 3 - модератор
 
     private float lastLatitude;
     private float lastLongitude;
@@ -100,6 +101,7 @@ public class User implements Serializable {
         this.phone = null;
         this.token = null;
         this.defaultClass = null;
+        this.documentPhoto = null;
     }
 
     public void cleanForUser() {
@@ -218,6 +220,11 @@ public class User implements Serializable {
     public static int getCountOfOpenProducerPackagesByPersonID(int personID) throws Exception {
         String query = "SELECT COUNT(*) " + " FROM Packages Where ProducerID = " + personID + " AND Status = 1";
         return Service.getIntByQuery(query);
+    }
+
+    public static void addMark(int personID, int mark) throws Exception {
+        String command = "Update Users Set SumOfResponses = SumOfResponses + " + mark + ", CountOfResponses = CountOfResponses + 1 Where PersonID = " + personID;
+        Service.execCommand(command);
     }
 
     public int getPersonID() {
