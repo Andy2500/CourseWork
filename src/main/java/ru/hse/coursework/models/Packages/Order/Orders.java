@@ -19,10 +19,11 @@ public class Orders implements Serializable {
         return Service.getOrdersByQuery(query);
     }
 
-    public static Orders getOrdersByID(int ID) throws Exception {
-        String query = "Select * From Orders Where OrderID = " + ID;
+    public static Orders getOrdersByUserID(int ID) throws Exception {
+        String query = "Select * From Orders Where PersonID = " + ID;
         return Service.getOrdersByQuery(query);
     }
+
 
     public void setDefaultClass(DefaultClass defaultClass) {
         this.defaultClass = defaultClass;
@@ -39,4 +40,6 @@ public class Orders implements Serializable {
     public void setOrders(ArrayList<PackageOrder> orders) {
         this.orders = orders;
     }
+
+
 }

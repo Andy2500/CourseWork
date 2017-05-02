@@ -3,6 +3,8 @@ package ru.hse.coursework.models.Service;
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 import ru.hse.coursework.models.Chat.Dialog;
 import ru.hse.coursework.models.Chat.Message;
+import ru.hse.coursework.models.Dispute.Dispute;
+import ru.hse.coursework.models.Event.Event;
 import ru.hse.coursework.models.Packages.Offer.OfferRequest;
 import ru.hse.coursework.models.Packages.Offer.Offers;
 import ru.hse.coursework.models.Packages.Offer.PackageOffer;
@@ -13,7 +15,6 @@ import ru.hse.coursework.models.Packages.Package;
 import ru.hse.coursework.models.Packages.Packages;
 import ru.hse.coursework.models.Response.Comment;
 import ru.hse.coursework.models.Response.Response;
-import ru.hse.coursework.models.User.Event;
 import ru.hse.coursework.models.User.User;
 
 import java.math.BigInteger;
@@ -117,33 +118,92 @@ public class Service {
 
         while (resultSet.next()) {
             byte[] ph = resultSet.getBytes("Photo");
+            byte[] docPhoto = resultSet.getBytes("DocumentPhoto");
+
             if (ph != null) {
                 String pho = javax.xml.bind.DatatypeConverter.printBase64Binary(ph);
-                user = new User(resultSet.getInt("personID"),
-                        resultSet.getInt("countOfOrders"),
-                        resultSet.getInt("countOfOffers"),
-                        resultSet.getInt("countOfPackages"),
-                        resultSet.getInt("rank"),
-                        resultSet.getDate("lastOnlineDate"),
-                        resultSet.getString("login"),
-                        resultSet.getString("email"),
-                        resultSet.getString("name"),
-                        resultSet.getString("HashPassword"),
-                        resultSet.getString("Phone"),
-                        resultSet.getString("Token"), pho);
+                if (docPhoto != null) {
+                    String docPho = javax.xml.bind.DatatypeConverter.printBase64Binary(ph);
+                    user = new User(resultSet.getInt("personID"),
+                            resultSet.getString("login"),
+                            resultSet.getString("email"),
+                            resultSet.getString("name"),
+                            resultSet.getString("HashPassword"),
+                            resultSet.getString("Phone"),
+                            resultSet.getString("Token"),
+                            pho,
+                            docPho,
+                            resultSet.getInt("countOfOrders"),
+                            resultSet.getInt("countOfOffers"),
+                            resultSet.getInt("countOfPackages"),
+                            resultSet.getInt("countOfResponses"),
+                            resultSet.getInt("sumOfResponses"),
+                            resultSet.getInt("status"),
+                            resultSet.getFloat("LastLatitude"),
+                            resultSet.getFloat("LastLongitude"),
+                            resultSet.getDate("lastOnlineDate"));
+                } else {
+                    user = new User(resultSet.getInt("personID"),
+                            resultSet.getString("login"),
+                            resultSet.getString("email"),
+                            resultSet.getString("name"),
+                            resultSet.getString("HashPassword"),
+                            resultSet.getString("Phone"),
+                            resultSet.getString("Token"),
+                            pho,
+                            null,
+                            resultSet.getInt("countOfOrders"),
+                            resultSet.getInt("countOfOffers"),
+                            resultSet.getInt("countOfPackages"),
+                            resultSet.getInt("countOfResponses"),
+                            resultSet.getInt("sumOfResponses"),
+                            resultSet.getInt("status"),
+                            resultSet.getFloat("LastLatitude"),
+                            resultSet.getFloat("LastLongitude"),
+                            resultSet.getDate("lastOnlineDate"));
+                }
+
             } else {
-                user = new User(resultSet.getInt("personID"),
-                        resultSet.getInt("countOfOrders"),
-                        resultSet.getInt("countOfOffers"),
-                        resultSet.getInt("countOfPackages"),
-                        resultSet.getInt("rank"),
-                        resultSet.getDate("lastOnlineDate"),
-                        resultSet.getString("login"),
-                        resultSet.getString("email"),
-                        resultSet.getString("name"),
-                        resultSet.getString("HashPassword"),
-                        resultSet.getString("Phone"),
-                        resultSet.getString("Token"), null);
+                if (docPhoto != null) {
+                    String docPho = javax.xml.bind.DatatypeConverter.printBase64Binary(ph);
+                    user = new User(resultSet.getInt("personID"),
+                            resultSet.getString("login"),
+                            resultSet.getString("email"),
+                            resultSet.getString("name"),
+                            resultSet.getString("HashPassword"),
+                            resultSet.getString("Phone"),
+                            resultSet.getString("Token"),
+                            null,
+                            docPho,
+                            resultSet.getInt("countOfOrders"),
+                            resultSet.getInt("countOfOffers"),
+                            resultSet.getInt("countOfPackages"),
+                            resultSet.getInt("countOfResponses"),
+                            resultSet.getInt("sumOfResponses"),
+                            resultSet.getInt("status"),
+                            resultSet.getFloat("LastLatitude"),
+                            resultSet.getFloat("LastLongitude"),
+                            resultSet.getDate("lastOnlineDate"));
+                } else {
+                    user = new User(resultSet.getInt("personID"),
+                            resultSet.getString("login"),
+                            resultSet.getString("email"),
+                            resultSet.getString("name"),
+                            resultSet.getString("HashPassword"),
+                            resultSet.getString("Phone"),
+                            resultSet.getString("Token"),
+                            null,
+                            null,
+                            resultSet.getInt("countOfOrders"),
+                            resultSet.getInt("countOfOffers"),
+                            resultSet.getInt("countOfPackages"),
+                            resultSet.getInt("countOfResponses"),
+                            resultSet.getInt("sumOfResponses"),
+                            resultSet.getInt("status"),
+                            resultSet.getFloat("LastLatitude"),
+                            resultSet.getFloat("LastLongitude"),
+                            resultSet.getDate("lastOnlineDate"));
+                }
             }
         }
 
@@ -163,10 +223,11 @@ public class Service {
                 response.setPersonID(resultSet.getInt("PersonID"));
                 response.setCriticID(resultSet.getInt("CriticID"));
                 response.setCritic(User.getUserByID(response.getCriticID()));
-                response.getCritic().clear();
                 response.setMark(resultSet.getInt("Mark"));
                 response.setText(resultSet.getString("Text"));
                 response.setDate(resultSet.getDate("Date"));
+
+                response.getCritic().clear();
                 responses.add(response);
             }
         }
@@ -184,10 +245,11 @@ public class Service {
                 response.setPersonID(resultSet.getInt("PersonID"));
                 response.setCriticID(resultSet.getInt("CriticID"));
                 response.setCritic(User.getUserByID(response.getCriticID()));
-                response.getCritic().clear();
                 response.setMark(resultSet.getInt("Mark"));
                 response.setText(resultSet.getString("Text"));
                 response.setDate(resultSet.getDate("Date"));
+
+                response.getCritic().clear();
             }
         }
         return response;
@@ -199,13 +261,15 @@ public class Service {
 
         while (resultSet.next()) {
             Comment comment = new Comment();
+
             comment.setPersonID(resultSet.getInt("PersonID"));
             comment.setText(resultSet.getString("Text"));
             comment.setCommentID(resultSet.getInt("CommentID"));
             comment.setResponseID(resultSet.getInt("ResponseID"));
             comment.setCommenter(User.getUserByID(comment.getPersonID()));
-            comment.getCommenter().clear();
             comment.setDate(resultSet.getDate("Date"));
+
+            comment.getCommenter().clear();
             comments.add(comment);
         }
 
@@ -220,18 +284,21 @@ public class Service {
         if (resultSet != null) {
             while (resultSet.next()) {
                 PackageOffer offer = new PackageOffer();
+
                 offer.setOfferID(resultSet.getInt("OfferID"));
                 offer.setText(resultSet.getString("Text"));
                 offer.setPersonID(resultSet.getInt("PersonID"));
-                offer.setPerson(User.getUserByID(offer.getPersonID()));
-                offer.getPerson().clear();
                 offer.setStartDate(resultSet.getDate("StartDate"));
                 offer.setEndDate(resultSet.getDate("EndDate"));
                 offer.setDestination(resultSet.getString("Destination"));
                 offer.setSource(resultSet.getString("Source"));
                 offer.setPublishDate(resultSet.getDate("PublishDate"));
                 offer.setWatches(resultSet.getInt("Watches"));
-                offer.setLength(resultSet.getFloat("Length"));
+
+                offer.setRequests(OfferRequest.getRequestsByOfferID(offer.getOfferID()));
+                offer.setPerson(User.getUserByID(offer.getPersonID()));
+
+                offer.getPerson().clear();
                 offerArrayList.add(offer);
             }
         }
@@ -247,17 +314,21 @@ public class Service {
         if (resultSet != null) {
             while (resultSet.next()) {
                 PackageOrder order = new PackageOrder();
+
+                order.setOrderID(resultSet.getInt("OrderID"));
                 order.setText(resultSet.getString("Text"));
                 order.setPersonID(resultSet.getInt("PersonID"));
-                order.setPerson(User.getUserByID(order.getPersonID()));
-                order.getPerson().clear();
                 order.setStartDate(resultSet.getDate("StartDate"));
                 order.setEndDate(resultSet.getDate("EndDate"));
                 order.setDestination(resultSet.getString("Destination"));
                 order.setSource(resultSet.getString("Source"));
                 order.setPublishDate(resultSet.getDate("PublishDate"));
                 order.setWatches(resultSet.getInt("Watches"));
-                order.setLength(resultSet.getFloat("Length"));
+
+                order.setRequests(OrderRequest.getRequestsByOrderID(order.getOrderID()));
+                order.setPerson(User.getUserByID(order.getPersonID()));
+
+                order.getPerson().clear();
                 orderArrayList.add(order);
             }
         }
@@ -272,19 +343,31 @@ public class Service {
 
         while (resultSet.next()) {
             Package _package = new Package();
-            _package.setText(resultSet.getString("Text"));
             _package.setConsumerID(resultSet.getInt("ConsumerID"));
-            _package.setStartDate(resultSet.getDate("StartDate"));
-            _package.setEndDate(resultSet.getDate("EndDate"));
-            _package.setDestination(resultSet.getString("Destination"));
-            _package.setPackageID(resultSet.getInt("PackageID"));
             _package.setProducerID(resultSet.getInt("ProducerID"));
-            _package.setSource(resultSet.getString("Source"));
-            _package.setLength(resultSet.getFloat("Length"));
+            _package.setGetterID(resultSet.getInt("GetterID"));
+            _package.setPackageID(resultSet.getInt("PackageID"));
+            _package.setStatus(resultSet.getInt("Status"));
+
+            _package.setSourceLatitude(resultSet.getFloat("SourceLatitude"));
+            _package.setDestinationLatitude(resultSet.getFloat("DestinationLatitude"));
+            _package.setSourceLongitude(resultSet.getFloat("SourceLongitude"));
+            _package.setDestinationLongitude(resultSet.getFloat("DestinationLongitude"));
+            _package.setDestinationAddress(resultSet.getString("DestinationAddress"));
+            _package.setSourceAddress(resultSet.getString("SourceAddress"));
+
+            _package.setText(resultSet.getString("Text"));
+            _package.setEventDate(resultSet.getDate("StartDate"));
+            _package.setFinishDate(resultSet.getDate("EndDate"));
+
             _package.setProducer(User.getUserByID(_package.getProducerID()));
             _package.setConsumer(User.getUserByID(_package.getConsumerID()));
+            _package.setGetter(User.getUserByID(_package.getGetterID()));
+
+            _package.getGetter().clear();
             _package.getConsumer().clear();
             _package.getProducer().clear();
+
             packageArrayList.add(_package);
         }
 
@@ -317,11 +400,13 @@ public class Service {
         if (resultSet != null) {
             while (resultSet.next()) {
                 dialog.setDialogID(resultSet.getInt("DialogID"));
-                dialog.setMessages(Message.getMessagesByDialogID(dialog.getDialogID()));
                 dialog.setPersonID_1(resultSet.getInt("PersonID_1"));
                 dialog.setPersonID_2(resultSet.getInt("PersonID_2"));
+
+                dialog.setMessages(Message.getMessagesByDialogID(dialog.getDialogID()));
             }
         }
+
         return dialog;
     }
 
@@ -350,19 +435,20 @@ public class Service {
 
         if (resultSet != null) {
             while (resultSet.next()) {
+                order.setOrderID(resultSet.getInt("OrderID"));
                 order.setText(resultSet.getString("Text"));
                 order.setPersonID(resultSet.getInt("PersonID"));
-                order.setPerson(User.getUserByID(order.getPersonID()));
-                order.getPerson().clear();
-                order.setOrderID(resultSet.getInt("OrderID"));
-                order.setRequests(OrderRequest.getRequestsByOrderID(order.getOrderID()));
                 order.setStartDate(resultSet.getDate("StartDate"));
                 order.setEndDate(resultSet.getDate("EndDate"));
                 order.setDestination(resultSet.getString("Destination"));
                 order.setSource(resultSet.getString("Source"));
                 order.setPublishDate(resultSet.getDate("PublishDate"));
                 order.setWatches(resultSet.getInt("Watches"));
-                order.setLength(resultSet.getFloat("Length"));
+
+                order.setRequests(OrderRequest.getRequestsByOrderID(order.getOrderID()));
+                order.setPerson(User.getUserByID(order.getPersonID()));
+
+                order.getPerson().clear();
             }
         }
         return order;
@@ -374,19 +460,18 @@ public class Service {
 
         if (resultSet != null) {
             while (resultSet.next()) {
+                offer.setOfferID(resultSet.getInt("OfferID"));
                 offer.setText(resultSet.getString("Text"));
                 offer.setPersonID(resultSet.getInt("PersonID"));
-                offer.setPerson(User.getUserByID(offer.getPersonID()));
                 offer.setStartDate(resultSet.getDate("StartDate"));
                 offer.setEndDate(resultSet.getDate("EndDate"));
                 offer.setDestination(resultSet.getString("Destination"));
                 offer.setSource(resultSet.getString("Source"));
-                offer.setOfferID(resultSet.getInt("OfferID"));
                 offer.setPublishDate(resultSet.getDate("PublishDate"));
-                offer.setRequests(OfferRequest.getRequestsByOfferID(offer.getOfferID()));
                 offer.setWatches(resultSet.getInt("Watches"));
-                offer.setLength(resultSet.getFloat("Length"));
-                offer.getPerson().clear();
+
+                offer.setRequests(OfferRequest.getRequestsByOfferID(offer.getOfferID()));
+                offer.setPerson(User.getUserByID(offer.getPersonID()));
             }
         }
 
@@ -398,17 +483,28 @@ public class Service {
         Package _package = new Package();
 
         while (resultSet.next()) {
-            _package.setText(resultSet.getString("Text"));
             _package.setConsumerID(resultSet.getInt("ConsumerID"));
-            _package.setStartDate(resultSet.getDate("StartDate"));
-            _package.setEndDate(resultSet.getDate("EndDate"));
-            _package.setDestination(resultSet.getString("Destination"));
-            _package.setPackageID(resultSet.getInt("PackageID"));
             _package.setProducerID(resultSet.getInt("ProducerID"));
-            _package.setSource(resultSet.getString("Source"));
-            _package.setLength(resultSet.getFloat("Length"));
+            _package.setGetterID(resultSet.getInt("GetterID"));
+            _package.setPackageID(resultSet.getInt("PackageID"));
+            _package.setStatus(resultSet.getInt("Status"));
+
+            _package.setSourceLatitude(resultSet.getFloat("SourceLatitude"));
+            _package.setDestinationLatitude(resultSet.getFloat("DestinationLatitude"));
+            _package.setSourceLongitude(resultSet.getFloat("SourceLongitude"));
+            _package.setDestinationLongitude(resultSet.getFloat("DestinationLongitude"));
+            _package.setDestinationAddress(resultSet.getString("DestinationAddress"));
+            _package.setSourceAddress(resultSet.getString("SourceAddress"));
+
+            _package.setText(resultSet.getString("Text"));
+            _package.setEventDate(resultSet.getDate("StartDate"));
+            _package.setFinishDate(resultSet.getDate("EndDate"));
+
             _package.setProducer(User.getUserByID(_package.getProducerID()));
             _package.setConsumer(User.getUserByID(_package.getConsumerID()));
+            _package.setGetter(User.getUserByID(_package.getGetterID()));
+
+            _package.getGetter().clear();
             _package.getConsumer().clear();
             _package.getProducer().clear();
         }
@@ -422,10 +518,13 @@ public class Service {
         if (resultSet != null) {
             while (resultSet.next()) {
                 OfferRequest request = new OfferRequest();
+
                 request.setRequestID(resultSet.getInt("RequestID"));
                 request.setPersonID(resultSet.getInt("PersonID"));
                 request.setOfferID(resultSet.getInt("OfferID"));
+
                 request.setPerson(User.getUserByID(request.getPersonID()));
+
                 request.getPerson().clear();
                 requests.add(request);
             }
@@ -441,15 +540,18 @@ public class Service {
         if (resultSet != null) {
             while (resultSet.next()) {
                 OrderRequest request = new OrderRequest();
+
                 request.setRequestID(resultSet.getInt("RequestID"));
                 request.setPersonID(resultSet.getInt("PersonID"));
                 request.setOrderID(resultSet.getInt("OrderID"));
+
                 request.setPerson(User.getUserByID(request.getPersonID()));
+
                 request.getPerson().clear();
                 requests.add(request);
             }
-        }
 
+        }
         return requests;
     }
 
@@ -462,12 +564,15 @@ public class Service {
                 request.setRequestID(resultSet.getInt("RequestID"));
                 request.setPersonID(resultSet.getInt("PersonID"));
                 request.setOfferID(resultSet.getInt("OfferID"));
+
                 request.setPerson(User.getUserByID(request.getPersonID()));
+
                 request.getPerson().clear();
+                return request;
             }
         }
 
-        return request;
+        throw new Exception("Такого запроса не существует");
     }
 
     public static OrderRequest getOrderRequestByQuery(String query) throws Exception {
@@ -478,11 +583,14 @@ public class Service {
             request.setRequestID(resultSet.getInt("RequestID"));
             request.setPersonID(resultSet.getInt("PersonID"));
             request.setOrderID(resultSet.getInt("OrderID"));
+
             request.setPerson(User.getUserByID(request.getPersonID()));
+
             request.getPerson().clear();
+            return request;
         }
 
-        return request;
+        throw new Exception("Такого запроса не существует");
     }
 
     public static ArrayList<Event> getEventsByQuery(String query) throws Exception {
@@ -514,6 +622,38 @@ public class Service {
             }
         }
         return "";
+    }
+
+    public static int getIntByQuery(String query) throws Exception {
+        ResultSet resultSet = getSelectResultSet(query);
+        if (resultSet != null) {
+            while (resultSet.next()) {
+                int result = resultSet.getInt(0);
+                return result;
+            }
+        }
+        return 0;
+    }
+
+    public static ArrayList<Dispute> getDisputesByQuery(String query) throws Exception {
+        ResultSet resultSet = getSelectResultSet(query);
+        ArrayList<Dispute> disputes = new ArrayList<>();
+
+        if (resultSet != null) {
+            while (resultSet.next()) {
+                Dispute dispute = new Dispute();
+                dispute.setStatus(resultSet.getInt("Status"));
+                dispute.setDisputeID(resultSet.getInt("DisputeID"));
+                dispute.setPublishDate(resultSet.getDate("PublishDate"));
+                dispute.setPackageID(resultSet.getInt("PackageID"));
+                dispute.setPersonID(resultSet.getInt("PersonID"));
+
+                dispute.set_package(Package.getPackageByID(dispute.getPackageID()));
+                dispute.setPerson(User.getUserByID(dispute.getPersonID()));
+            }
+        }
+
+        return disputes;
     }
 
     private static ResultSet getSelectResultSet(String query) throws Exception {

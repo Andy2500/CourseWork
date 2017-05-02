@@ -1,4 +1,4 @@
-package ru.hse.coursework.models.User;
+package ru.hse.coursework.models.Event;
 
 
 import ru.hse.coursework.models.Service.Service;
@@ -55,4 +55,6 @@ public class Event {
     public void setText(String text) {
         this.text = text;
     }
+
+
 }

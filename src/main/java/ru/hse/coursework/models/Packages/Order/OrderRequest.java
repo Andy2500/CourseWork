@@ -14,7 +14,6 @@ public class OrderRequest implements Serializable {
     private int personID;
     private int orderID;
 
-
     private User person;
 
     public OrderRequest() {

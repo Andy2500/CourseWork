@@ -25,7 +25,6 @@ public class PackageOrder implements Serializable {
     private Date publishDate;
 
     private Integer watches;
-    private Float length;
 
     private ArrayList<OrderRequest> requests;
     private User person;
@@ -42,10 +41,9 @@ public class PackageOrder implements Serializable {
         this.text = text;
         this.personID = personID;
         this.watches = 0;
-        this.length = length;
 
-        String command = "Insert Into Orders (OrderID, PersonID, Source, Destination, StartDate, EndDate, Text, PublishDate, Length, Watches)" +
-                "Values ((Select Max(OrderID) From Orders) + 1," + personID + ",'" + source + "', '" + destination + "',' " + Service.makeSqlDateString(startDate) + "',' " + Service.makeSqlDateString(endDate) + "',' " + text + "','" + Service.getNowMomentInUTC() + "', " + length + ", 0)";
+        String command = "Insert Into Orders (OrderID, PersonID, Source, Destination, StartDate, EndDate, Text, PublishDate, Watches)" +
+                "Values ((Select Max(OrderID) From Orders) + 1," + personID + ",'" + source + "', '" + destination + "',' " + Service.makeSqlDateString(startDate) + "',' " + Service.makeSqlDateString(endDate) + "',' " + text + "','" + Service.getNowMomentInUTC() + "', 0)";
         Service.execCommand(command);
         command = "Update Users Set CountOfOrders = CountOfOrders + 1 Where PersonID = " + personID;
         Service.execCommand(command);
@@ -161,11 +159,5 @@ public class PackageOrder implements Serializable {
         this.watches = watches;
     }
 
-    public Float getLength() {
-        return length;
-    }
 
-    public void setLength(Float length) {
-        this.length = length;
-    }
 }

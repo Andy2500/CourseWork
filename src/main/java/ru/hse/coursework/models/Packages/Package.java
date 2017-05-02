@@ -13,51 +13,51 @@ public class Package implements Serializable {
 
     private int consumerID;
     private int producerID;
+    private int getterID;
     private int packageID;
-    private int status; //0 - подтерждено с двух сторон, 1 - назначена встреча, 2 - подтверждено исполнителем,
-    private float length;
-    private int producerStatus; //1 - подтвердил передачу посылки, 2 - подтвердил закрытие сделки
-    private int consumerStatus; //1 - подтвердил передачу посылки, 2 - подтвердил закрытие сделки
+    private int status; //0 - ожидание встречи, 1 - посылка передана, 2 - сделка выполнена исполнителем, 3 - сделка закрыта получателем
 
-    private String source;
-    private String destination;
-    private Date event;
+    private float sourceLatitude;
+    private float sourceLongitude;
+    private float destinationLatitude;
+    private float destinationLongitude;
 
-    private Date startDate;
-    private Date endDate;
-    private Date publishDate;
+    private String sourceAddress;
+    private String destinationAddress;
+
+    private Date eventDate;
+    private Date finishDate;
 
     private String text;
 
     private User consumer;
     private User producer;
+    private User getter;
+
+    private String transferProofPhoto;
+    private String deliveryProofPhoto;
+
     private DefaultClass defaultClass;
 
-    public Package() {
-    }
-
-    public Package(int consumerID, int producerID, String source, String destination, Date startDate, Date endDate, String text, float length, Date event) throws Exception {
+    public Package(int consumerID, int producerID, int getterID, float sourceLatitude, float sourceLongitude, float destinationLatitude, float destinationLongitude, String sourceAdress, String destinationAdress, Date eventDate, Date finishDate, String text) throws Exception {
         this.consumerID = consumerID;
         this.producerID = producerID;
-        this.source = source;
-        this.destination = destination;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.text = text;
-        this.length = length;
+        this.getterID = getterID;
+        this.sourceLatitude = sourceLatitude;
+        this.sourceLongitude = sourceLongitude;
+        this.destinationLatitude = destinationLatitude;
+        this.destinationLongitude = destinationLongitude;
+        this.sourceAddress = sourceAdress;
+        this.destinationAddress = destinationAdress;
+        this.eventDate = eventDate;
+        this.finishDate = finishDate;
 
-        String command = "";
-
-        if (event != null) {
-
-            command = "Insert Into Packages (PackageID, ConsumerID, ProducerID, Source, Destination, StartDate, EndDate, Text, PublishDate, Status, Length, Event)"
-                    + "Values ((Select Max(PackageID) From Packages) + 1," + consumerID + "," + producerID + ",'" + source + "','" + destination + "','" + startDate + "','" + endDate + "','" + text + "','" + Service.getNowMomentInUTC() + "', 0, " + length + "," + Service.makeSqlDateString(event) + ")";
-        } else {
-            command = "Insert Into Packages (PackageID, ConsumerID, ProducerID, Source, Destination, StartDate, EndDate, Text, PublishDate, Status, Length)"
-                    + "Values ((Select Max(PackageID) From Packages) + 1," + consumerID + "," + producerID + ",'" + source + "','" + destination + "','" + startDate + "','" + endDate + "','" + text + "','" + Service.getNowMomentInUTC() + "', 0, " + length + ")";
-        }
-
+        String command = "Insert Into Packages (PackageID, ConsumerID, ProducerID, SourceAddress, DestinationAddress, EventDate, FinishDate, Text, Status, GetterID, SourceLatitude, SourceLongitude, DestinationLatitude, DestinationLongitude, TransferProofPhoto, DeliveryProofPhoto)" +
+                "Values ((Select Max(PackageID) From Packages) + 1," + this.consumerID + "," + this.producerID + ",'" + this.sourceAddress + "','" + this.destinationAddress + "','" + Service.makeSqlDateString(this.eventDate) + "','" + Service.makeSqlDateString(this.finishDate) + "','" + text + "', 0, " + this.getterID + "," + this.sourceLatitude + ", " + this.sourceLongitude + ", " + this.destinationLatitude + ", " + this.destinationLongitude + ", NULL, NULL)";
         Service.execCommand(command);
+    }
+
+    public Package() {
     }
 
     public static Package getPackageByID(int ID) throws Exception {
@@ -65,20 +65,8 @@ public class Package implements Serializable {
         return Service.getPackageByQuery(query);
     }
 
-    public static void setEvent(Date date, int packageID) throws Exception {
-        String query = "Update Packages Set Event = '" + Service.makeSqlDateString(date) + "' Where PackageID = " + packageID;
-        Service.execCommand(query);
-    }
-
     public static void setStatus(int status, int packageID) throws Exception {
         String query = "Update Packages Set Status = " + status + " Where PackageID = " + packageID;
-        Service.execCommand(query);
-    }
-
-    public static void updateStatus(int producerStatus, int packageID, int personID) throws Exception {
-        String query = "Update Packages Set ProducerStatus = " + producerStatus + " Where PackageID = " + packageID + "AND ProducerID = " + personID;
-        Service.execCommand(query);
-        query = "Update Packages Set ConsumerStatus = " + producerStatus + " Where PackageID = " + packageID + "AND ConsumerID = " + personID;
         Service.execCommand(query);
     }
 
@@ -91,6 +79,49 @@ public class Package implements Serializable {
         Service.execCommand(command);
     }
 
+    public static void setTransferProof(int packageID, String transferProofPhoto) throws Exception {
+        String query = "Update Packages Set TransferProofPhoto = ? Where PackageID = " + packageID;
+        Service.loadPhoto(query, javax.xml.bind.DatatypeConverter.parseBase64Binary(transferProofPhoto));
+    }
+
+    public static void setDeliveryProof(int packageID, String deliveryProofPhoto) throws Exception {
+        String query = "Update Packages Set TransferProofPhoto = ? Where PackageID = " + packageID;
+        Service.loadPhoto(query, javax.xml.bind.DatatypeConverter.parseBase64Binary(deliveryProofPhoto));
+    }
+
+    public static int getProducerIDByPackageID(int packageID) throws Exception {
+        String query = "Select ProducerID From Packages Where PackageID = " + packageID;
+        return Service.getIntByQuery(query);
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public String getDestinationAddress() {
+        return destinationAddress;
+    }
+
+    public void setDestinationAddress(String destinationAdress) {
+        this.destinationAddress = destinationAdress;
+    }
+
+    public Date getEventDate() {
+        return eventDate;
+    }
+
+    public void setEventDate(Date eventDate) {
+        this.eventDate = eventDate;
+    }
+
+    public Date getFinishDate() {
+        return finishDate;
+    }
+
+    public void setFinishDate(Date finishDate) {
+        this.finishDate = finishDate;
+    }
+
     public void setConsumerID(int consumerID) {
         this.consumerID = consumerID;
     }
@@ -101,14 +132,6 @@ public class Package implements Serializable {
 
     public void setPackageID(int packageID) {
         this.packageID = packageID;
-    }
-
-    public void setSource(String source) {
-        this.source = source;
-    }
-
-    public void setDestination(String destination) {
-        this.destination = destination;
     }
 
     public void setText(String text) {
@@ -129,14 +152,6 @@ public class Package implements Serializable {
 
     public int getPackageID() {
         return packageID;
-    }
-
-    public String getSource() {
-        return source;
-    }
-
-    public String getDestination() {
-        return destination;
     }
 
     public String getText() {
@@ -163,30 +178,6 @@ public class Package implements Serializable {
         this.producer = producer;
     }
 
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
-
-    public Date getPublishDate() {
-        return publishDate;
-    }
-
-    public void setPublishDate(Date publishDate) {
-        this.publishDate = publishDate;
-    }
-
     public Integer getStatus() {
         return status;
     }
@@ -195,35 +186,76 @@ public class Package implements Serializable {
         this.status = status;
     }
 
-    public Float getLength() {
-        return length;
+    public User getGetter() {
+        return getter;
     }
 
-    public void setLength(Float length) {
-        this.length = length;
+    public void setGetter(User getter) {
+        this.getter = getter;
     }
 
-    public Date getEvent() {
-        return event;
+    public int getGetterID() {
+        return getterID;
     }
 
-    public void setEvent(Date event) {
-        this.event = event;
+    public void setGetterID(int getterID) {
+        this.getterID = getterID;
     }
 
-    public int getProducerStatus() {
-        return producerStatus;
+    public float getSourceLongitude() {
+        return sourceLongitude;
     }
 
-    public int getConsumerStatus() {
-        return consumerStatus;
+    public void setSourceLongitude(float sourceLongitude) {
+        this.sourceLongitude = sourceLongitude;
     }
 
-    public void setProducerStatus(int producerStatus) {
-        this.producerStatus = producerStatus;
+    public float getSourceLatitude() {
+        return sourceLatitude;
     }
 
-    public void setConsumerStatus(int consumerStatus) {
-        this.consumerStatus = consumerStatus;
+    public void setSourceLatitude(float sourceLatitude) {
+        this.sourceLatitude = sourceLatitude;
     }
+
+    public float getDestinationLatitude() {
+        return destinationLatitude;
+    }
+
+    public void setDestinationLatitude(float destinationLatitude) {
+        this.destinationLatitude = destinationLatitude;
+    }
+
+    public float getDestinationLongitude() {
+        return destinationLongitude;
+    }
+
+    public void setDestinationLongitude(float destinationLongitude) {
+        this.destinationLongitude = destinationLongitude;
+    }
+
+    public String getSourceAddress() {
+        return sourceAddress;
+    }
+
+    public void setSourceAddress(String sourceAddress) {
+        this.sourceAddress = sourceAddress;
+    }
+
+    public String getTransferProofPhoto() {
+        return transferProofPhoto;
+    }
+
+    public void setTransferProofPhoto(String transferProofPhoto) {
+        this.transferProofPhoto = transferProofPhoto;
+    }
+
+    public String getDeliveryProofPhoto() {
+        return deliveryProofPhoto;
+    }
+
+    public void setDeliveryProofPhoto(String deliveryProofPhoto) {
+        this.deliveryProofPhoto = deliveryProofPhoto;
+    }
+
 }

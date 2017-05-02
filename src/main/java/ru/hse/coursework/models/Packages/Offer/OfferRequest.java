@@ -42,36 +42,35 @@ public class OfferRequest implements Serializable {
         return Service.getOfferRequestsByQuery(query);
     }
 
-    public void setPersonID(int personID) {
-        this.personID = personID;
-    }
-
-    public void setOfferID(int offerID) {
-        this.offerID = offerID;
-    }
-
-    public void setRequestID(int requestID) {
-        this.requestID = requestID;
-    }
-
-    public void setPerson(User person) {
-        this.person = person;
-    }
-
-    public int getPersonID() {
+    public Integer getPersonID() {
         return personID;
     }
 
-    public int getOfferID() {
+    public void setPersonID(Integer personID) {
+        this.personID = personID;
+    }
+
+    public Integer getOfferID() {
         return offerID;
     }
 
-    public int getRequestID() {
+    public void setOfferID(Integer offerID) {
+        this.offerID = offerID;
+    }
+
+    public Integer getRequestID() {
         return requestID;
+    }
+
+    public void setRequestID(Integer requestID) {
+        this.requestID = requestID;
     }
 
     public User getPerson() {
         return person;
     }
 
+    public void setPerson(User person) {
+        this.person = person;
+    }
 }

@@ -33,4 +33,6 @@ public class UserPhoto {
     public void setDefaultClass(DefaultClass defaultClass) {
         this.defaultClass = defaultClass;
     }
+
+
 }

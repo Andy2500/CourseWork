@@ -24,7 +24,6 @@ public class PackageOffer implements Serializable {
     private Date publishDate;
 
     private Integer watches;
-    private Float length;
 
     private ArrayList<OfferRequest> requests;
     private DefaultClass defaultClass;
@@ -41,9 +40,9 @@ public class PackageOffer implements Serializable {
         this.text = text;
         this.personID = personID;
         this.watches = 0;
-        this.length = length;
-        String command = "Insert Into Offers (OfferID, PersonID, Source, Destination, StartDate, EndDate, Text, PublishDate, Length, Watches)" +
-                "Values ((Select Max(OfferID) From Offers) + 1, " + personID + ",'" + source + "', '" + destination + "','" + Service.makeSqlDateString(startDate) + "','" + Service.makeSqlDateString(endDate) + "','" + text + "','" + Service.getNowMomentInUTC() + "', " + length + ", 0 )";
+
+        String command = "Insert Into Offers (OfferID, PersonID, Source, Destination, StartDate, EndDate, Text, PublishDate, Watches)" +
+                "Values ((Select Max(OfferID) From Offers) + 1, " + personID + ",'" + source + "', '" + destination + "','" + Service.makeSqlDateString(startDate) + "','" + Service.makeSqlDateString(endDate) + "','" + text + "','" + Service.getNowMomentInUTC() + "', 0 )";
         Service.execCommand(command);
         command = "Update Users Set CountOfOffers = CountOfOffers + 1 Where PersonID = " + personID;
         Service.execCommand(command);
@@ -64,76 +63,44 @@ public class PackageOffer implements Serializable {
         Service.execCommand(command);
     }
 
-    public void setDefaultClass(DefaultClass defaultClass) {
-        this.defaultClass = defaultClass;
-    }
-
-    public void setOfferID(int offerID) {
-        this.offerID = offerID;
-    }
-
-    public void setRequests(ArrayList<OfferRequest> requests) {
-        this.requests = requests;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public void setPersonID(int personID) {
-        this.personID = personID;
-    }
-
-    public void setSource(String source) {
-        this.source = source;
-    }
-
-    public void setDestination(String destination) {
-        this.destination = destination;
-    }
-
-    public DefaultClass getDefaultClass() {
-        return defaultClass;
-    }
-
-    public int getOfferID() {
+    public Integer getOfferID() {
         return offerID;
     }
 
-    public int getPersonID() {
+    public void setOfferID(Integer offerID) {
+        this.offerID = offerID;
+    }
+
+    public Integer getPersonID() {
         return personID;
+    }
+
+    public void setPersonID(Integer personID) {
+        this.personID = personID;
     }
 
     public String getSource() {
         return source;
     }
 
+    public void setSource(String source) {
+        this.source = source;
+    }
+
     public String getDestination() {
         return destination;
+    }
+
+    public void setDestination(String destination) {
+        this.destination = destination;
     }
 
     public String getText() {
         return text;
     }
 
-    public ArrayList<OfferRequest> getRequests() {
-        return requests;
-    }
-
-    public User getPerson() {
-        return person;
-    }
-
-    public void setPerson(User person) {
-        this.person = person;
-    }
-
-    public Date getPublishDate() {
-        return publishDate;
-    }
-
-    public void setPublishDate(Date publishDate) {
-        this.publishDate = publishDate;
+    public void setText(String text) {
+        this.text = text;
     }
 
     public Date getStartDate() {
@@ -152,12 +119,12 @@ public class PackageOffer implements Serializable {
         this.endDate = endDate;
     }
 
-    public Float getLength() {
-        return length;
+    public Date getPublishDate() {
+        return publishDate;
     }
 
-    public void setLength(Float length) {
-        this.length = length;
+    public void setPublishDate(Date publishDate) {
+        this.publishDate = publishDate;
     }
 
     public Integer getWatches() {
@@ -167,4 +134,30 @@ public class PackageOffer implements Serializable {
     public void setWatches(Integer watches) {
         this.watches = watches;
     }
+
+    public ArrayList<OfferRequest> getRequests() {
+        return requests;
+    }
+
+    public void setRequests(ArrayList<OfferRequest> requests) {
+        this.requests = requests;
+    }
+
+    public DefaultClass getDefaultClass() {
+        return defaultClass;
+    }
+
+    public void setDefaultClass(DefaultClass defaultClass) {
+        this.defaultClass = defaultClass;
+    }
+
+    public User getPerson() {
+        return person;
+    }
+
+    public void setPerson(User person) {
+        this.person = person;
+    }
+
+
 }

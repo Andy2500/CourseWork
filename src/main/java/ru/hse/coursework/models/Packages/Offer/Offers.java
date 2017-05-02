@@ -19,8 +19,8 @@ public class Offers implements Serializable {
         return Service.getOffersByQuery(query);
     }
 
-    public static Offers getOffersByID(int ID) throws Exception {
-        String query = "Select * From Offers Where OfferID = " + ID;
+    public static Offers getOffersByUserID(int ID) throws Exception {
+        String query = "Select * From Offers Where PersonID = " + ID;
         return Service.getOffersByQuery(query);
     }
 
@@ -39,4 +39,6 @@ public class Offers implements Serializable {
     public ArrayList<PackageOffer> getOffers() {
         return offers;
     }
+
+
 }

@@ -1,4 +1,4 @@
-package ru.hse.coursework.models.User;
+package ru.hse.coursework.models.Event;
 
 
 import ru.hse.coursework.models.Service.DefaultClass;
@@ -34,5 +34,6 @@ public class Events {
     public void setEvents(ArrayList<Event> events) {
         this.events = events;
     }
+
 
 }

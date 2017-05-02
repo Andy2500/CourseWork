@@ -1,8 +1,13 @@
 package ru.hse.coursework.controllers;
 
+import ru.hse.coursework.models.Event.Event;
+import ru.hse.coursework.models.Event.Events;
 import ru.hse.coursework.models.Service.DefaultClass;
 import ru.hse.coursework.models.Service.Service;
-import ru.hse.coursework.models.User.*;
+import ru.hse.coursework.models.User.User;
+import ru.hse.coursework.models.User.UserInfo;
+import ru.hse.coursework.models.User.UserPhoto;
+import ru.hse.coursework.models.User.UserProfile;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -20,17 +25,20 @@ public class UserController {
                              @FormParam("hashpsd") String hashpsd,
                              @FormParam("email") String email,
                              @FormParam("name") String name,
-                             @FormParam("phone") String phone) {
+                             @FormParam("phone") String phone,
+                             @FormParam("new") String photo) {
         try {
             User.exists(login, phone, email);
             login = login.toLowerCase();
             email = email.toLowerCase();
             phone = phone.toLowerCase();
 
-            User user = new User(login, email, name, hashpsd, phone);
-            String token = Service.makeToken(user.getLogin() + "10" + user.getName() + "10" + user.getEmail());
-            user = User.getUserByLogin(login);
-            user.setLastOnlineDate();
+            String token = Service.makeToken(login + "10" + name + "10" + phone);
+            new User(login, email, name, hashpsd, phone, token);
+
+            User user = User.getUserByToken(token);
+            User.setToken(user.getPersonID(), token);
+            User.setLastOnlineDate(user.getPersonID());
             Event.writeEvent("Вы зарегистрировались!", user.getPersonID());
 
             return new UserInfo(user.getPersonID(), new DefaultClass(true, user.getToken()));
@@ -49,8 +57,7 @@ public class UserController {
             if (!user.getHashpsd().equals(hashpsd)) {
                 throw new Exception("hashpsd error");
             }
-
-            user.setLastOnlineDate();
+            User.setLastOnlineDate(user.getPersonID());
             return new UserInfo(user.getPersonID(), new DefaultClass(true, user.getToken()));
         } catch (Exception ex) {
             return new UserInfo(0, new DefaultClass(false, ex.getMessage()));
@@ -70,7 +77,7 @@ public class UserController {
             User user = User.getUserByID(id);
             if (Service.makeToken(user.getToken() + date).equals(token)) {
                 user.setHashpsd(newpsd, lastpsd);
-                user.setLastOnlineDate();
+                User.setLastOnlineDate(id);
                 Event.writeEvent("Вы изменили пароль!", user.getPersonID());
                 return new DefaultClass(true, "");
             }
@@ -94,8 +101,7 @@ public class UserController {
             User user = User.getUserByID(id);
             if (Service.makeToken(user.getToken() + date).equals(token)) {
                 user.setEmail(newEmail, lastEmail);
-
-                user.setLastOnlineDate();
+                User.setLastOnlineDate(id);
                 Event.writeEvent("Вы изменили почту!", user.getPersonID());
                 return new DefaultClass(true, "");
             }
@@ -120,7 +126,7 @@ public class UserController {
             if (Service.makeToken(user.getToken() + date).equals(token)) {
                 user.setPhone(newPhone, lastPhone);
 
-                user.setLastOnlineDate();
+                User.setLastOnlineDate(id);
                 Event.writeEvent("Вы изменили номер телефона!", user.getPersonID());
                 return new DefaultClass(true, "");
             }
@@ -142,8 +148,7 @@ public class UserController {
         try {
             User user = User.getUserByID(id);
             if (Service.makeToken(user.getToken() + date).equals(token)) {
-                user.setPhoto(photo);
-
+                User.setPhoto(id, photo);
                 Event.writeEvent("Вы изменили фотографию профиля!", user.getPersonID());
                 return new DefaultClass(true, "");
             }
@@ -166,9 +171,8 @@ public class UserController {
         try {
             User user = User.getUserByID(id);
             if (Service.makeToken(user.getToken() + date).equals(token)) {
-                user.setLogin(login);
-
-                user.setLastOnlineDate();
+                User.setLogin(id, login);
+                User.setLastOnlineDate(id);
                 Event.writeEvent("Вы поменяли свой логин!", user.getPersonID());
                 return new DefaultClass(true, "");
             }
@@ -190,9 +194,9 @@ public class UserController {
         try {
             User user = User.getUserByID(id);
             if (Service.makeToken(user.getToken() + date).equals(token)) {
-                user.setName(name);
+                User.setName(id, name);
 
-                user.setLastOnlineDate();
+                User.setLastOnlineDate(id);
                 Event.writeEvent("Вы изменили имя!", user.getPersonID());
                 return new DefaultClass(true, "");
             }
@@ -216,7 +220,7 @@ public class UserController {
                 UserProfile userProfile = UserProfile.getUserProfileByID(personID);
                 userProfile.setDefaultClass(new DefaultClass(true, ""));
 
-                user.setLastOnlineDate();
+                User.setLastOnlineDate(id);
                 return userProfile;
             }
             throw new Exception("token error");
@@ -239,7 +243,7 @@ public class UserController {
             if (Service.makeToken(user.getToken() + date).equals(token)) {
                 UserProfile userProfile = UserProfile.getUserProfileByUser(user);
                 userProfile.setDefaultClass(new DefaultClass(true, ""));
-                user.setLastOnlineDate();
+                User.setLastOnlineDate(id);
                 return userProfile;
             }
             throw new Exception("token error");
@@ -264,7 +268,7 @@ public class UserController {
 
                 Events events = new Events(Event.getEventsByPersonIDFromDate(user.getPersonID(), Service.get3DayBeforeDate(Service.dateFromString(lastDate))), new DefaultClass(true, ""));
 
-                user.setLastOnlineDate();
+                User.setLastOnlineDate(id);
                 return events;
             }
             throw new Exception("token error");
@@ -289,12 +293,34 @@ public class UserController {
             if (Service.makeToken(user.getToken() + date).equals(token)) {
 
                 String photo = User.getUserPhoto(userID);
-                user.setLastOnlineDate();
+                User.setLastOnlineDate(id);
                 return new UserPhoto(photo, new DefaultClass(true, ""));
             }
             throw new Exception("token error");
         } catch (Exception ex) {
             return new UserPhoto(null, new DefaultClass(false, ""));
+        }
+    }
+
+    @POST
+    @Path("/sul/")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    public DefaultClass saveUserLocation(@FormParam("token") String token,
+                                         @FormParam("personID") int id,
+                                         @FormParam("date") String date,
+                                         @FormParam("latitude") float latitude,
+                                         @FormParam("longitude") float longitude) {
+        try {
+            User user = User.getUserByID(id);
+            if (Service.makeToken(user.getToken() + date).equals(token)) {
+                User.setCoordinates(id, longitude, latitude);
+                return new DefaultClass(true, "");
+            }
+
+            throw new Exception("token error");
+        } catch (Exception ex) {
+            return new DefaultClass(false, ex.getLocalizedMessage());
         }
     }
 }

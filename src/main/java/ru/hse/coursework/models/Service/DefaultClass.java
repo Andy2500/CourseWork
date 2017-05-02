@@ -17,24 +17,19 @@ public class DefaultClass implements Serializable {
         this.message = message;
     }
 
-    public boolean getOperationOutput() {
+    public Boolean getOperationOutput() {
         return operationOutput;
     }
 
-    public String getToken() {
-        return message;
-    }
-
-    public boolean isOperationOutput() {
-        return operationOutput;
-    }
-
-    public void setOperationOutput(boolean operationOutput) {
+    public void setOperationOutput(Boolean operationOutput) {
         this.operationOutput = operationOutput;
     }
 
-    public void setToken(String message) {
-        this.message = message;
+    public String getMessage() {
+        return message;
     }
 
+    public void setMessage(String message) {
+        this.message = message;
+    }
 }

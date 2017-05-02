@@ -42,40 +42,32 @@ public class Comment implements Serializable {
         return Service.getCommentsByQuery(query);
     }
 
-    public int getCommentID() {
+    public Integer getCommentID() {
         return commentID;
     }
 
-    public int getResponseID() {
+    public void setCommentID(Integer commentID) {
+        this.commentID = commentID;
+    }
+
+    public Integer getResponseID() {
         return responseID;
     }
 
-    public int getPersonID() {
+    public void setResponseID(Integer responseID) {
+        this.responseID = responseID;
+    }
+
+    public Integer getPersonID() {
         return personID;
+    }
+
+    public void setPersonID(Integer personID) {
+        this.personID = personID;
     }
 
     public String getText() {
         return text;
-    }
-
-    public User getCommenter() {
-        return commenter;
-    }
-
-    public void setCommentID(int commentID) {
-        this.commentID = commentID;
-    }
-
-    public void setCommenter(User commenter) {
-        this.commenter = commenter;
-    }
-
-    public void setResponseID(int responseID) {
-        this.responseID = responseID;
-    }
-
-    public void setPersonID(int personID) {
-        this.personID = personID;
     }
 
     public void setText(String text) {
@@ -88,5 +80,13 @@ public class Comment implements Serializable {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public User getCommenter() {
+        return commenter;
+    }
+
+    public void setCommenter(User commenter) {
+        this.commenter = commenter;
     }
 }

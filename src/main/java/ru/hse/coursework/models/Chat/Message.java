@@ -43,52 +43,44 @@ public class Message implements Serializable {
 
     }
 
-    public void setPersonID(int personID) {
+    public Integer getMessageID() {
+        return messageID;
+    }
+
+    public void setMessageID(Integer messageID) {
+        this.messageID = messageID;
+    }
+
+    public Integer getPersonID() {
+        return personID;
+    }
+
+    public void setPersonID(Integer personID) {
         this.personID = personID;
     }
 
-    public void setDialogID(int dialogID) {
+    public Integer getDialogID() {
+        return dialogID;
+    }
+
+    public void setDialogID(Integer dialogID) {
         this.dialogID = dialogID;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    public void setDefaultClass(DefaultClass defaultClass) {
-        this.defaultClass = defaultClass;
-    }
-
-    public DefaultClass getDefaultClass() {
-        return defaultClass;
-    }
-
-    public Date getDate() {
-        return date;
     }
 
     public String getText() {
         return text;
     }
 
-    public int getDialogID() {
-        return dialogID;
+    public void setText(String text) {
+        this.text = text;
     }
 
-    public int getPersonID() {
-        return personID;
+    public Date getDate() {
+        return date;
     }
 
-    public int getMessageID() {
-        return messageID;
-    }
-
-    public void setMessageID(int messageID) {
-        this.messageID = messageID;
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public int getWatched() {
@@ -97,5 +89,13 @@ public class Message implements Serializable {
 
     public void setWatched(int watched) {
         this.watched = watched;
+    }
+
+    public DefaultClass getDefaultClass() {
+        return defaultClass;
+    }
+
+    public void setDefaultClass(DefaultClass defaultClass) {
+        this.defaultClass = defaultClass;
     }
 }

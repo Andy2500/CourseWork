@@ -1,6 +1,5 @@
 package ru.hse.coursework.controllers;
 
-import ru.hse.coursework.models.Packages.Package;
 import ru.hse.coursework.models.Response.Comment;
 import ru.hse.coursework.models.Response.Response;
 import ru.hse.coursework.models.Service.DefaultClass;
@@ -29,10 +28,8 @@ public class ResponseController {
 
             User user = User.getUserByID(id);
             if (Service.makeToken(user.getToken() + date).equals(token)) {
-                user.setToken(token);
-                user.setLastOnlineDate();
 
-                Package.updateStatus(2, packageID, user.getPersonID());
+                User.setLastOnlineDate(id);
 
                 new Response(user.getPersonID(), personID, text, mark);
                 return new DefaultClass(true, token);
@@ -57,8 +54,7 @@ public class ResponseController {
             if (Service.makeToken(user.getToken() + date).equals(token)) {
                 Response response = Response.getResponseByID(responseID);
 
-                user.setToken(token);
-                user.setLastOnlineDate();
+                User.setLastOnlineDate(id);
                 response.setDefaultClass(new DefaultClass(true, token));
                 return response;
             }
@@ -84,8 +80,8 @@ public class ResponseController {
             User user = User.getUserByID(id);
             if (Service.makeToken(user.getToken() + date).equals(token)) {
                 new Comment(responseID, user.getPersonID(), text);
-                user.setToken(token);
-                user.setLastOnlineDate();
+
+                User.setLastOnlineDate(id);
                 return new DefaultClass(true, token);
             }
 
@@ -106,8 +102,8 @@ public class ResponseController {
         try {
             User user = User.getUserByID(id);
             if (Service.makeToken(user.getToken() + date).equals(token)) {
-                user.setToken(token);
-                user.setLastOnlineDate();
+
+                User.setLastOnlineDate(id);
                 Comment.deleteComment(commentID);
                 return new DefaultClass(true, token);
             }
