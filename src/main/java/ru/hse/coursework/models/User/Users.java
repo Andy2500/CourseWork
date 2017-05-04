@@ -1,0 +1,47 @@
+package ru.hse.coursework.models.User;
+
+import ru.hse.coursework.models.Service.DefaultClass;
+import ru.hse.coursework.models.Service.Service;
+
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+
+@XmlRootElement
+public class Users {
+    private ArrayList<User> users;
+    private DefaultClass defaultClass;
+
+    public Users(ArrayList<User> users, DefaultClass defaultClass) {
+        this.users = users;
+        this.defaultClass = defaultClass;
+    }
+
+    public Users() {
+    }
+
+    public static Users getUsersForConfirm() throws Exception {
+        String query = "Select * From Users Where Status = 0";
+        return Service.getUsersByQuery(query);
+    }
+
+    public static Users getUsersWithLogin(String login) throws Exception {
+        String query = "Select * From Users Where Login Like '%" + login + "%'";
+        return Service.getUsersByQuery(query);
+    }
+
+    public ArrayList<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(ArrayList<User> users) {
+        this.users = users;
+    }
+
+    public DefaultClass getDefaultClass() {
+        return defaultClass;
+    }
+
+    public void setDefaultClass(DefaultClass defaultClass) {
+        this.defaultClass = defaultClass;
+    }
+}

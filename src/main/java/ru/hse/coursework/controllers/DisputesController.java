@@ -76,4 +76,28 @@ public class DisputesController {
             return disputes;
         }
     }
+
+    @POST
+    @Path("/gad/")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Disputes getAllDisputes(@FormParam("token") String token,
+                                   @FormParam("personID") int id,
+                                   @FormParam("date") String date) {
+        try {
+            User user = User.getUserByID(id);
+            if (Service.makeToken(user.getToken() + date).equals(token)) {
+                Disputes disputes = Disputes.getAllDisputes();
+
+                return disputes;
+            }
+            throw new Exception("token error");
+        } catch (Exception ex) {
+            Disputes disputes = new Disputes();
+            disputes.setDefaultClass(new DefaultClass(false, ex.getLocalizedMessage()));
+            return disputes;
+        }
+    }
+
+
 }

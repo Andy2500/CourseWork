@@ -6,8 +6,8 @@ import ru.hse.coursework.models.Service.DefaultClass;
 import ru.hse.coursework.models.Service.Service;
 import ru.hse.coursework.models.User.User;
 import ru.hse.coursework.models.User.UserInfo;
-import ru.hse.coursework.models.User.UserPhoto;
 import ru.hse.coursework.models.User.UserProfile;
+import ru.hse.coursework.models.User.Users;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -15,7 +15,6 @@ import java.util.ArrayList;
 
 @Path("/user")
 public class UserController {
-
 
     @POST
     @Path("/reg/")
@@ -281,28 +280,6 @@ public class UserController {
     }
 
     @POST
-    @Path("/gupho/")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.APPLICATION_JSON)
-    public UserPhoto getUserPhoto(@FormParam("token") String token,
-                                  @FormParam("personID") int id,
-                                  @FormParam("date") String date,
-                                  @FormParam("userID") int userID) {
-        try {
-            User user = User.getUserByID(id);
-            if (Service.makeToken(user.getToken() + date).equals(token)) {
-
-                String photo = User.getUserPhoto(userID);
-                User.setLastOnlineDate(id);
-                return new UserPhoto(photo, new DefaultClass(true, ""));
-            }
-            throw new Exception("token error");
-        } catch (Exception ex) {
-            return new UserPhoto(null, new DefaultClass(false, ""));
-        }
-    }
-
-    @POST
     @Path("/sul/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
@@ -321,6 +298,51 @@ public class UserController {
             throw new Exception("token error");
         } catch (Exception ex) {
             return new DefaultClass(false, ex.getLocalizedMessage());
+        }
+    }
+
+    @POST
+    @Path("/sudp/")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    public DefaultClass saveUserDocumentPhoto(@FormParam("token") String token,
+                                              @FormParam("personID") int id,
+                                              @FormParam("date") String date,
+                                              @FormParam("documentPhoto") String documentPhoto) {
+        try {
+            User user = User.getUserByID(id);
+            if (Service.makeToken(user.getToken() + date).equals(token)) {
+                User.setDocumentPhoto(id, documentPhoto);
+                return new DefaultClass(true, "");
+            }
+
+            throw new Exception("token error");
+        } catch (Exception ex) {
+            return new DefaultClass(false, ex.getLocalizedMessage());
+        }
+    }
+
+    @POST
+    @Path("/sfuwl/")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Users searchForUserWithName(@FormParam("token") String token,
+                                       @FormParam("personID") int id,
+                                       @FormParam("date") String date,
+                                       @FormParam("login") String login) {
+        try {
+            User user = User.getUserByID(id);
+            if (Service.makeToken(user.getToken() + date).equals(token)) {
+                Users users = Users.getUsersWithLogin(login);
+                users.setDefaultClass(new DefaultClass(true, ""));
+                return users;
+            }
+
+            throw new Exception("token error");
+        } catch (Exception ex) {
+            Users users = new Users();
+            users.setDefaultClass(new DefaultClass(false, ex.getMessage()));
+            return users;
         }
     }
 }

@@ -20,7 +20,14 @@ public class Disputes {
     }
 
     public static Disputes getDisputesByPersonID(int personID) throws Exception {
-        String query = "";
+        String query = "Select * From Disputes Where PersonID = " + personID;
+        Disputes disputes = new Disputes();
+        disputes.setDisputes(Service.getDisputesByQuery(query));
+        return disputes;
+    }
+
+    public static Disputes getAllDisputes() throws Exception {
+        String query = "Select * From Disputes Where Status = 0";
         Disputes disputes = new Disputes();
         disputes.setDisputes(Service.getDisputesByQuery(query));
         return disputes;

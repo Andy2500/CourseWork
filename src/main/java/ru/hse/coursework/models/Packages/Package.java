@@ -1,5 +1,6 @@
 package ru.hse.coursework.models.Packages;
 
+import ru.hse.coursework.models.Packages.Offer.PackageOffer;
 import ru.hse.coursework.models.Service.DefaultClass;
 import ru.hse.coursework.models.Service.Service;
 import ru.hse.coursework.models.User.User;
@@ -15,7 +16,7 @@ public class Package implements Serializable {
     private int producerID;
     private int getterID;
     private int packageID;
-    private int status; //0 - ожидание встречи, 1 - посылка передана, 2 - сделка выполнена исполнителем, 3 - сделка закрыта получателем
+    private int status; //-1 - не настроен, 0 - ожидание встречи, 1 - посылка передана, 2 - сделка выполнена исполнителем, 3 - сделка закрыта получателем
 
     private float sourceLatitude;
     private float sourceLongitude;
@@ -57,6 +58,13 @@ public class Package implements Serializable {
         Service.execCommand(command);
     }
 
+    public Package(PackageOffer offer, int id) throws Exception {
+
+        String command = "Insert Into Packages (PackageID, ConsumerID, ProducerID, SourceAddress, DestinationAddress, EventDate, FinishDate, Text, Status, GetterID, SourceLatitude, SourceLongitude, DestinationLatitude, DestinationLongitude, TransferProofPhoto, DeliveryProofPhoto)" +
+                "Values ((Select Max(PackageID) From Packages) + 1," + offer.getPersonID() + "," + id + ",'" + offer.getSource() + "','" + offer.getDestination() + "','" + Service.makeSqlDateString(offer.getStartDate()) + "','" + Service.makeSqlDateString(offer.getEndDate()) + "','" + offer.getText() + "', -1, 0,0, 0, 0, 0, NULL, NULL)";
+        Service.execCommand(command);
+    }
+
     public Package() {
     }
 
@@ -90,8 +98,9 @@ public class Package implements Serializable {
     }
 
     public static int getProducerIDByPackageID(int packageID) throws Exception {
-        String query = "Select ProducerID From Packages Where PackageID = " + packageID;
-        return Service.getIntByQuery(query);
+        String paramName = "ProducerID";
+        String query = "Select " + paramName + " From Packages Where PackageID = " + packageID;
+        return Service.getIntByQuery(query, paramName);
     }
 
     public void setStatus(int status) {

@@ -11,7 +11,7 @@ import java.util.Date;
 public class Dispute {
     private int disputeID;
     private int packageID;
-    private int type;
+    private int type; //1 - Доставка не было осуществлена 2 - Доставка не подтверждена получателем, 3 - Товар не передан, пруф залит
     private int personID;
     private int status; //0 - открыт, 1 - закрыть
     private String text;
@@ -30,12 +30,13 @@ public class Dispute {
         this.personID = personID;
         this.text = text;
 
-        String command = "";
+        String command = "Insert Into Disputes (PackageID, Type, PersonID, Text) " +
+                "VALUES (" + packageID + "," + type + "," + personID + ",'" + text + "')";
         Service.execCommand(command);
     }
 
     public static void changeStatus(int disputeID, int status) throws Exception {
-        String command = "";
+        String command = "Update Disputes Set Status = " + status + "Where" + "DisputeID = " + disputeID;
         Service.execCommand(command);
     }
 

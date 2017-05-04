@@ -15,7 +15,7 @@ public class Offers implements Serializable {
     private DefaultClass defaultClass;
 
     public static Offers getOffersByParams(String source, String destination, Date startDate, Date endDate) throws Exception {
-        String query = "Select * From Offers Where (Source = '" + source + "') AND (Destination = '" + destination + "') AND (StartDate >= '" + Service.makeSqlDateString(startDate) + " 00:00') AND (EndDate <= '" + Service.makeSqlDateString(endDate) + " 23:59')";
+        String query = "Select * From Offers Where (Source = '" + source + "') AND (Destination = '" + destination + "') AND (StartDate = '" + Service.makeSqlDateString(startDate) + " 00:00') AND (EndDate <= '" + Service.makeSqlDateString(endDate) + " 23:59')";
         return Service.getOffersByQuery(query);
     }
 

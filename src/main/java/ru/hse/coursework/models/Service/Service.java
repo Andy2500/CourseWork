@@ -16,6 +16,7 @@ import ru.hse.coursework.models.Packages.Packages;
 import ru.hse.coursework.models.Response.Comment;
 import ru.hse.coursework.models.Response.Response;
 import ru.hse.coursework.models.User.User;
+import ru.hse.coursework.models.User.Users;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -165,7 +166,7 @@ public class Service {
 
             } else {
                 if (docPhoto != null) {
-                    String docPho = javax.xml.bind.DatatypeConverter.printBase64Binary(ph);
+                    String docPho = javax.xml.bind.DatatypeConverter.printBase64Binary(docPhoto);
                     user = new User(resultSet.getInt("personID"),
                             resultSet.getString("login"),
                             resultSet.getString("email"),
@@ -209,6 +210,110 @@ public class Service {
 
         return user;
     }
+
+    public static Users getUsersByQuery(String query) throws Exception {
+        Users users = new Users();
+        users.setUsers(new ArrayList<User>());
+
+        ResultSet resultSet = getSelectResultSet(query);
+
+        while (resultSet.next()) {
+            User user = new User();
+            byte[] ph = resultSet.getBytes("Photo");
+            byte[] docPhoto = resultSet.getBytes("DocumentPhoto");
+
+            if (ph != null) {
+                String pho = javax.xml.bind.DatatypeConverter.printBase64Binary(ph);
+                if (docPhoto != null) {
+                    String docPho = javax.xml.bind.DatatypeConverter.printBase64Binary(ph);
+                    user = new User(resultSet.getInt("personID"),
+                            resultSet.getString("login"),
+                            resultSet.getString("email"),
+                            resultSet.getString("name"),
+                            resultSet.getString("HashPassword"),
+                            resultSet.getString("Phone"),
+                            resultSet.getString("Token"),
+                            pho,
+                            docPho,
+                            resultSet.getInt("countOfOrders"),
+                            resultSet.getInt("countOfOffers"),
+                            resultSet.getInt("countOfPackages"),
+                            resultSet.getInt("countOfResponses"),
+                            resultSet.getInt("sumOfResponses"),
+                            resultSet.getInt("status"),
+                            resultSet.getFloat("LastLatitude"),
+                            resultSet.getFloat("LastLongitude"),
+                            resultSet.getDate("lastOnlineDate"));
+                } else {
+                    user = new User(resultSet.getInt("personID"),
+                            resultSet.getString("login"),
+                            resultSet.getString("email"),
+                            resultSet.getString("name"),
+                            resultSet.getString("HashPassword"),
+                            resultSet.getString("Phone"),
+                            resultSet.getString("Token"),
+                            pho,
+                            null,
+                            resultSet.getInt("countOfOrders"),
+                            resultSet.getInt("countOfOffers"),
+                            resultSet.getInt("countOfPackages"),
+                            resultSet.getInt("countOfResponses"),
+                            resultSet.getInt("sumOfResponses"),
+                            resultSet.getInt("status"),
+                            resultSet.getFloat("LastLatitude"),
+                            resultSet.getFloat("LastLongitude"),
+                            resultSet.getDate("lastOnlineDate"));
+                }
+
+            } else {
+                if (docPhoto != null) {
+                    String docPho = javax.xml.bind.DatatypeConverter.printBase64Binary(docPhoto);
+                    user = new User(resultSet.getInt("personID"),
+                            resultSet.getString("login"),
+                            resultSet.getString("email"),
+                            resultSet.getString("name"),
+                            resultSet.getString("HashPassword"),
+                            resultSet.getString("Phone"),
+                            resultSet.getString("Token"),
+                            null,
+                            docPho,
+                            resultSet.getInt("countOfOrders"),
+                            resultSet.getInt("countOfOffers"),
+                            resultSet.getInt("countOfPackages"),
+                            resultSet.getInt("countOfResponses"),
+                            resultSet.getInt("sumOfResponses"),
+                            resultSet.getInt("status"),
+                            resultSet.getFloat("LastLatitude"),
+                            resultSet.getFloat("LastLongitude"),
+                            resultSet.getDate("lastOnlineDate"));
+                } else {
+                    user = new User(resultSet.getInt("personID"),
+                            resultSet.getString("login"),
+                            resultSet.getString("email"),
+                            resultSet.getString("name"),
+                            resultSet.getString("HashPassword"),
+                            resultSet.getString("Phone"),
+                            resultSet.getString("Token"),
+                            null,
+                            null,
+                            resultSet.getInt("countOfOrders"),
+                            resultSet.getInt("countOfOffers"),
+                            resultSet.getInt("countOfPackages"),
+                            resultSet.getInt("countOfResponses"),
+                            resultSet.getInt("sumOfResponses"),
+                            resultSet.getInt("status"),
+                            resultSet.getFloat("LastLatitude"),
+                            resultSet.getFloat("LastLongitude"),
+                            resultSet.getDate("lastOnlineDate"));
+                }
+            }
+
+            users.getUsers().add(user);
+        }
+
+        return users;
+    }
+
 
     public static ArrayList<Response> getResponsesByQuery(String query) throws Exception {
         ArrayList<Response> responses = new ArrayList<Response>();
@@ -356,15 +461,29 @@ public class Service {
             _package.setDestinationAddress(resultSet.getString("DestinationAddress"));
             _package.setSourceAddress(resultSet.getString("SourceAddress"));
 
+            byte[] deliveryPhotoProof = resultSet.getBytes("DeliveryProofPhoto");
+            if (deliveryPhotoProof != null) {
+                _package.setDeliveryProofPhoto(javax.xml.bind.DatatypeConverter.printBase64Binary(deliveryPhotoProof));
+            }
+
+            byte[] transferPhotoProof = resultSet.getBytes("TransferProofPhoto");
+            if (transferPhotoProof != null) {
+                _package.setTransferProofPhoto(javax.xml.bind.DatatypeConverter.printBase64Binary(transferPhotoProof));
+
+            }
+
             _package.setText(resultSet.getString("Text"));
-            _package.setEventDate(resultSet.getDate("StartDate"));
-            _package.setFinishDate(resultSet.getDate("EndDate"));
+            _package.setEventDate(resultSet.getDate("EventDate"));
+            _package.setFinishDate(resultSet.getDate("FinishDate"));
 
             _package.setProducer(User.getUserByID(_package.getProducerID()));
             _package.setConsumer(User.getUserByID(_package.getConsumerID()));
-            _package.setGetter(User.getUserByID(_package.getGetterID()));
 
-            _package.getGetter().clear();
+            if (_package.getStatus() != -1) {
+                _package.setGetter(User.getUserByID(_package.getGetterID()));
+                _package.getGetter().clear();
+            }
+
             _package.getConsumer().clear();
             _package.getProducer().clear();
 
@@ -497,8 +616,18 @@ public class Service {
             _package.setSourceAddress(resultSet.getString("SourceAddress"));
 
             _package.setText(resultSet.getString("Text"));
-            _package.setEventDate(resultSet.getDate("StartDate"));
-            _package.setFinishDate(resultSet.getDate("EndDate"));
+            _package.setEventDate(resultSet.getDate("EventDate"));
+            _package.setFinishDate(resultSet.getDate("FinishDate"));
+
+            byte[] deliveryPhotoProof = resultSet.getBytes("DeliveryPhotoProof");
+            if (deliveryPhotoProof != null) {
+                _package.setDeliveryProofPhoto(javax.xml.bind.DatatypeConverter.printBase64Binary(deliveryPhotoProof));
+            }
+
+            byte[] transferPhotoProof = resultSet.getBytes("TransferPhotoProof");
+            if (transferPhotoProof != null) {
+                _package.setTransferProofPhoto(javax.xml.bind.DatatypeConverter.printBase64Binary(transferPhotoProof));
+            }
 
             _package.setProducer(User.getUserByID(_package.getProducerID()));
             _package.setConsumer(User.getUserByID(_package.getConsumerID()));
@@ -624,12 +753,17 @@ public class Service {
         return "";
     }
 
-    public static int getIntByQuery(String query) throws Exception {
+    public static int getIntByQuery(String query, String paramName) throws Exception {
         ResultSet resultSet = getSelectResultSet(query);
         if (resultSet != null) {
             while (resultSet.next()) {
-                int result = resultSet.getInt(0);
-                return result;
+                try {
+                    int result = resultSet.getInt(0);
+                    return result;
+                } catch (Exception ex) {
+                    int result = resultSet.getInt(paramName);
+                    return result;
+                }
             }
         }
         return 0;

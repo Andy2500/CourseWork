@@ -20,7 +20,7 @@ public class Event {
     }
 
     public static void writeEvent(String text, int personID) throws Exception {
-        String command = "Insert Into Events (EventID, PersonID, Date, Text) Values ((Select Max(EventID) From Events) + 1, " + personID + ",'" + Service.makeSqlDateString(new Date()) + "','" + text + "')";
+        String command = "Insert Into Events (EventID, PersonID, Date, Text) Values ((Select Max(EventID) From Events) + 1, " + personID + ",'" + Service.getNowMomentInUTC() + "','" + text + "')";
         Service.execCommand(command);
     }
 

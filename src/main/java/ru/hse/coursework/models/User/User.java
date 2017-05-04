@@ -91,7 +91,7 @@ public class User implements Serializable {
         this.hashpsd = hashpsd;
         this.phone = phone;
         String command = "Insert Into Users (PersonID,Login,Email,Name,HashPassword,Phone,Photo, CountOfOrders, CountOfOffers, LastOnlineDate, Token, CountOfPackages, CountOfResponses, SumOfResponses, Status, DocumentPhoto, LastLatitude, LastLongitude)"
-                + "Values ((Select MAX(PersonID) FROM Users) + 1,'" + login + "','" + email + "','" + name + "','" + hashpsd + "','" + phone + "',NULL,0,0,'" + Service.getNowMomentInUTC() + "'" + token + "', 0,0,0,0,NULL,0,0)";
+                + "Values ((Select MAX(PersonID) FROM Users) + 1,'" + login + "','" + email + "','" + name + "','" + hashpsd + "','" + phone + "',NULL,0,0,'" + Service.getNowMomentInUTC() + "','" + token + "', 0,0,0,0,NULL,0,0)";
         Service.execCommand(command);
     }
 
@@ -120,11 +120,6 @@ public class User implements Serializable {
         }
 
         return user;
-    }
-
-    public static String getUserPhoto(int ID) throws Exception {
-        String query = "Select Photo From Users Where PersonID = " + ID;
-        return Service.getPhotoByQuery(query);
     }
 
     //получение пользователя по токену
@@ -169,6 +164,11 @@ public class User implements Serializable {
     public static void setName(int personID, String name) throws Exception {
         String command = "Update Users Set Name = '" + name + "' Where PersonID=" + personID;
         Service.execCommand(command);
+    }
+
+    public static void setDocumentPhoto(int personID, String documentPhoto) throws Exception {
+        String query = "Update Users Set DocumentPhoto = ? Where PersonID = " + personID;
+        Service.loadPhoto(query, javax.xml.bind.DatatypeConverter.parseBase64Binary(documentPhoto));
     }
 
     public void setHashpsd(String hashpsd, String last) throws Exception {
@@ -219,7 +219,7 @@ public class User implements Serializable {
 
     public static int getCountOfOpenProducerPackagesByPersonID(int personID) throws Exception {
         String query = "SELECT COUNT(*) " + " FROM Packages Where ProducerID = " + personID + " AND Status = 1";
-        return Service.getIntByQuery(query);
+        return Service.getIntByQuery(query, "");
     }
 
     public static void addMark(int personID, int mark) throws Exception {

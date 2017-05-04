@@ -14,7 +14,7 @@ public class Packages implements Serializable {
     private DefaultClass defaultClass;
 
     public static Packages getPackagesByUserID(int ID) throws Exception {
-        String query = "Select * From Packages Where (ProducerID = " + ID + ") OR ( ConsumerID = " + ID + ")";
+        String query = "Select * From Packages Where (ProducerID = " + ID + ") OR ( ConsumerID = " + ID + ") OR (GetterID = " + ID + ")";
         return Service.getPackagesByQuery(query);
     }
 

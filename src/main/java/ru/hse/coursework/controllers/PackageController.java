@@ -146,6 +146,52 @@ public class PackageController {
     }
 
     @POST
+    @Path("/dofr/")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    public DefaultClass deleteOfferRequest(@FormParam("token") String token,
+                                           @FormParam("personID") int id,
+                                           @FormParam("date") String date,
+                                           @FormParam("requestID") int requestID) {
+        try {
+            User user = User.getUserByID(id);
+            if (Service.makeToken(user.getToken() + date).equals(token)) {
+                OfferRequest.deleteRequest(requestID);
+                User.setLastOnlineDate(id);
+                Event.writeEvent("Вы удалили свой запрос на сделку ", user.getPersonID());
+                return new DefaultClass(true, "");
+            }
+
+            throw new Exception("token error");
+        } catch (Exception ex) {
+            return new DefaultClass(false, ex.getMessage());
+        }
+    }
+
+    @POST
+    @Path("/dorr/")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    public DefaultClass deleteOrderRequest(@FormParam("token") String token,
+                                           @FormParam("personID") int id,
+                                           @FormParam("date") String date,
+                                           @FormParam("requestID") int requestID) {
+        try {
+            User user = User.getUserByID(id);
+            if (Service.makeToken(user.getToken() + date).equals(token)) {
+                OrderRequest.deleteRequest(requestID);
+                User.setLastOnlineDate(id);
+                Event.writeEvent("Вы удалили свое предложение на заказ ", user.getPersonID());
+                return new DefaultClass(true, "");
+            }
+
+            throw new Exception("token error");
+        } catch (Exception ex) {
+            return new DefaultClass(false, ex.getMessage());
+        }
+    }
+
+    @POST
     @Path("/cofr/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
@@ -183,8 +229,10 @@ public class PackageController {
             if (Service.makeToken(user.getToken() + date).equals(token)) {
                 OfferRequest request = OfferRequest.getRequestByID(requestID);
                 PackageOffer offer = PackageOffer.getOfferByID(request.getOfferID());
+                new Package(offer, request.getPersonID());
+
                 PackageOffer.deletePackageOffer(offer.getOfferID());
-                OfferRequest.deleteRequest(requestID);
+                OfferRequest.deleteAllRequestsWithOutRequestID(offer.getOfferID(), requestID);
 
                 User.setLastOnlineDate(id);
                 Event.writeEvent("Вы согласились на совершение сделки ", user.getPersonID());
@@ -230,6 +278,7 @@ public class PackageController {
 
     }
 
+
     /**
      * Создание сделки
      */
@@ -256,6 +305,45 @@ public class PackageController {
             User user = User.getUserByID(id);
             if (Service.makeToken(user.getToken() + date).equals(token)) {
 
+                new Package(consumerID, producerID, getterID, sourceLatitude, sourceLongitude, destinationLatitude, destinationLongitude, sourceAdress, destinationAdress, Service.dateFromString(eventDate), Service.dateFromString(finishDate), text);
+
+                User.setLastOnlineDate(id);
+                return new DefaultClass(true, "");
+            }
+
+            throw new Exception("token error");
+        } catch (Exception ex) {
+            return new DefaultClass(false, ex.getMessage());
+        }
+    }
+
+    /**
+     * Создание сделки
+     */
+    @POST
+    @Path("/rcp/")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    public DefaultClass recreatePackage(@FormParam("token") String token,
+                                        @FormParam("personID") int id,
+                                        @FormParam("date") String date,
+                                        @FormParam("consumerID") int consumerID,
+                                        @FormParam("producerID") int producerID,
+                                        @FormParam("getterID") int getterID,
+                                        @FormParam("sourceLatitude") float sourceLatitude,
+                                        @FormParam("sourceLongitude") float sourceLongitude,
+                                        @FormParam("destinationLatitude") float destinationLatitude,
+                                        @FormParam("destinationLongitude") float destinationLongitude,
+                                        @FormParam("sourceAdress") String sourceAdress,
+                                        @FormParam("destinationAdress") String destinationAdress,
+                                        @FormParam("eventDate") String eventDate,
+                                        @FormParam("finishDate") String finishDate,
+                                        @FormParam("text") String text,
+                                        @FormParam("lastPackageID") int lastPackageID) {
+        try {
+            User user = User.getUserByID(id);
+            if (Service.makeToken(user.getToken() + date).equals(token)) {
+                Package.deletePackage(lastPackageID, consumerID, producerID);
                 new Package(consumerID, producerID, getterID, sourceLatitude, sourceLongitude, destinationLatitude, destinationLongitude, sourceAdress, destinationAdress, Service.dateFromString(eventDate), Service.dateFromString(finishDate), text);
 
                 User.setLastOnlineDate(id);

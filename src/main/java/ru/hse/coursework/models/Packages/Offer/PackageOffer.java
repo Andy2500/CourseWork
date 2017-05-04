@@ -44,6 +44,7 @@ public class PackageOffer implements Serializable {
         String command = "Insert Into Offers (OfferID, PersonID, Source, Destination, StartDate, EndDate, Text, PublishDate, Watches)" +
                 "Values ((Select Max(OfferID) From Offers) + 1, " + personID + ",'" + source + "', '" + destination + "','" + Service.makeSqlDateString(startDate) + "','" + Service.makeSqlDateString(endDate) + "','" + text + "','" + Service.getNowMomentInUTC() + "', 0 )";
         Service.execCommand(command);
+
         command = "Update Users Set CountOfOffers = CountOfOffers + 1 Where PersonID = " + personID;
         Service.execCommand(command);
     }
@@ -158,6 +159,4 @@ public class PackageOffer implements Serializable {
     public void setPerson(User person) {
         this.person = person;
     }
-
-
 }

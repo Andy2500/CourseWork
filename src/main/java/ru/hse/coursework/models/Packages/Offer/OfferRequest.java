@@ -37,9 +37,18 @@ public class OfferRequest implements Serializable {
         Service.execCommand(command);
     }
 
+    public static void deleteAllRequestsWithOutRequestID(int offerID, int requestID) throws Exception {
+        String command = "Delete From OfferRequests Where RequestID != " + requestID + "AND OfferID = " + offerID;
+        Service.execCommand(command);
+    }
+
     public static ArrayList<OfferRequest> getRequestsByOfferID(int ID) throws Exception {
         String query = "Select * From OfferRequests Where OfferID = " + ID;
         return Service.getOfferRequestsByQuery(query);
+    }
+
+    public static void setStatus(int offerID, int status) {
+
     }
 
     public Integer getPersonID() {
