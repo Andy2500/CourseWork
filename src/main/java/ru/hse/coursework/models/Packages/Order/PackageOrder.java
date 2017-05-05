@@ -45,8 +45,6 @@ public class PackageOrder implements Serializable {
         String command = "Insert Into Orders (OrderID, PersonID, Source, Destination, StartDate, EndDate, Text, PublishDate, Watches)" +
                 "Values ((Select Max(OrderID) From Orders) + 1," + personID + ",'" + source + "', '" + destination + "',' " + Service.makeSqlDateString(startDate) + "',' " + Service.makeSqlDateString(endDate) + "',' " + text + "','" + Service.getNowMomentInUTC() + "', 0)";
         Service.execCommand(command);
-        command = "Update Users Set CountOfOrders = CountOfOrders + 1 Where PersonID = " + personID;
-        Service.execCommand(command);
     }
 
     public static PackageOrder getOrderByID(int ID) throws Exception {
@@ -59,8 +57,22 @@ public class PackageOrder implements Serializable {
     public static void deletePackageOrder(int packageID, int personID) throws Exception {
         String command = "Delete From Orders Where OrderID = " + packageID;
         Service.execCommand(command);
-        command = "Update Users Set CountOfOrders = CountOfOrders - 1 Where PersonID = " + personID;
+        command = "Delete From OrderRequests Where OrderID = " + packageID;
         Service.execCommand(command);
+    }
+
+    public static Orders getOrdersByRequests(ArrayList<OrderRequest> requests) throws Exception {
+        String query = "Select * From Orders Where ";
+
+        for (int i = 0; i < requests.size(); i++) {
+            if (i == requests.size() - 1) {
+                query += "OrderID = " + requests.get(i).getOrderID();
+            } else {
+                query += "OrderID = " + requests.get(i).getOrderID() + "OR ";
+            }
+        }
+
+        return Service.getOrdersByQuery(query);
     }
 
     public void setDefaultClass(DefaultClass defaultClass) {

@@ -40,8 +40,8 @@ public class Message implements Serializable {
     public static ArrayList<Message> getMessagesByDialogID(int ID) throws Exception {
         String query = "Select * From Messages Where DialogID =" + ID;
         return Service.getMessagesByQuery(query);
-
     }
+
 
     public Integer getMessageID() {
         return messageID;

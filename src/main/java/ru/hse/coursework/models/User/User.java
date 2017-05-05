@@ -90,8 +90,8 @@ public class User implements Serializable {
         this.name = name;
         this.hashpsd = hashpsd;
         this.phone = phone;
-        String command = "Insert Into Users (PersonID,Login,Email,Name,HashPassword,Phone,Photo, CountOfOrders, CountOfOffers, LastOnlineDate, Token, CountOfPackages, CountOfResponses, SumOfResponses, Status, DocumentPhoto, LastLatitude, LastLongitude)"
-                + "Values ((Select MAX(PersonID) FROM Users) + 1,'" + login + "','" + email + "','" + name + "','" + hashpsd + "','" + phone + "',NULL,0,0,'" + Service.getNowMomentInUTC() + "','" + token + "', 0,0,0,0,NULL,0,0)";
+        String command = "Insert Into Users (PersonID,Login,Email,Name,HashPassword,Phone,Photo, LastOnlineDate, Token, Status, DocumentPhoto, LastLatitude, LastLongitude)"
+                + "Values ((Select MAX(PersonID) FROM Users) + 1,'" + login + "','" + email + "','" + name + "','" + hashpsd + "','" + phone + "',NULL,'" + Service.getNowMomentInUTC() + "','" + token + "',0,NULL,0,0)";
         Service.execCommand(command);
     }
 
@@ -150,13 +150,13 @@ public class User implements Serializable {
         Service.execCommand(command);
     }
 
-    public void setEmail(String email, String last) throws Exception {
+    public static void setEmail(User user, String email, String last) throws Exception {
         //запись в базу данных
-        if (!this.email.equals(last)) {
+        if (!user.email.equals(last)) {
             throw new Exception("Last Email Error");
         } else {
-            this.email = email;
-            String command = " Update Users Set Email = '" + email + "' Where PersonID = " + this.personID;
+            user.email = email;
+            String command = " Update Users Set Email = '" + email + "' Where PersonID = " + user.personID;
             Service.execCommand(command);
         }
     }
@@ -171,23 +171,23 @@ public class User implements Serializable {
         Service.loadPhoto(query, javax.xml.bind.DatatypeConverter.parseBase64Binary(documentPhoto));
     }
 
-    public void setHashpsd(String hashpsd, String last) throws Exception {
+    public static void setHashpsd(User user, String hashpsd, String last) throws Exception {
 
-        if (!this.hashpsd.equals(last)) {
+        if (!user.hashpsd.equals(last)) {
             throw new Exception("Last Psd Error");
         } else {
-            this.hashpsd = hashpsd;
-            String command = "Update Users Set HashPassword = '" + hashpsd + "' Where PersonID=" + this.personID;
+            user.hashpsd = hashpsd;
+            String command = "Update Users Set HashPassword = '" + hashpsd + "' Where PersonID=" + user.personID;
             Service.execCommand(command);
         }
     }
 
-    public void setPhone(String phone, String last) throws Exception {
-        if (!this.phone.equals(last)) {
+    public static void setPhone(User user, String phone, String last) throws Exception {
+        if (!user.phone.equals(last)) {
             throw new Exception("Last Email Error");
         } else {
-            this.phone = phone;
-            String command = "Update Users Set Phone = '" + phone + "' Where PersonID=" + personID;
+            user.phone = phone;
+            String command = "Update Users Set Phone = '" + phone + "' Where PersonID=" + user.personID;
             Service.execCommand(command);
         }
     }
@@ -222,105 +222,69 @@ public class User implements Serializable {
         return Service.getIntByQuery(query, "");
     }
 
-    public static void addMark(int personID, int mark) throws Exception {
-        String command = "Update Users Set SumOfResponses = SumOfResponses + " + mark + ", CountOfResponses = CountOfResponses + 1 Where PersonID = " + personID;
-        Service.execCommand(command);
-    }
 
     public int getPersonID() {
         return personID;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public DefaultClass getDefaultClass() {
-        return defaultClass;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getHashpsd() {
-        return hashpsd;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public int getCountOfOrders() {
-        return countOfOrders;
-    }
-
-    public int getCountOfOffers() {
-        return countOfOffers;
-    }
-
-    public Date getLastOnlineDate() {
-        return lastOnlineDate;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public void setPersonID(int personID) {
         this.personID = personID;
     }
 
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getHashpsd() {
+        return hashpsd;
+    }
+
     public void setHashpsd(String hashpsd) {
         this.hashpsd = hashpsd;
+    }
+
+    public String getPhone() {
+        return phone;
     }
 
     public void setPhone(String phone) {
         this.phone = phone;
     }
 
-    public void setCountOfOrders(Integer countOfOrders) {
-        this.countOfOrders = countOfOrders;
+    public String getToken() {
+        return token;
     }
 
-    public void setCountOfOffers(Integer countOfOffers) {
-        this.countOfOffers = countOfOffers;
-    }
-
-    public void setLastOnlineDate(Date lastOnlineDate) {
-        this.lastOnlineDate = lastOnlineDate;
-    }
-
-    public void setDefaultClass(DefaultClass defaultClass) {
-        this.defaultClass = defaultClass;
-    }
-
-    public void setCountOfOrders(int countOfOrders) {
-        this.countOfOrders = countOfOrders;
-    }
-
-    public void setCountOfOffers(int countOfOffers) {
-        this.countOfOffers = countOfOffers;
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public String getPhoto() {
         return photo;
     }
 
-    public int getCountOfPackages() {
-        return countOfPackages;
-    }
-
-    public void setCountOfPackages(int countOfPackages) {
-        this.countOfPackages = countOfPackages;
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 
     public String getDocumentPhoto() {
@@ -329,6 +293,30 @@ public class User implements Serializable {
 
     public void setDocumentPhoto(String documentPhoto) {
         this.documentPhoto = documentPhoto;
+    }
+
+    public int getCountOfOrders() {
+        return countOfOrders;
+    }
+
+    public void setCountOfOrders(int countOfOrders) {
+        this.countOfOrders = countOfOrders;
+    }
+
+    public int getCountOfOffers() {
+        return countOfOffers;
+    }
+
+    public void setCountOfOffers(int countOfOffers) {
+        this.countOfOffers = countOfOffers;
+    }
+
+    public int getCountOfPackages() {
+        return countOfPackages;
+    }
+
+    public void setCountOfPackages(int countOfPackages) {
+        this.countOfPackages = countOfPackages;
     }
 
     public int getCountOfResponses() {
@@ -371,19 +359,19 @@ public class User implements Serializable {
         this.lastLongitude = lastLongitude;
     }
 
-    public void setLogin(String login) {
-        this.login = login;
+    public Date getLastOnlineDate() {
+        return lastOnlineDate;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setLastOnlineDate(Date lastOnlineDate) {
+        this.lastOnlineDate = lastOnlineDate;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public DefaultClass getDefaultClass() {
+        return defaultClass;
     }
 
-    public void setPhoto(String photo) {
-        this.photo = photo;
+    public void setDefaultClass(DefaultClass defaultClass) {
+        this.defaultClass = defaultClass;
     }
 }

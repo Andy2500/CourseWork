@@ -1,6 +1,7 @@
 package ru.hse.coursework.controllers;
 
 import ru.hse.coursework.models.Chat.Dialog;
+import ru.hse.coursework.models.Chat.Dialogs;
 import ru.hse.coursework.models.Chat.Message;
 import ru.hse.coursework.models.Chat.Messages;
 import ru.hse.coursework.models.Service.DefaultClass;
@@ -9,6 +10,7 @@ import ru.hse.coursework.models.User.User;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.ArrayList;
 
 @Path("/chat")
 public class ChatController {
@@ -24,11 +26,11 @@ public class ChatController {
         try {
             User user = User.getUserByID(id);
             if (Service.makeToken(user.getToken() + date).equals(token)) {
-                Dialog dialog = Dialog.getDialogByPersonIDs(id, personID_2);
+                Dialog dialog = Dialog.getDialogByPersonIDs(id, personID_2, false, 0);
 
                 if (dialog.getDialogID() == 0) {
                     new Dialog(id, personID_2);
-                    dialog = Dialog.getDialogByPersonIDs(id, personID_2);
+                    dialog = Dialog.getDialogByPersonIDs(id, personID_2, false, 0);
                 }
 
                 dialog.setMessages(Message.getMessagesByDialogID(dialog.getDialogID()));
@@ -98,6 +100,29 @@ public class ChatController {
             Messages messages = new Messages();
             messages.setDefaultClass(new DefaultClass(false, ex.getMessage()));
             return messages;
+        }
+    }
+
+    @POST
+    @Path("/guds/")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Dialogs getUserDialogs(@FormParam("token") String token,
+                                  @FormParam("personID") int id,
+                                  @FormParam("date") String date) {
+        try {
+            User user = User.getUserByID(id);
+            if (Service.makeToken(user.getToken() + date).equals(token)) {
+
+                Dialogs dialogs = Dialogs.getDialogsByPersonID(id);
+                dialogs.setDefaultClass(new DefaultClass(true, ""));
+                User.setLastOnlineDate(id);
+                return dialogs;
+            }
+
+            throw new Exception("token error");
+        } catch (Exception ex) {
+            return new Dialogs(new ArrayList<Dialog>(), new DefaultClass(false, ex.getMessage()));
         }
     }
 }

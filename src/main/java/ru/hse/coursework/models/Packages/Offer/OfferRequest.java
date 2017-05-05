@@ -47,8 +47,9 @@ public class OfferRequest implements Serializable {
         return Service.getOfferRequestsByQuery(query);
     }
 
-    public static void setStatus(int offerID, int status) {
-
+    public static ArrayList<OfferRequest> getRequestsByPersonID(int ID) throws Exception {
+        String query = "Select * From OfferRequests Where PersonID = " + ID;
+        return Service.getOfferRequestsByQuery(query);
     }
 
     public Integer getPersonID() {

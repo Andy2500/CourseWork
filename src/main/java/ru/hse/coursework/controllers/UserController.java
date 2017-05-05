@@ -75,7 +75,7 @@ public class UserController {
         try {
             User user = User.getUserByID(id);
             if (Service.makeToken(user.getToken() + date).equals(token)) {
-                user.setHashpsd(newpsd, lastpsd);
+                user.setHashpsd(user, newpsd, lastpsd);
                 User.setLastOnlineDate(id);
                 Event.writeEvent("Вы изменили пароль!", user.getPersonID());
                 return new DefaultClass(true, "");
@@ -99,7 +99,7 @@ public class UserController {
         try {
             User user = User.getUserByID(id);
             if (Service.makeToken(user.getToken() + date).equals(token)) {
-                user.setEmail(newEmail, lastEmail);
+                user.setEmail(user, newEmail, lastEmail);
                 User.setLastOnlineDate(id);
                 Event.writeEvent("Вы изменили почту!", user.getPersonID());
                 return new DefaultClass(true, "");
@@ -123,7 +123,7 @@ public class UserController {
         try {
             User user = User.getUserByID(id);
             if (Service.makeToken(user.getToken() + date).equals(token)) {
-                user.setPhone(newPhone, lastPhone);
+                user.setPhone(user, newPhone, lastPhone);
 
                 User.setLastOnlineDate(id);
                 Event.writeEvent("Вы изменили номер телефона!", user.getPersonID());
@@ -326,13 +326,14 @@ public class UserController {
     @Path("/sfuwl/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public Users searchForUserWithName(@FormParam("token") String token,
-                                       @FormParam("personID") int id,
-                                       @FormParam("date") String date,
-                                       @FormParam("login") String login) {
+    public Users searchForUserWithLogin(@FormParam("token") String token,
+                                        @FormParam("personID") int id,
+                                        @FormParam("date") String date,
+                                        @FormParam("login") String login) {
         try {
             User user = User.getUserByID(id);
             if (Service.makeToken(user.getToken() + date).equals(token)) {
+                login = login.toLowerCase();
                 Users users = Users.getUsersWithLogin(login);
                 users.setDefaultClass(new DefaultClass(true, ""));
                 return users;

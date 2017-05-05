@@ -4,6 +4,7 @@ import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 import ru.hse.coursework.models.Chat.Dialog;
 import ru.hse.coursework.models.Chat.Message;
 import ru.hse.coursework.models.Dispute.Dispute;
+import ru.hse.coursework.models.Dispute.Disputes;
 import ru.hse.coursework.models.Event.Event;
 import ru.hse.coursework.models.Packages.Offer.OfferRequest;
 import ru.hse.coursework.models.Packages.Offer.Offers;
@@ -32,7 +33,7 @@ import java.util.*;
 public class Service {
 
     public static String makeToken(String login) throws Exception {
-        // String str = login + Service.getNowMomentInUTC();
+// String str = login + Service.getNowMomentInUTC();
         String str = login;
         MessageDigest messageDigest;
 
@@ -121,90 +122,28 @@ public class Service {
             byte[] ph = resultSet.getBytes("Photo");
             byte[] docPhoto = resultSet.getBytes("DocumentPhoto");
 
-            if (ph != null) {
-                String pho = javax.xml.bind.DatatypeConverter.printBase64Binary(ph);
-                if (docPhoto != null) {
-                    String docPho = javax.xml.bind.DatatypeConverter.printBase64Binary(ph);
-                    user = new User(resultSet.getInt("personID"),
-                            resultSet.getString("login"),
-                            resultSet.getString("email"),
-                            resultSet.getString("name"),
-                            resultSet.getString("HashPassword"),
-                            resultSet.getString("Phone"),
-                            resultSet.getString("Token"),
-                            pho,
-                            docPho,
-                            resultSet.getInt("countOfOrders"),
-                            resultSet.getInt("countOfOffers"),
-                            resultSet.getInt("countOfPackages"),
-                            resultSet.getInt("countOfResponses"),
-                            resultSet.getInt("sumOfResponses"),
-                            resultSet.getInt("status"),
-                            resultSet.getFloat("LastLatitude"),
-                            resultSet.getFloat("LastLongitude"),
-                            resultSet.getDate("lastOnlineDate"));
-                } else {
-                    user = new User(resultSet.getInt("personID"),
-                            resultSet.getString("login"),
-                            resultSet.getString("email"),
-                            resultSet.getString("name"),
-                            resultSet.getString("HashPassword"),
-                            resultSet.getString("Phone"),
-                            resultSet.getString("Token"),
-                            pho,
-                            null,
-                            resultSet.getInt("countOfOrders"),
-                            resultSet.getInt("countOfOffers"),
-                            resultSet.getInt("countOfPackages"),
-                            resultSet.getInt("countOfResponses"),
-                            resultSet.getInt("sumOfResponses"),
-                            resultSet.getInt("status"),
-                            resultSet.getFloat("LastLatitude"),
-                            resultSet.getFloat("LastLongitude"),
-                            resultSet.getDate("lastOnlineDate"));
-                }
+            user.setPersonID(resultSet.getInt("personID"));
+            user.setLogin(resultSet.getString("login"));
+            user.setEmail(resultSet.getString("email"));
+            user.setName(resultSet.getString("name"));
+            user.setHashpsd(resultSet.getString("HashPassword"));
+            user.setPhone(resultSet.getString("Phone"));
+            user.setCountOfOffers(Service.getIntByQuery("Select Count(*) From Offers Where PersonID = " + user.getPersonID(), ""));
+            user.setCountOfOrders(Service.getIntByQuery("Select Count(*) From Orders Where PersonID = " + user.getPersonID(), ""));
+            user.setCountOfPackages(Service.getIntByQuery("Select Count(*) From Packages Where ConsumerID = " + user.getPersonID() + "OR ProducerID = " + user.getPersonID() + "OR GetterID = " + user.getPersonID(), ""));
+            user.setCountOfResponses(Service.getIntByQuery("Select Count(*) From Responses Where PersonID = " + user.getPersonID(), ""));
+            user.setSumOfResponses(Service.getIntByQuery("Select Sum(Mark) From Responses Where PersonID = " + user.getPersonID(), ""));
+            user.setLastLatitude(resultSet.getFloat("LastLatitude"));
+            user.setLastLongitude(resultSet.getFloat("LastLongitude"));
+            user.setLastOnlineDate(resultSet.getTimestamp("lastOnlineDate"));
+            user.setToken(resultSet.getString("Token"));
+            user.setStatus(resultSet.getInt("Status"));
 
-            } else {
-                if (docPhoto != null) {
-                    String docPho = javax.xml.bind.DatatypeConverter.printBase64Binary(docPhoto);
-                    user = new User(resultSet.getInt("personID"),
-                            resultSet.getString("login"),
-                            resultSet.getString("email"),
-                            resultSet.getString("name"),
-                            resultSet.getString("HashPassword"),
-                            resultSet.getString("Phone"),
-                            resultSet.getString("Token"),
-                            null,
-                            docPho,
-                            resultSet.getInt("countOfOrders"),
-                            resultSet.getInt("countOfOffers"),
-                            resultSet.getInt("countOfPackages"),
-                            resultSet.getInt("countOfResponses"),
-                            resultSet.getInt("sumOfResponses"),
-                            resultSet.getInt("status"),
-                            resultSet.getFloat("LastLatitude"),
-                            resultSet.getFloat("LastLongitude"),
-                            resultSet.getDate("lastOnlineDate"));
-                } else {
-                    user = new User(resultSet.getInt("personID"),
-                            resultSet.getString("login"),
-                            resultSet.getString("email"),
-                            resultSet.getString("name"),
-                            resultSet.getString("HashPassword"),
-                            resultSet.getString("Phone"),
-                            resultSet.getString("Token"),
-                            null,
-                            null,
-                            resultSet.getInt("countOfOrders"),
-                            resultSet.getInt("countOfOffers"),
-                            resultSet.getInt("countOfPackages"),
-                            resultSet.getInt("countOfResponses"),
-                            resultSet.getInt("sumOfResponses"),
-                            resultSet.getInt("status"),
-                            resultSet.getFloat("LastLatitude"),
-                            resultSet.getFloat("LastLongitude"),
-                            resultSet.getDate("lastOnlineDate"));
-                }
+            if (ph != null) {
+                user.setPhoto(javax.xml.bind.DatatypeConverter.printBase64Binary(ph));
+            }
+            if (docPhoto != null) {
+                user.setPhoto(javax.xml.bind.DatatypeConverter.printBase64Binary(docPhoto));
             }
         }
 
@@ -222,90 +161,29 @@ public class Service {
             byte[] ph = resultSet.getBytes("Photo");
             byte[] docPhoto = resultSet.getBytes("DocumentPhoto");
 
-            if (ph != null) {
-                String pho = javax.xml.bind.DatatypeConverter.printBase64Binary(ph);
-                if (docPhoto != null) {
-                    String docPho = javax.xml.bind.DatatypeConverter.printBase64Binary(ph);
-                    user = new User(resultSet.getInt("personID"),
-                            resultSet.getString("login"),
-                            resultSet.getString("email"),
-                            resultSet.getString("name"),
-                            resultSet.getString("HashPassword"),
-                            resultSet.getString("Phone"),
-                            resultSet.getString("Token"),
-                            pho,
-                            docPho,
-                            resultSet.getInt("countOfOrders"),
-                            resultSet.getInt("countOfOffers"),
-                            resultSet.getInt("countOfPackages"),
-                            resultSet.getInt("countOfResponses"),
-                            resultSet.getInt("sumOfResponses"),
-                            resultSet.getInt("status"),
-                            resultSet.getFloat("LastLatitude"),
-                            resultSet.getFloat("LastLongitude"),
-                            resultSet.getDate("lastOnlineDate"));
-                } else {
-                    user = new User(resultSet.getInt("personID"),
-                            resultSet.getString("login"),
-                            resultSet.getString("email"),
-                            resultSet.getString("name"),
-                            resultSet.getString("HashPassword"),
-                            resultSet.getString("Phone"),
-                            resultSet.getString("Token"),
-                            pho,
-                            null,
-                            resultSet.getInt("countOfOrders"),
-                            resultSet.getInt("countOfOffers"),
-                            resultSet.getInt("countOfPackages"),
-                            resultSet.getInt("countOfResponses"),
-                            resultSet.getInt("sumOfResponses"),
-                            resultSet.getInt("status"),
-                            resultSet.getFloat("LastLatitude"),
-                            resultSet.getFloat("LastLongitude"),
-                            resultSet.getDate("lastOnlineDate"));
-                }
+            user.setPersonID(resultSet.getInt("personID"));
+            user.setLogin(resultSet.getString("login"));
+            user.setEmail(resultSet.getString("email"));
+            user.setName(resultSet.getString("name"));
+            user.setHashpsd(resultSet.getString("HashPassword"));
+            user.setPhone(resultSet.getString("Phone"));
+            user.setCountOfOffers(Service.getIntByQuery("Select Count(*) From Offers Where PersonID = " + user.getPersonID(), ""));
+            user.setCountOfOrders(Service.getIntByQuery("Select Count(*) From Orders Where PersonID = " + user.getPersonID(), ""));
+            user.setCountOfPackages(Service.getIntByQuery("Select Count(*) From Packages Where ConsumerID = " + user.getPersonID() + "OR ProducerID = " + user.getPersonID() + "OR GetterID = " + user.getPersonID(), ""));
+            user.setCountOfResponses(Service.getIntByQuery("Select Count(*) From Responses Where PersonID = " + user.getPersonID(), ""));
+            user.setSumOfResponses(Service.getIntByQuery("Select Sum(Mark) From Responses Where PersonID = " + user.getPersonID(), ""));
+            user.setLastLatitude(resultSet.getFloat("LastLatitude"));
+            user.setLastLongitude(resultSet.getFloat("LastLongitude"));
+            user.setLastOnlineDate(resultSet.getTimestamp("lastOnlineDate"));
+            user.setToken(resultSet.getString("Token"));
+            user.setStatus(resultSet.getInt("Status"));
 
-            } else {
-                if (docPhoto != null) {
-                    String docPho = javax.xml.bind.DatatypeConverter.printBase64Binary(docPhoto);
-                    user = new User(resultSet.getInt("personID"),
-                            resultSet.getString("login"),
-                            resultSet.getString("email"),
-                            resultSet.getString("name"),
-                            resultSet.getString("HashPassword"),
-                            resultSet.getString("Phone"),
-                            resultSet.getString("Token"),
-                            null,
-                            docPho,
-                            resultSet.getInt("countOfOrders"),
-                            resultSet.getInt("countOfOffers"),
-                            resultSet.getInt("countOfPackages"),
-                            resultSet.getInt("countOfResponses"),
-                            resultSet.getInt("sumOfResponses"),
-                            resultSet.getInt("status"),
-                            resultSet.getFloat("LastLatitude"),
-                            resultSet.getFloat("LastLongitude"),
-                            resultSet.getDate("lastOnlineDate"));
-                } else {
-                    user = new User(resultSet.getInt("personID"),
-                            resultSet.getString("login"),
-                            resultSet.getString("email"),
-                            resultSet.getString("name"),
-                            resultSet.getString("HashPassword"),
-                            resultSet.getString("Phone"),
-                            resultSet.getString("Token"),
-                            null,
-                            null,
-                            resultSet.getInt("countOfOrders"),
-                            resultSet.getInt("countOfOffers"),
-                            resultSet.getInt("countOfPackages"),
-                            resultSet.getInt("countOfResponses"),
-                            resultSet.getInt("sumOfResponses"),
-                            resultSet.getInt("status"),
-                            resultSet.getFloat("LastLatitude"),
-                            resultSet.getFloat("LastLongitude"),
-                            resultSet.getDate("lastOnlineDate"));
-                }
+            if (ph != null) {
+                user.setPhoto(javax.xml.bind.DatatypeConverter.printBase64Binary(ph));
+            }
+
+            if (docPhoto != null) {
+                user.setPhoto(javax.xml.bind.DatatypeConverter.printBase64Binary(docPhoto));
             }
 
             users.getUsers().add(user);
@@ -330,7 +208,7 @@ public class Service {
                 response.setCritic(User.getUserByID(response.getCriticID()));
                 response.setMark(resultSet.getInt("Mark"));
                 response.setText(resultSet.getString("Text"));
-                response.setDate(resultSet.getDate("Date"));
+                response.setDate(resultSet.getTimestamp("Date"));
 
                 response.getCritic().clear();
                 responses.add(response);
@@ -352,7 +230,7 @@ public class Service {
                 response.setCritic(User.getUserByID(response.getCriticID()));
                 response.setMark(resultSet.getInt("Mark"));
                 response.setText(resultSet.getString("Text"));
-                response.setDate(resultSet.getDate("Date"));
+                response.setDate(resultSet.getTimestamp("Date"));
 
                 response.getCritic().clear();
             }
@@ -372,7 +250,7 @@ public class Service {
             comment.setCommentID(resultSet.getInt("CommentID"));
             comment.setResponseID(resultSet.getInt("ResponseID"));
             comment.setCommenter(User.getUserByID(comment.getPersonID()));
-            comment.setDate(resultSet.getDate("Date"));
+            comment.setDate(resultSet.getTimestamp("Date"));
 
             comment.getCommenter().clear();
             comments.add(comment);
@@ -393,11 +271,11 @@ public class Service {
                 offer.setOfferID(resultSet.getInt("OfferID"));
                 offer.setText(resultSet.getString("Text"));
                 offer.setPersonID(resultSet.getInt("PersonID"));
-                offer.setStartDate(resultSet.getDate("StartDate"));
-                offer.setEndDate(resultSet.getDate("EndDate"));
+                offer.setStartDate(resultSet.getTimestamp("StartDate"));
+                offer.setEndDate(resultSet.getTimestamp("EndDate"));
                 offer.setDestination(resultSet.getString("Destination"));
                 offer.setSource(resultSet.getString("Source"));
-                offer.setPublishDate(resultSet.getDate("PublishDate"));
+                offer.setPublishDate(resultSet.getTimestamp("PublishDate"));
                 offer.setWatches(resultSet.getInt("Watches"));
 
                 offer.setRequests(OfferRequest.getRequestsByOfferID(offer.getOfferID()));
@@ -423,11 +301,11 @@ public class Service {
                 order.setOrderID(resultSet.getInt("OrderID"));
                 order.setText(resultSet.getString("Text"));
                 order.setPersonID(resultSet.getInt("PersonID"));
-                order.setStartDate(resultSet.getDate("StartDate"));
-                order.setEndDate(resultSet.getDate("EndDate"));
+                order.setStartDate(resultSet.getTimestamp("StartDate"));
+                order.setEndDate(resultSet.getTimestamp("EndDate"));
                 order.setDestination(resultSet.getString("Destination"));
                 order.setSource(resultSet.getString("Source"));
-                order.setPublishDate(resultSet.getDate("PublishDate"));
+                order.setPublishDate(resultSet.getTimestamp("PublishDate"));
                 order.setWatches(resultSet.getInt("Watches"));
 
                 order.setRequests(OrderRequest.getRequestsByOrderID(order.getOrderID()));
@@ -473,8 +351,8 @@ public class Service {
             }
 
             _package.setText(resultSet.getString("Text"));
-            _package.setEventDate(resultSet.getDate("EventDate"));
-            _package.setFinishDate(resultSet.getDate("FinishDate"));
+            _package.setEventDate(resultSet.getTimestamp("EventDate"));
+            _package.setFinishDate(resultSet.getTimestamp("FinishDate"));
 
             _package.setProducer(User.getUserByID(_package.getProducerID()));
             _package.setConsumer(User.getUserByID(_package.getConsumerID()));
@@ -502,7 +380,7 @@ public class Service {
             while (resultSet.next()) {
                 message.setPersonID(resultSet.getInt("PersonID"));
                 message.setText(resultSet.getString("Text"));
-                message.setDate(resultSet.getDate("Date"));
+                message.setDate(resultSet.getTimestamp("Date"));
                 message.setDialogID(resultSet.getInt("DialogID"));
                 message.setMessageID(resultSet.getInt("MessageID"));
                 message.setWatched(resultSet.getInt("Watched"));
@@ -512,7 +390,7 @@ public class Service {
         return message;
     }
 
-    public static Dialog getDialogByQuery(String query) throws Exception {
+    public static Dialog getDialogByQuery(String query, Boolean type, int personID) throws Exception {
         ResultSet resultSet = getSelectResultSet(query);
         Dialog dialog = new Dialog();
 
@@ -522,11 +400,40 @@ public class Service {
                 dialog.setPersonID_1(resultSet.getInt("PersonID_1"));
                 dialog.setPersonID_2(resultSet.getInt("PersonID_2"));
 
+                if (type) {
+                    dialog.setPerson(User.getUserByID(personID));
+                }
+
                 dialog.setMessages(Message.getMessagesByDialogID(dialog.getDialogID()));
             }
         }
 
         return dialog;
+    }
+
+    public static ArrayList<Dialog> getDialogsByQuery(String query, int personID) throws Exception {
+        ResultSet resultSet = getSelectResultSet(query);
+        ArrayList<Dialog> dialogs = new ArrayList<>();
+
+        if (resultSet != null) {
+            while (resultSet.next()) {
+                Dialog dialog = new Dialog();
+                dialog.setDialogID(resultSet.getInt("DialogID"));
+                dialog.setPersonID_1(resultSet.getInt("PersonID_1"));
+                dialog.setPersonID_2(resultSet.getInt("PersonID_2"));
+
+                if (dialog.getPersonID_1() != personID) {
+                    dialog.setPerson(User.getUserByID(dialog.getPersonID_1()));
+                } else {
+                    dialog.setPerson(User.getUserByID(dialog.getPersonID_2()));
+                }
+
+                dialog.setMessages(Message.getMessagesByDialogID(dialog.getDialogID()));
+                dialogs.add(dialog);
+            }
+        }
+
+        return dialogs;
     }
 
     public static ArrayList<Message> getMessagesByQuery(String query) throws Exception {
@@ -537,7 +444,7 @@ public class Service {
             Message message = new Message();
             message.setPersonID(resultSet.getInt("PersonID"));
             message.setText(resultSet.getString("Text"));
-            message.setDate(resultSet.getDate("Date"));
+            message.setDate(resultSet.getTimestamp("Date"));
             message.setDialogID(resultSet.getInt("DialogID"));
             message.setMessageID(resultSet.getInt("MessageID"));
             message.setWatched(resultSet.getInt("Watched"));
@@ -557,11 +464,11 @@ public class Service {
                 order.setOrderID(resultSet.getInt("OrderID"));
                 order.setText(resultSet.getString("Text"));
                 order.setPersonID(resultSet.getInt("PersonID"));
-                order.setStartDate(resultSet.getDate("StartDate"));
-                order.setEndDate(resultSet.getDate("EndDate"));
+                order.setStartDate(resultSet.getTimestamp("StartDate"));
+                order.setEndDate(resultSet.getTimestamp("EndDate"));
                 order.setDestination(resultSet.getString("Destination"));
                 order.setSource(resultSet.getString("Source"));
-                order.setPublishDate(resultSet.getDate("PublishDate"));
+                order.setPublishDate(resultSet.getTimestamp("PublishDate"));
                 order.setWatches(resultSet.getInt("Watches"));
 
                 order.setRequests(OrderRequest.getRequestsByOrderID(order.getOrderID()));
@@ -582,11 +489,11 @@ public class Service {
                 offer.setOfferID(resultSet.getInt("OfferID"));
                 offer.setText(resultSet.getString("Text"));
                 offer.setPersonID(resultSet.getInt("PersonID"));
-                offer.setStartDate(resultSet.getDate("StartDate"));
-                offer.setEndDate(resultSet.getDate("EndDate"));
+                offer.setStartDate(resultSet.getTimestamp("StartDate"));
+                offer.setEndDate(resultSet.getTimestamp("EndDate"));
                 offer.setDestination(resultSet.getString("Destination"));
                 offer.setSource(resultSet.getString("Source"));
-                offer.setPublishDate(resultSet.getDate("PublishDate"));
+                offer.setPublishDate(resultSet.getTimestamp("PublishDate"));
                 offer.setWatches(resultSet.getInt("Watches"));
 
                 offer.setRequests(OfferRequest.getRequestsByOfferID(offer.getOfferID()));
@@ -616,15 +523,15 @@ public class Service {
             _package.setSourceAddress(resultSet.getString("SourceAddress"));
 
             _package.setText(resultSet.getString("Text"));
-            _package.setEventDate(resultSet.getDate("EventDate"));
-            _package.setFinishDate(resultSet.getDate("FinishDate"));
+            _package.setEventDate(resultSet.getTimestamp("EventDate"));
+            _package.setFinishDate(resultSet.getTimestamp("FinishDate"));
 
-            byte[] deliveryPhotoProof = resultSet.getBytes("DeliveryPhotoProof");
+            byte[] deliveryPhotoProof = resultSet.getBytes("DeliveryProofPhoto");
             if (deliveryPhotoProof != null) {
                 _package.setDeliveryProofPhoto(javax.xml.bind.DatatypeConverter.printBase64Binary(deliveryPhotoProof));
             }
 
-            byte[] transferPhotoProof = resultSet.getBytes("TransferPhotoProof");
+            byte[] transferPhotoProof = resultSet.getBytes("TransferProofPhoto");
             if (transferPhotoProof != null) {
                 _package.setTransferProofPhoto(javax.xml.bind.DatatypeConverter.printBase64Binary(transferPhotoProof));
             }
@@ -729,7 +636,7 @@ public class Service {
         if (resultSet != null) {
             while (resultSet.next()) {
                 Event event = new Event();
-                event.setDate(resultSet.getDate("Date"));
+                event.setDate(resultSet.getTimestamp("Date"));
                 event.setEventID(resultSet.getInt("EventID"));
                 event.setPersonID(resultSet.getInt("PersonID"));
                 event.setText(resultSet.getString("Text"));
@@ -769,21 +676,23 @@ public class Service {
         return 0;
     }
 
-    public static ArrayList<Dispute> getDisputesByQuery(String query) throws Exception {
+    public static Disputes getDisputesByQuery(String query) throws Exception {
         ResultSet resultSet = getSelectResultSet(query);
-        ArrayList<Dispute> disputes = new ArrayList<>();
+        Disputes disputes = new Disputes();
+        disputes.setDisputes(new ArrayList<Dispute>());
 
         if (resultSet != null) {
             while (resultSet.next()) {
                 Dispute dispute = new Dispute();
                 dispute.setStatus(resultSet.getInt("Status"));
                 dispute.setDisputeID(resultSet.getInt("DisputeID"));
-                dispute.setPublishDate(resultSet.getDate("PublishDate"));
+                dispute.setPublishDate(resultSet.getTimestamp("PublishDate"));
                 dispute.setPackageID(resultSet.getInt("PackageID"));
                 dispute.setPersonID(resultSet.getInt("PersonID"));
-
+                dispute.setText(resultSet.getString("Text"));
                 dispute.set_package(Package.getPackageByID(dispute.getPackageID()));
                 dispute.setPerson(User.getUserByID(dispute.getPersonID()));
+                disputes.getDisputes().add(dispute);
             }
         }
 
@@ -826,11 +735,8 @@ public class Service {
         Connection connection = ds.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(command);
         preparedStatement.setBytes(1, array);
-        try {
-            preparedStatement.executeQuery();
-        } catch (Exception ex) {
 
-        }
+        preparedStatement.executeUpdate();
     }
 
     public static Date get3DayBeforeDate(Date date) {

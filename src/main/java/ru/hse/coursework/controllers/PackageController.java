@@ -15,6 +15,7 @@ import ru.hse.coursework.models.User.User;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.ArrayList;
 
 @Path("/pack")
 public class PackageController {
@@ -109,7 +110,7 @@ public class PackageController {
         try {
             User user = User.getUserByID(id);
             if (Service.makeToken(user.getToken() + date).equals(token)) {
-                PackageOffer.deletePackageOffer(offerID);
+                PackageOffer.deletePackageOffer(offerID, id);
                 User.setLastOnlineDate(id);
                 Event.writeEvent("Вы создали удалили свое предложение", user.getPersonID());
                 return new DefaultClass(true, "");
@@ -231,7 +232,7 @@ public class PackageController {
                 PackageOffer offer = PackageOffer.getOfferByID(request.getOfferID());
                 new Package(offer, request.getPersonID());
 
-                PackageOffer.deletePackageOffer(offer.getOfferID());
+                PackageOffer.deletePackageOffer(offer.getOfferID(), id);
                 OfferRequest.deleteAllRequestsWithOutRequestID(offer.getOfferID(), requestID);
 
                 User.setLastOnlineDate(id);
@@ -304,7 +305,8 @@ public class PackageController {
         try {
             User user = User.getUserByID(id);
             if (Service.makeToken(user.getToken() + date).equals(token)) {
-
+                sourceAdress = sourceAdress.replace("\'", "\\'");
+                destinationAdress = destinationAdress.replace("\'", "\\'");
                 new Package(consumerID, producerID, getterID, sourceLatitude, sourceLongitude, destinationLatitude, destinationLongitude, sourceAdress, destinationAdress, Service.dateFromString(eventDate), Service.dateFromString(finishDate), text);
 
                 User.setLastOnlineDate(id);
@@ -343,6 +345,8 @@ public class PackageController {
         try {
             User user = User.getUserByID(id);
             if (Service.makeToken(user.getToken() + date).equals(token)) {
+                sourceAdress = sourceAdress.replace("\'", "\\'");
+                destinationAdress = destinationAdress.replace("\'", "\\'");
                 Package.deletePackage(lastPackageID, consumerID, producerID);
                 new Package(consumerID, producerID, getterID, sourceLatitude, sourceLongitude, destinationLatitude, destinationLongitude, sourceAdress, destinationAdress, Service.dateFromString(eventDate), Service.dateFromString(finishDate), text);
 
@@ -554,6 +558,7 @@ public class PackageController {
         try {
             User user = User.getUserByID(id);
             if (Service.makeToken(user.getToken() + date).equals(token)) {
+                source = source.replace("\'", "\\'");
                 Offers offers = Offers.getOffersByParams(source, destination, Service.dateFromString(startDate), Service.dateFromString(endDate));
                 offers.setDefaultClass(new DefaultClass(true, ""));
 
@@ -582,6 +587,8 @@ public class PackageController {
         try {
             User user = User.getUserByID(id);
             if (Service.makeToken(user.getToken() + date).equals(token)) {
+                source = source.replace("\'", "\\'");
+                destination = destination.replace("\'", "\\'");
                 Orders orders = Orders.getOrdersByParams(source, destination, Service.dateFromString(startDate), Service.dateFromString(endDate));
                 orders.setDefaultClass(new DefaultClass(true, ""));
 
@@ -668,6 +675,65 @@ public class PackageController {
         }
     }
 
+    @POST
+    @Path("/gorbur/")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Orders getOrdersByUserRequest(@FormParam("token") String token,
+                                         @FormParam("personID") int id,
+                                         @FormParam("date") String date) {
+        try {
+            User user = User.getUserByID(id);
+            if (Service.makeToken(user.getToken() + date).equals(token)) {
+                ArrayList<OrderRequest> requests = OrderRequest.getRequestsByPersonID(id);
+                if (requests.size() > 0) {
+                    Orders orders = PackageOrder.getOrdersByRequests(requests);
+                    orders.setDefaultClass(new DefaultClass(true, ""));
+                    User.setLastOnlineDate(id);
+                    return orders;
+                }
+                Orders orders = new Orders();
+                orders.setDefaultClass(new DefaultClass(true, ""));
+
+                return orders;
+            }
+            throw new Exception("token error");
+        } catch (Exception ex) {
+            Orders orders = new Orders();
+            orders.setDefaultClass(new DefaultClass(false, ex.getMessage()));
+            return orders;
+        }
+    }
+
+    @POST
+    @Path("/gofbur/")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Offers getOffersByUserRequest(@FormParam("token") String token,
+                                         @FormParam("personID") int id,
+                                         @FormParam("date") String date) {
+        try {
+            User user = User.getUserByID(id);
+            if (Service.makeToken(user.getToken() + date).equals(token)) {
+                ArrayList<OfferRequest> requests = OfferRequest.getRequestsByPersonID(id);
+                if (requests.size() > 0) {
+                    Offers offers = PackageOffer.getOffersByRequests(requests);
+                    offers.setDefaultClass(new DefaultClass(true, ""));
+                    User.setLastOnlineDate(id);
+                    return offers;
+                }
+                Offers offers = new Offers();
+                offers.setDefaultClass(new DefaultClass(true, ""));
+
+                return offers;
+            }
+            throw new Exception("token error");
+        } catch (Exception ex) {
+            Offers offers = new Offers();
+            offers.setDefaultClass(new DefaultClass(false, ex.getMessage()));
+            return offers;
+        }
+    }
 /*
  * Получить список заказов и предложений, где пользователь оставил запрос
  */

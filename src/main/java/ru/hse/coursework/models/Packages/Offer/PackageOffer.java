@@ -44,9 +44,6 @@ public class PackageOffer implements Serializable {
         String command = "Insert Into Offers (OfferID, PersonID, Source, Destination, StartDate, EndDate, Text, PublishDate, Watches)" +
                 "Values ((Select Max(OfferID) From Offers) + 1, " + personID + ",'" + source + "', '" + destination + "','" + Service.makeSqlDateString(startDate) + "','" + Service.makeSqlDateString(endDate) + "','" + text + "','" + Service.getNowMomentInUTC() + "', 0 )";
         Service.execCommand(command);
-
-        command = "Update Users Set CountOfOffers = CountOfOffers + 1 Where PersonID = " + personID;
-        Service.execCommand(command);
     }
 
     public static PackageOffer getOfferByID(int ID) throws Exception {
@@ -56,12 +53,25 @@ public class PackageOffer implements Serializable {
         return Service.getOfferByQuery(query);
     }
 
-    public static void deletePackageOffer(int ID) throws Exception {
-        PackageOffer offer = Service.getOfferByQuery("Select * From Offers Where OfferID =" + ID);
+    public static void deletePackageOffer(int ID, int personID) throws Exception {
         String command = "Delete From Offers Where OfferID = " + ID;
         Service.execCommand(command);
-        command = "Update Users Set CountOfOffers = CountOfOffers - 1 Where PersonID = " + offer.getPersonID();
+        command = "Delete From OfferRequests Where OfferID = " + ID;
         Service.execCommand(command);
+    }
+
+    public static Offers getOffersByRequests(ArrayList<OfferRequest> requests) throws Exception {
+        String query = "Select * From Offers Where ";
+
+        for (int i = 0; i < requests.size(); i++) {
+            if (i == requests.size() - 1) {
+                query += "OfferID = " + requests.get(i).getOfferID().toString();
+            } else {
+                query += "OfferID = " + requests.get(i).getOfferID().toString() + "OR ";
+            }
+        }
+
+        return Service.getOffersByQuery(query);
     }
 
     public Integer getOfferID() {

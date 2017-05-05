@@ -6,6 +6,7 @@ import ru.hse.coursework.models.Service.Service;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 
 @XmlRootElement
 public class Packages implements Serializable {
@@ -15,7 +16,15 @@ public class Packages implements Serializable {
 
     public static Packages getPackagesByUserID(int ID) throws Exception {
         String query = "Select * From Packages Where (ProducerID = " + ID + ") OR ( ConsumerID = " + ID + ") OR (GetterID = " + ID + ")";
-        return Service.getPackagesByQuery(query);
+        Packages packages = Service.getPackagesByQuery(query);
+
+        for (int i = 0; i < packages.getPackages().size(); i++) {
+            if (packages.getPackages().get(i).getEventDate().getTime() + 86400000 < (new Date().getTime()) && packages.getPackages().get(i).getStatus() == 0) {
+                Package.deletePackage(packages.getPackages().get(i).getPackageID(), packages.getPackages().get(i).getConsumerID(), packages.getPackages().get(i).getProducerID());
+                packages.getPackages().remove(i);
+            }
+        }
+        return packages;
     }
 
     public ArrayList<Package> getPackages() {

@@ -20,7 +20,7 @@ public class ResponseController {
     public DefaultClass makeResponse(@FormParam("token") String token,
                                      @FormParam("personID") int id,
                                      @FormParam("date") String date,
-                                     @FormParam("personID") int personID,
+                                     @FormParam("id") int personID,
                                      @FormParam("text") String text,
                                      @FormParam("mark") int mark,
                                      @FormParam("packageID") int packageID) {
@@ -31,7 +31,6 @@ public class ResponseController {
 
                 User.setLastOnlineDate(id);
                 new Response(user.getPersonID(), personID, text, mark);
-                User.addMark(personID, mark);
 
                 return new DefaultClass(true, token);
             }

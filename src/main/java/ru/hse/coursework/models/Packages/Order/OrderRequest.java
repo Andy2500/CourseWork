@@ -42,6 +42,11 @@ public class OrderRequest implements Serializable {
         return Service.getOrderRequestsByQuery(query);
     }
 
+    public static ArrayList<OrderRequest> getRequestsByPersonID(int ID) throws Exception {
+        String query = "Select * From OrderRequests Where PersonID = " + ID;
+        return Service.getOrderRequestsByQuery(query);
+    }
+
     public void setRequestID(int requestID) {
         this.requestID = requestID;
     }

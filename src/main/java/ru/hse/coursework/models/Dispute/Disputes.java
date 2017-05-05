@@ -20,17 +20,13 @@ public class Disputes {
     }
 
     public static Disputes getDisputesByPersonID(int personID) throws Exception {
-        String query = "Select * From Disputes Where PersonID = " + personID;
-        Disputes disputes = new Disputes();
-        disputes.setDisputes(Service.getDisputesByQuery(query));
-        return disputes;
+        String query = "select * from [dbo].[Disputеs]   Where PersonID = " + personID;
+        return Service.getDisputesByQuery(query);
     }
 
     public static Disputes getAllDisputes() throws Exception {
         String query = "Select * From Disputes Where Status = 0";
-        Disputes disputes = new Disputes();
-        disputes.setDisputes(Service.getDisputesByQuery(query));
-        return disputes;
+        return Service.getDisputesByQuery(query);
     }
 
     public ArrayList<Dispute> getDisputes() {

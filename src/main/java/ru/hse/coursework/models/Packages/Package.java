@@ -79,11 +79,7 @@ public class Package implements Serializable {
     }
 
     public static void deletePackage(int packageID, int personID, int personID2) throws Exception {
-        String command = "Delete From Orders Where OrderID = " + packageID;
-        Service.execCommand(command);
-        command = "Update Users Set CountOfPackages = CountOfPackages - 1 Where PersonID = " + personID;
-        Service.execCommand(command);
-        command = "Update Users Set CountOfPackages = CountOfPackages - 1 Where PersonID = " + personID2;
+        String command = "Delete From Packages Where PackageID = " + packageID;
         Service.execCommand(command);
     }
 

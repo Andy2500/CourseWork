@@ -13,7 +13,7 @@ public class Dispute {
     private int packageID;
     private int type; //1 - Доставка не было осуществлена 2 - Доставка не подтверждена получателем, 3 - Товар не передан, пруф залит
     private int personID;
-    private int status; //0 - открыт, 1 - закрыть
+    private int status; //0 - открыт, 1 - закрыт
     private String text;
 
     private Date publishDate;
@@ -30,13 +30,13 @@ public class Dispute {
         this.personID = personID;
         this.text = text;
 
-        String command = "Insert Into Disputes (PackageID, Type, PersonID, Text) " +
-                "VALUES (" + packageID + "," + type + "," + personID + ",'" + text + "')";
+        String command = "insert into Disputеs ( DisputeID, PackageID, Type, PersonID, Status, Text, PublishDate) " +
+                "values ((Select MAX(DisputeID) FROM Disputеs) + 1," + packageID + "," + type + "," + personID + ", 0,'" + text + "','" + Service.getNowMomentInUTC() + "')";
         Service.execCommand(command);
     }
 
     public static void changeStatus(int disputeID, int status) throws Exception {
-        String command = "Update Disputes Set Status = " + status + "Where" + "DisputeID = " + disputeID;
+        String command = "update [dbo].[Disputеs] set [Status]=\'" + status + "\' where [DisputeID]= \'" + disputeID + "\'";
         Service.execCommand(command);
     }
 
