@@ -1,11 +1,12 @@
 package ru.hse.coursework.models.Chat;
 
-import ru.hse.coursework.models.Service.DefaultClass;
-import ru.hse.coursework.models.Service.Service;
+import ru.hse.coursework.models.DefaultClass;
 import ru.hse.coursework.models.User.User;
+import ru.hse.coursework.service.DBManager;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 
 @XmlRootElement
@@ -29,12 +30,23 @@ public class Dialog implements Serializable {
 
         String command = "Insert Into Dialogs (DialogID, PersonID_1, PersonID_2) " +
                 "Values ((Select Max(DialogID) From Dialogs) + 1," + PersonID_1 + "," + PersonID_2 + ")";
-        Service.execCommand(command);
+        DBManager.execCommand(command);
     }
 
     public static Dialog getDialogByPersonIDs(int personID_1, int personID_2, Boolean type, int personID) throws Exception {
         String query = "Select * From Dialogs Where (PersonID_1 = " + personID_1 + " AND PersonID_2 = " + personID_2 + ") OR (PersonID_2 = " + personID_1 + "AND PersonID_1 = " + personID_2 + ")";
-        return Service.getDialogByQuery(query, type, personID);
+        return DBManager.getDialogByQuery(query, type, personID);
+    }
+
+    public static Dialog parseDialogFromResultSet(ResultSet resultSet) throws Exception {
+        Dialog dialog = new Dialog();
+
+        dialog.setDialogID(resultSet.getInt("DialogID"));
+        dialog.setPersonID_1(resultSet.getInt("PersonID_1"));
+        dialog.setPersonID_2(resultSet.getInt("PersonID_2"));
+
+        dialog.setMessages(Message.getMessagesByDialogID(dialog.getDialogID()));
+        return dialog;
     }
 
     public int getDialogID() {

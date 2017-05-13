@@ -1,10 +1,11 @@
 package ru.hse.coursework.models.Dispute;
 
-import ru.hse.coursework.models.Packages.Package;
-import ru.hse.coursework.models.Service.Service;
 import ru.hse.coursework.models.User.User;
+import ru.hse.coursework.service.DBManager;
+import ru.hse.coursework.service.DateWorker;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.sql.ResultSet;
 import java.util.Date;
 
 @XmlRootElement
@@ -18,7 +19,6 @@ public class Dispute {
 
     private Date publishDate;
 
-    private Package _package;
     private User person;
 
     public Dispute() {
@@ -30,14 +30,26 @@ public class Dispute {
         this.personID = personID;
         this.text = text;
 
-        String command = "insert into Disputеs ( DisputeID, PackageID, Type, PersonID, Status, Text, PublishDate) " +
-                "values ((Select MAX(DisputeID) FROM Disputеs) + 1," + packageID + "," + type + "," + personID + ", 0,'" + text + "','" + Service.getNowMomentInUTC() + "')";
-        Service.execCommand(command);
+        String command = "insert into Disputes ( DisputeID, PackageID, Type, PersonID, Status, Text, PublishDate) " +
+                "values ((Select MAX(DisputeID) FROM Disputes) + 1," + packageID + "," + type + "," + personID + ", 0,'" + text + "','" + DateWorker.getNowMomentInUTC() + "')";
+        DBManager.execCommand(command);
     }
 
     public static void changeStatus(int disputeID, int status) throws Exception {
-        String command = "update [dbo].[Disputеs] set [Status]=\'" + status + "\' where [DisputeID]= \'" + disputeID + "\'";
-        Service.execCommand(command);
+        String command = "update Disputes set Status=\'" + status + "\' where DisputeID= \'" + disputeID + "\'";
+        DBManager.execCommand(command);
+    }
+
+    public static Dispute parseDisputeFromResultSet(ResultSet resultSet) throws Exception {
+        Dispute dispute = new Dispute();
+        dispute.setStatus(resultSet.getInt("Status"));
+        dispute.setDisputeID(resultSet.getInt("DisputeID"));
+        dispute.setPublishDate(resultSet.getTimestamp("PublishDate"));
+        dispute.setPackageID(resultSet.getInt("PackageID"));
+        dispute.setPersonID(resultSet.getInt("PersonID"));
+        dispute.setText(resultSet.getString("Text"));
+        dispute.setPerson(User.getUserByID(dispute.getPersonID()));
+        return dispute;
     }
 
     public int getDisputeID() {
@@ -86,14 +98,6 @@ public class Dispute {
 
     public void setText(String text) {
         this.text = text;
-    }
-
-    public Package get_package() {
-        return _package;
-    }
-
-    public void set_package(Package _package) {
-        this._package = _package;
     }
 
     public User getPerson() {

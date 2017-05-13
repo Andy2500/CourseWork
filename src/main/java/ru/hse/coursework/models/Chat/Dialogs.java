@@ -1,7 +1,7 @@
 package ru.hse.coursework.models.Chat;
 
-import ru.hse.coursework.models.Service.DefaultClass;
-import ru.hse.coursework.models.Service.Service;
+import ru.hse.coursework.models.DefaultClass;
+import ru.hse.coursework.service.DBManager;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
@@ -24,7 +24,7 @@ public class Dialogs implements Serializable {
 
     public static Dialogs getDialogsByPersonID(int personID) throws Exception {
         String query = "Select * From Dialogs Where PersonID_1 = " + personID + " OR PersonID_2 = " + personID;
-        return new Dialogs(Service.getDialogsByQuery(query, personID), new DefaultClass(true, ""));
+        return new Dialogs(DBManager.getDialogsByQuery(query, personID), new DefaultClass(true, ""));
     }
 
     public ArrayList<Dialog> getDialogs() {

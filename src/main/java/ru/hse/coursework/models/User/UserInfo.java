@@ -1,6 +1,6 @@
 package ru.hse.coursework.models.User;
 
-import ru.hse.coursework.models.Service.DefaultClass;
+import ru.hse.coursework.models.DefaultClass;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
@@ -11,7 +11,6 @@ public class UserInfo implements Serializable {
     private DefaultClass defaultClass;
 
     public UserInfo() {
-
     }
 
     public UserInfo(int personID, DefaultClass defaultClass) {

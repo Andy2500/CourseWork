@@ -1,10 +1,12 @@
 package ru.hse.coursework.models.Response;
 
-import ru.hse.coursework.models.Service.Service;
 import ru.hse.coursework.models.User.User;
+import ru.hse.coursework.service.DBManager;
+import ru.hse.coursework.service.DateWorker;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -28,18 +30,32 @@ public class Comment implements Serializable {
         this.text = text;
 
         String command = "Insert Into Comments (CommentID, ResponseID, PersonID, Text, Date)" +
-                "Values ((Select MAX(CommentID) FROM Comments) + 1, " + responseID + ", " + personID + ",'" + text + "','" + Service.getNowMomentInUTC() + "')";
-        Service.execCommand(command);
+                "Values ((Select MAX(CommentID) FROM Comments) + 1, " + responseID + ", " + personID + ",'" + text + "','" + DateWorker.getNowMomentInUTC() + "')";
+        DBManager.execCommand(command);
     }
 
     public static void deleteComment(int commentID) throws Exception {
         String command = "Delete From Comments Where CommentID = " + commentID;
-        Service.execCommand(command);
+        DBManager.execCommand(command);
     }
 
     public static ArrayList<Comment> getCommentsByResponseID(int ID) throws Exception {
         String query = "Select * From Comments Where ResponseID = " + ID;
-        return Service.getCommentsByQuery(query);
+        return DBManager.getCommentsByQuery(query);
+    }
+
+    public static Comment parseCommentFromResultSet(ResultSet resultSet) throws Exception {
+        Comment comment = new Comment();
+
+        comment.setPersonID(resultSet.getInt("PersonID"));
+        comment.setText(resultSet.getString("Text"));
+        comment.setCommentID(resultSet.getInt("CommentID"));
+        comment.setResponseID(resultSet.getInt("ResponseID"));
+        comment.setCommenter(User.getUserByID(comment.getPersonID()));
+        comment.setDate(resultSet.getTimestamp("Date"));
+
+        comment.getCommenter().clear();
+        return comment;
     }
 
     public Integer getCommentID() {

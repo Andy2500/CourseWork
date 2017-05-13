@@ -1,11 +1,13 @@
 package ru.hse.coursework.models.Packages.Offer;
 
-import ru.hse.coursework.models.Service.DefaultClass;
-import ru.hse.coursework.models.Service.Service;
+import ru.hse.coursework.models.DefaultClass;
 import ru.hse.coursework.models.User.User;
+import ru.hse.coursework.service.DBManager;
+import ru.hse.coursework.service.DateWorker;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -42,22 +44,22 @@ public class PackageOffer implements Serializable {
         this.watches = 0;
 
         String command = "Insert Into Offers (OfferID, PersonID, Source, Destination, StartDate, EndDate, Text, PublishDate, Watches)" +
-                "Values ((Select Max(OfferID) From Offers) + 1, " + personID + ",'" + source + "', '" + destination + "','" + Service.makeSqlDateString(startDate) + "','" + Service.makeSqlDateString(endDate) + "','" + text + "','" + Service.getNowMomentInUTC() + "', 0 )";
-        Service.execCommand(command);
+                "Values ((Select Max(OfferID) From Offers) + 1, " + personID + ",'" + source + "', '" + destination + "','" + DateWorker.makeSqlDateString(startDate) + "','" + DateWorker.makeSqlDateString(endDate) + "','" + text + "','" + DateWorker.getNowMomentInUTC() + "', 0 )";
+        DBManager.execCommand(command);
     }
 
     public static PackageOffer getOfferByID(int ID) throws Exception {
         String query = "Update Offers Set Watches = Watches + 1 Where OfferID = " + ID;
-        Service.execCommand(query);
+        DBManager.execCommand(query);
         query = "Select * From Offers Where OfferID = " + ID;
-        return Service.getOfferByQuery(query);
+        return DBManager.getOfferByQuery(query);
     }
 
     public static void deletePackageOffer(int ID, int personID) throws Exception {
         String command = "Delete From Offers Where OfferID = " + ID;
-        Service.execCommand(command);
+        DBManager.execCommand(command);
         command = "Delete From OfferRequests Where OfferID = " + ID;
-        Service.execCommand(command);
+        DBManager.execCommand(command);
     }
 
     public static Offers getOffersByRequests(ArrayList<OfferRequest> requests) throws Exception {
@@ -71,7 +73,27 @@ public class PackageOffer implements Serializable {
             }
         }
 
-        return Service.getOffersByQuery(query);
+        return DBManager.getOffersByQuery(query);
+    }
+
+    public static PackageOffer parseOfferFromResultSet(ResultSet resultSet) throws Exception {
+        PackageOffer offer = new PackageOffer();
+
+        offer.setOfferID(resultSet.getInt("OfferID"));
+        offer.setText(resultSet.getString("Text"));
+        offer.setPersonID(resultSet.getInt("PersonID"));
+        offer.setStartDate(resultSet.getTimestamp("StartDate"));
+        offer.setEndDate(resultSet.getTimestamp("EndDate"));
+        offer.setDestination(resultSet.getString("Destination"));
+        offer.setSource(resultSet.getString("Source"));
+        offer.setPublishDate(resultSet.getTimestamp("PublishDate"));
+        offer.setWatches(resultSet.getInt("Watches"));
+
+        offer.setRequests(OfferRequest.getRequestsByOfferID(offer.getOfferID()));
+        offer.setPerson(User.getUserByID(offer.getPersonID()));
+
+        offer.getPerson().clear();
+        return offer;
     }
 
     public Integer getOfferID() {

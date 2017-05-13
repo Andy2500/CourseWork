@@ -1,11 +1,13 @@
 package ru.hse.coursework.models.Response;
 
-import ru.hse.coursework.models.Service.DefaultClass;
-import ru.hse.coursework.models.Service.Service;
+import ru.hse.coursework.models.DefaultClass;
 import ru.hse.coursework.models.User.User;
+import ru.hse.coursework.service.DBManager;
+import ru.hse.coursework.service.DateWorker;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -35,18 +37,33 @@ public class Response implements Serializable {
         this.defaultClass = new DefaultClass(true, "");
 
         String command = "Insert Into Responses (ResponseID, PersonID, CriticID, Text, Mark, Date)" +
-                "Values ((Select MAX(ResponseID) FROM Responses) + 1, " + personID + "," + criticID + ",'" + text + "'," + mark + ",'" + Service.getNowMomentInUTC() + "')";
-        Service.execCommand(command);
+                "Values ((Select MAX(ResponseID) FROM Responses) + 1, " + personID + "," + criticID + ",'" + text + "'," + mark + ",'" + DateWorker.getNowMomentInUTC() + "')";
+        DBManager.execCommand(command);
     }
 
     public static Response getResponseByID(int ID) throws Exception {
         String query = "Select * From Responses Where ResponseID = " + ID;
-        Response response = Service.getResponseByQuery(query);
+        Response response = DBManager.getResponseByQuery(query);
 
         response.critic.clear();
         for (Comment comment : response.comments) {
             comment.getCommenter().clear();
         }
+        return response;
+    }
+
+    public static Response parseResponseFromResultSet(ResultSet resultSet) throws Exception {
+        Response response = new Response();
+        response.setResponseID(resultSet.getInt("ResponseID"));
+        response.setComments(Comment.getCommentsByResponseID(response.getResponseID()));
+        response.setPersonID(resultSet.getInt("PersonID"));
+        response.setCriticID(resultSet.getInt("CriticID"));
+        response.setCritic(User.getUserByID(response.getCriticID()));
+        response.setMark(resultSet.getInt("Mark"));
+        response.setText(resultSet.getString("Text"));
+        response.setDate(resultSet.getTimestamp("Date"));
+
+        response.getCritic().clear();
         return response;
     }
 

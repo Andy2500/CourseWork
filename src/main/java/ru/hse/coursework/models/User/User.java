@@ -1,10 +1,12 @@
 package ru.hse.coursework.models.User;
 
-import ru.hse.coursework.models.Service.DefaultClass;
-import ru.hse.coursework.models.Service.Service;
+import ru.hse.coursework.models.DefaultClass;
+import ru.hse.coursework.service.DBManager;
+import ru.hse.coursework.service.DateWorker;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.sql.ResultSet;
 import java.util.Date;
 
 @XmlRootElement
@@ -63,21 +65,21 @@ public class User implements Serializable {
 
     public static void exists(String login, String phone, String email) throws Exception {
         String query = "Select * From Users Where Login = '" + login + "'";
-        User user = Service.getUserByQuery(query);
+        User user = DBManager.getUserByQuery(query);
 
         if (user.getPersonID() != 0) {
             throw new Exception("Login Error");
         }
 
         query = "Select * From Users Where Phone = '" + phone + "'";
-        user = Service.getUserByQuery(query);
+        user = DBManager.getUserByQuery(query);
 
         if (user.getPersonID() != 0) {
             throw new Exception("Phone Error");
         }
 
         query = "Select * From Users Where Email = '" + email + "'";
-        user = Service.getUserByQuery(query);
+        user = DBManager.getUserByQuery(query);
 
         if (user.getPersonID() != 0) {
             throw new Exception("Email Error");
@@ -91,8 +93,8 @@ public class User implements Serializable {
         this.hashpsd = hashpsd;
         this.phone = phone;
         String command = "Insert Into Users (PersonID,Login,Email,Name,HashPassword,Phone,Photo, LastOnlineDate, Token, Status, DocumentPhoto, LastLatitude, LastLongitude)"
-                + "Values ((Select MAX(PersonID) FROM Users) + 1,'" + login + "','" + email + "','" + name + "','" + hashpsd + "','" + phone + "',NULL,'" + Service.getNowMomentInUTC() + "','" + token + "',0,NULL,0,0)";
-        Service.execCommand(command);
+                + "Values ((Select MAX(PersonID) FROM Users) + 1,'" + login + "','" + email + "','" + name + "','" + hashpsd + "','" + phone + "',NULL,'" + DateWorker.getNowMomentInUTC() + "','" + token + "',0,NULL,0,0)";
+        DBManager.execCommand(command);
     }
 
     public void clear() {
@@ -113,7 +115,7 @@ public class User implements Serializable {
     //получение пользователя по ID
     public static User getUserByID(int ID) throws Exception {
         String query = "Select * From Users Where PersonID = " + ID;
-        User user = Service.getUserByQuery(query);
+        User user = DBManager.getUserByQuery(query);
 
         if (user.getPersonID() == 0) {
             throw new Exception("ID Error");
@@ -125,10 +127,10 @@ public class User implements Serializable {
     //получение пользователя по токену
     public static User getUserByToken(String token) throws Exception {
         String query = "Select * From Users Where Token = '" + token + "'";
-        User user = Service.getUserByQuery(query);
+        User user = DBManager.getUserByQuery(query);
 
         if (user.getPersonID() == 0) {
-            throw new Exception("Token Error");
+            throw new Exception("token Error");
         }
 
         return user;
@@ -137,7 +139,7 @@ public class User implements Serializable {
     //получение пользователя по ID
     public static User getUserByLogin(String login) throws Exception {
         String query = "Select * From Users Where Login = '" + login + "'";
-        User user = Service.getUserByQuery(query);
+        User user = DBManager.getUserByQuery(query);
 
         if (user.getPersonID() == 0) {
             throw new Exception("Login Error");
@@ -147,7 +149,7 @@ public class User implements Serializable {
 
     public static void setLogin(int personID, String login) throws Exception {
         String command = "Update Users Set Login = '" + login + "' Where PersonID = " + personID;
-        Service.execCommand(command);
+        DBManager.execCommand(command);
     }
 
     public static void setEmail(User user, String email, String last) throws Exception {
@@ -157,18 +159,18 @@ public class User implements Serializable {
         } else {
             user.email = email;
             String command = " Update Users Set Email = '" + email + "' Where PersonID = " + user.personID;
-            Service.execCommand(command);
+            DBManager.execCommand(command);
         }
     }
 
     public static void setName(int personID, String name) throws Exception {
         String command = "Update Users Set Name = '" + name + "' Where PersonID=" + personID;
-        Service.execCommand(command);
+        DBManager.execCommand(command);
     }
 
     public static void setDocumentPhoto(int personID, String documentPhoto) throws Exception {
         String query = "Update Users Set DocumentPhoto = ? Where PersonID = " + personID;
-        Service.loadPhoto(query, javax.xml.bind.DatatypeConverter.parseBase64Binary(documentPhoto));
+        DBManager.loadPhoto(query, javax.xml.bind.DatatypeConverter.parseBase64Binary(documentPhoto));
     }
 
     public static void setHashpsd(User user, String hashpsd, String last) throws Exception {
@@ -178,7 +180,7 @@ public class User implements Serializable {
         } else {
             user.hashpsd = hashpsd;
             String command = "Update Users Set HashPassword = '" + hashpsd + "' Where PersonID=" + user.personID;
-            Service.execCommand(command);
+            DBManager.execCommand(command);
         }
     }
 
@@ -188,40 +190,72 @@ public class User implements Serializable {
         } else {
             user.phone = phone;
             String command = "Update Users Set Phone = '" + phone + "' Where PersonID=" + user.personID;
-            Service.execCommand(command);
+            DBManager.execCommand(command);
         }
     }
 
     public static void setToken(int personID, String token) throws Exception {
         String command = "Update Users Set Token = '" + token + "' Where PersonID = " + personID;
-        Service.execCommand(command);
+        DBManager.execCommand(command);
     }
 
     public static void setLastOnlineDate(int personID) throws Exception {
-        String command = "Update Users Set LastOnlineDate = '" + Service.getNowMomentInUTC() + "' Where PersonID = " + personID;
-        Service.execCommand(command);
+        String command = "Update Users Set LastOnlineDate = '" + DateWorker.getNowMomentInUTC() + "' Where PersonID = " + personID;
+        DBManager.execCommand(command);
     }
 
     public static void setPhoto(int personID, String photo) throws Exception {
         String query = "Update Users Set Photo = ? Where PersonID = " + personID;
-        Service.loadPhoto(query, javax.xml.bind.DatatypeConverter.parseBase64Binary(photo));
+        DBManager.loadPhoto(query, javax.xml.bind.DatatypeConverter.parseBase64Binary(photo));
     }
 
     public static void setStatus(int personID, int status) throws Exception {
         String command = "Update Users Set Status = " + status + " Where PersonID = " + personID;
-        Service.execCommand(command);
+        DBManager.execCommand(command);
     }
 
     public static void setCoordinates(int personID, float lastLongitude, float lastLatitude) throws Exception {
         String command = "Update Users Set LastLatitude = " + lastLatitude + ", LastLongitude = " + lastLongitude + " Where PersonID = " + personID;
-        Service.execCommand(command);
+        DBManager.execCommand(command);
     }
 
     public static int getCountOfOpenProducerPackagesByPersonID(int personID) throws Exception {
         String query = "SELECT COUNT(*) " + " FROM Packages Where ProducerID = " + personID + " AND Status = 1";
-        return Service.getIntByQuery(query, "");
+        return DBManager.getIntByQuery(query, "");
     }
 
+    public static User parseUserFromResultSet(ResultSet resultSet) throws Exception {
+        User user = new User();
+
+        byte[] ph = resultSet.getBytes("Photo");
+        byte[] docPhoto = resultSet.getBytes("DocumentPhoto");
+
+        user.setPersonID(resultSet.getInt("personID"));
+        user.setLogin(resultSet.getString("login"));
+        user.setEmail(resultSet.getString("email"));
+        user.setName(resultSet.getString("name"));
+        user.setHashpsd(resultSet.getString("HashPassword"));
+        user.setPhone(resultSet.getString("Phone"));
+        user.setCountOfOffers(DBManager.getIntByQuery("Select Count(*) From Offers Where PersonID = " + user.getPersonID(), ""));
+        user.setCountOfOrders(DBManager.getIntByQuery("Select Count(*) From Orders Where PersonID = " + user.getPersonID(), ""));
+        user.setCountOfPackages(DBManager.getIntByQuery("Select Count(*) From Packages Where ConsumerID = " + user.getPersonID() + "OR ProducerID = " + user.getPersonID() + "OR GetterID = " + user.getPersonID(), ""));
+        user.setCountOfResponses(DBManager.getIntByQuery("Select Count(*) From Responses Where PersonID = " + user.getPersonID(), ""));
+        user.setSumOfResponses(DBManager.getIntByQuery("Select Sum(Mark) From Responses Where PersonID = " + user.getPersonID(), ""));
+        user.setLastLatitude(resultSet.getFloat("LastLatitude"));
+        user.setLastLongitude(resultSet.getFloat("LastLongitude"));
+        user.setLastOnlineDate(resultSet.getTimestamp("lastOnlineDate"));
+        user.setToken(resultSet.getString("Token"));
+        user.setStatus(resultSet.getInt("Status"));
+
+        if (ph != null) {
+            user.setPhoto(javax.xml.bind.DatatypeConverter.printBase64Binary(ph));
+        }
+        if (docPhoto != null) {
+            user.setDocumentPhoto(javax.xml.bind.DatatypeConverter.printBase64Binary(docPhoto));
+        }
+
+        return user;
+    }
 
     public int getPersonID() {
         return personID;

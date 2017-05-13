@@ -1,6 +1,6 @@
 package ru.hse.coursework.models.Chat;
 
-import ru.hse.coursework.models.Service.DefaultClass;
+import ru.hse.coursework.models.DefaultClass;
 
 import java.util.ArrayList;
 

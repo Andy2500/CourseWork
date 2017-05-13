@@ -1,10 +1,12 @@
 package ru.hse.coursework.models.Chat;
 
-import ru.hse.coursework.models.Service.DefaultClass;
-import ru.hse.coursework.models.Service.Service;
+import ru.hse.coursework.models.DefaultClass;
+import ru.hse.coursework.service.DBManager;
+import ru.hse.coursework.service.DateWorker;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -28,20 +30,30 @@ public class Message implements Serializable {
         this.dialogID = dialogID;
         this.text = text;
         String command = "Insert Into Messages (MessageID, DialogID, PersonID, Text, Date, Watched)"
-                + "Values ((Select Max(MessageID) From Messages) + 1 ," + dialogID + "," + personID + ",'" + text + "','" + Service.getNowMomentInUTC() + "', 0 )";
-        Service.execCommand(command);
+                + "Values ((Select Max(MessageID) From Messages) + 1 ," + dialogID + "," + personID + ",'" + text + "','" + DateWorker.getNowMomentInUTC() + "', 0 )";
+        DBManager.execCommand(command);
     }
 
     public static ArrayList<Message> getLastMessagesByDialogID(int dialogID) throws Exception {
         String query = "Select * From Messages Where Watched = 0 AND DialogID = " + dialogID + "";
-        return Service.getMessagesByQuery(query);
+        return DBManager.getMessagesByQuery(query);
     }
 
     public static ArrayList<Message> getMessagesByDialogID(int ID) throws Exception {
         String query = "Select * From Messages Where DialogID =" + ID;
-        return Service.getMessagesByQuery(query);
+        return DBManager.getMessagesByQuery(query);
     }
 
+    public static Message parseMessageFromResultSet(ResultSet resultSet) throws Exception {
+        Message message = new Message();
+        message.setPersonID(resultSet.getInt("PersonID"));
+        message.setText(resultSet.getString("Text"));
+        message.setDate(resultSet.getTimestamp("Date"));
+        message.setDialogID(resultSet.getInt("DialogID"));
+        message.setMessageID(resultSet.getInt("MessageID"));
+        message.setWatched(resultSet.getInt("Watched"));
+        return message;
+    }
 
     public Integer getMessageID() {
         return messageID;

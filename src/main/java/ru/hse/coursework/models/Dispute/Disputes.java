@@ -1,7 +1,7 @@
 package ru.hse.coursework.models.Dispute;
 
-import ru.hse.coursework.models.Service.DefaultClass;
-import ru.hse.coursework.models.Service.Service;
+import ru.hse.coursework.models.DefaultClass;
+import ru.hse.coursework.service.DBManager;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
@@ -20,13 +20,13 @@ public class Disputes {
     }
 
     public static Disputes getDisputesByPersonID(int personID) throws Exception {
-        String query = "select * from [dbo].[Disputеs]   Where PersonID = " + personID;
-        return Service.getDisputesByQuery(query);
+        String query = "select * from Disputes Where PersonID = " + personID;
+        return DBManager.getDisputesByQuery(query);
     }
 
     public static Disputes getAllDisputes() throws Exception {
         String query = "Select * From Disputes Where Status = 0";
-        return Service.getDisputesByQuery(query);
+        return DBManager.getDisputesByQuery(query);
     }
 
     public ArrayList<Dispute> getDisputes() {

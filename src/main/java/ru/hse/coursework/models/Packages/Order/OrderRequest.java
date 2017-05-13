@@ -1,10 +1,11 @@
 package ru.hse.coursework.models.Packages.Order;
 
-import ru.hse.coursework.models.Service.Service;
 import ru.hse.coursework.models.User.User;
+import ru.hse.coursework.service.DBManager;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 
 @XmlRootElement
@@ -24,27 +25,40 @@ public class OrderRequest implements Serializable {
         this.orderID = orderID;
 
         String command = "Insert Into OrderRequests (RequestID, PersonID, OrderID) Values ((Select Max(RequestID) From OrderRequests) + 1," + personID + "," + orderID + ")";
-        Service.execCommand(command);
+        DBManager.execCommand(command);
     }
 
     public static void deleteRequest(int requestID) throws Exception {
         String command = "Delete From OrderRequests Where RequestID = " + requestID;
-        Service.execCommand(command);
+        DBManager.execCommand(command);
     }
 
     public static OrderRequest getRequestByID(int ID) throws Exception {
         String query = "Select * From OrderRequests Where RequestID = " + ID;
-        return Service.getOrderRequestByQuery(query);
+        return DBManager.getOrderRequestByQuery(query);
     }
 
     public static ArrayList<OrderRequest> getRequestsByOrderID(int ID) throws Exception {
         String query = "Select * From OrderRequests Where OrderID = " + ID;
-        return Service.getOrderRequestsByQuery(query);
+        return DBManager.getOrderRequestsByQuery(query);
     }
 
     public static ArrayList<OrderRequest> getRequestsByPersonID(int ID) throws Exception {
         String query = "Select * From OrderRequests Where PersonID = " + ID;
-        return Service.getOrderRequestsByQuery(query);
+        return DBManager.getOrderRequestsByQuery(query);
+    }
+
+    public static OrderRequest parseOrderRequestFromResultSet(ResultSet resultSet) throws Exception {
+        OrderRequest request = new OrderRequest();
+
+        request.setRequestID(resultSet.getInt("RequestID"));
+        request.setPersonID(resultSet.getInt("PersonID"));
+        request.setOrderID(resultSet.getInt("OrderID"));
+
+        request.setPerson(User.getUserByID(request.getPersonID()));
+
+        request.getPerson().clear();
+        return request;
     }
 
     public void setRequestID(int requestID) {

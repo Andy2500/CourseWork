@@ -1,7 +1,7 @@
 package ru.hse.coursework.models.Packages;
 
-import ru.hse.coursework.models.Service.DefaultClass;
-import ru.hse.coursework.models.Service.Service;
+import ru.hse.coursework.models.DefaultClass;
+import ru.hse.coursework.service.DBManager;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
@@ -16,11 +16,11 @@ public class Packages implements Serializable {
 
     public static Packages getPackagesByUserID(int ID) throws Exception {
         String query = "Select * From Packages Where (ProducerID = " + ID + ") OR ( ConsumerID = " + ID + ") OR (GetterID = " + ID + ")";
-        Packages packages = Service.getPackagesByQuery(query);
+        Packages packages = DBManager.getPackagesByQuery(query);
 
         for (int i = 0; i < packages.getPackages().size(); i++) {
             if (packages.getPackages().get(i).getEventDate().getTime() + 86400000 < (new Date().getTime()) && packages.getPackages().get(i).getStatus() == 0) {
-                Package.deletePackage(packages.getPackages().get(i).getPackageID(), packages.getPackages().get(i).getConsumerID(), packages.getPackages().get(i).getProducerID());
+                Package.deletePackage(packages.getPackages().get(i).getPackageID());
                 packages.getPackages().remove(i);
             }
         }

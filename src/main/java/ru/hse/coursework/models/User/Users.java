@@ -1,7 +1,7 @@
 package ru.hse.coursework.models.User;
 
-import ru.hse.coursework.models.Service.DefaultClass;
-import ru.hse.coursework.models.Service.Service;
+import ru.hse.coursework.models.DefaultClass;
+import ru.hse.coursework.service.DBManager;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
@@ -21,12 +21,12 @@ public class Users {
 
     public static Users getUsersForConfirm() throws Exception {
         String query = "Select * From Users Where Status = 0";
-        return Service.getUsersByQuery(query);
+        return DBManager.getUsersByQuery(query);
     }
 
     public static Users getUsersWithLogin(String login) throws Exception {
         String query = "Select * From Users Where Login Like '%" + login + "%'";
-        return Service.getUsersByQuery(query);
+        return DBManager.getUsersByQuery(query);
     }
 
     public ArrayList<User> getUsers() {

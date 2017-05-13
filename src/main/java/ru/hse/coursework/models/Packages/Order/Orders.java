@@ -1,7 +1,8 @@
 package ru.hse.coursework.models.Packages.Order;
 
-import ru.hse.coursework.models.Service.DefaultClass;
-import ru.hse.coursework.models.Service.Service;
+import ru.hse.coursework.models.DefaultClass;
+import ru.hse.coursework.service.DBManager;
+import ru.hse.coursework.service.DateWorker;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
@@ -15,13 +16,13 @@ public class Orders implements Serializable {
     private DefaultClass defaultClass;
 
     public static Orders getOrdersByParams(String source, String destination, Date startDate, Date endDate) throws Exception {
-        String query = "Select * From Orders Where (Source = '" + source + "') AND (Destination = '" + destination + "') AND (StartDate >= '" + Service.makeSqlDateString(startDate) + "') AND (EndDate <= '" + Service.makeSqlDateString(endDate) + " 23:59')";
-        return Service.getOrdersByQuery(query);
+        String query = "Select * From Orders Where (Source = '" + source + "') AND (Destination = '" + destination + "') AND (StartDate >= '" + DateWorker.makeSqlDateString(startDate) + "') AND (EndDate <= '" + DateWorker.makeSqlDateString(endDate) + " 23:59')";
+        return DBManager.getOrdersByQuery(query);
     }
 
     public static Orders getOrdersByUserID(int ID) throws Exception {
         String query = "Select * From Orders Where PersonID = " + ID;
-        return Service.getOrdersByQuery(query);
+        return DBManager.getOrdersByQuery(query);
     }
 
 

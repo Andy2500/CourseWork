@@ -1,8 +1,8 @@
 package ru.hse.coursework.models.User;
 
+import ru.hse.coursework.models.DefaultClass;
 import ru.hse.coursework.models.Response.Response;
-import ru.hse.coursework.models.Service.DefaultClass;
-import ru.hse.coursework.models.Service.Service;
+import ru.hse.coursework.service.DBManager;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
@@ -20,7 +20,7 @@ public class UserProfile implements Serializable {
         userProfile.user = User.getUserByID(ID);
         userProfile.user.clear();
         String query = "Select * From Responses Where PersonID = " + ID;
-        userProfile.responses = Service.getResponsesByQuery(query);
+        userProfile.responses = DBManager.getResponsesByQuery(query);
         return userProfile;
     }
 
@@ -30,7 +30,7 @@ public class UserProfile implements Serializable {
         String query = "Select * From Responses Where PersonID = " + user.getPersonID();
         userProfile.user = user;
         userProfile.user.cleanForUser();
-        userProfile.responses = Service.getResponsesByQuery(query);
+        userProfile.responses = DBManager.getResponsesByQuery(query);
         return userProfile;
     }
 

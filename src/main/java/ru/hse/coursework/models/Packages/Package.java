@@ -1,12 +1,14 @@
 package ru.hse.coursework.models.Packages;
 
+import ru.hse.coursework.models.DefaultClass;
 import ru.hse.coursework.models.Packages.Offer.PackageOffer;
-import ru.hse.coursework.models.Service.DefaultClass;
-import ru.hse.coursework.models.Service.Service;
 import ru.hse.coursework.models.User.User;
+import ru.hse.coursework.service.DBManager;
+import ru.hse.coursework.service.DateWorker;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.sql.ResultSet;
 import java.util.Date;
 
 @XmlRootElement
@@ -29,8 +31,6 @@ public class Package implements Serializable {
     private Date eventDate;
     private Date finishDate;
 
-    private String text;
-
     private User consumer;
     private User producer;
     private User getter;
@@ -40,7 +40,7 @@ public class Package implements Serializable {
 
     private DefaultClass defaultClass;
 
-    public Package(int consumerID, int producerID, int getterID, float sourceLatitude, float sourceLongitude, float destinationLatitude, float destinationLongitude, String sourceAdress, String destinationAdress, Date eventDate, Date finishDate, String text) throws Exception {
+    public Package(int consumerID, int producerID, int getterID, float sourceLatitude, float sourceLongitude, float destinationLatitude, float destinationLongitude, String sourceAdress, String destinationAdress, Date eventDate, Date finishDate) throws Exception {
         this.consumerID = consumerID;
         this.producerID = producerID;
         this.getterID = getterID;
@@ -53,16 +53,16 @@ public class Package implements Serializable {
         this.eventDate = eventDate;
         this.finishDate = finishDate;
 
-        String command = "Insert Into Packages (PackageID, ConsumerID, ProducerID, SourceAddress, DestinationAddress, EventDate, FinishDate, Text, Status, GetterID, SourceLatitude, SourceLongitude, DestinationLatitude, DestinationLongitude, TransferProofPhoto, DeliveryProofPhoto)" +
-                "Values ((Select Max(PackageID) From Packages) + 1," + this.consumerID + "," + this.producerID + ",'" + this.sourceAddress + "','" + this.destinationAddress + "','" + Service.makeSqlDateString(this.eventDate) + "','" + Service.makeSqlDateString(this.finishDate) + "','" + text + "', 0, " + this.getterID + "," + this.sourceLatitude + ", " + this.sourceLongitude + ", " + this.destinationLatitude + ", " + this.destinationLongitude + ", NULL, NULL)";
-        Service.execCommand(command);
+        String command = "Insert Into Packages (PackageID, ConsumerID, ProducerID, SourceAddress, DestinationAddress, EventDate, FinishDate, Status, GetterID, SourceLatitude, SourceLongitude, DestinationLatitude, DestinationLongitude, TransferProofPhoto, DeliveryProofPhoto)" +
+                "Values ((Select Max(PackageID) From Packages) + 1," + this.consumerID + "," + this.producerID + ",'" + this.sourceAddress + "','" + this.destinationAddress + "','" + DateWorker.makeSqlDateString(this.eventDate) + "','" + DateWorker.makeSqlDateString(this.finishDate) + "', 0, " + this.getterID + "," + this.sourceLatitude + ", " + this.sourceLongitude + ", " + this.destinationLatitude + ", " + this.destinationLongitude + ", NULL, NULL)";
+        DBManager.execCommand(command);
     }
 
     public Package(PackageOffer offer, int id) throws Exception {
 
-        String command = "Insert Into Packages (PackageID, ConsumerID, ProducerID, SourceAddress, DestinationAddress, EventDate, FinishDate, Text, Status, GetterID, SourceLatitude, SourceLongitude, DestinationLatitude, DestinationLongitude, TransferProofPhoto, DeliveryProofPhoto)" +
-                "Values ((Select Max(PackageID) From Packages) + 1," + offer.getPersonID() + "," + id + ",'" + offer.getSource() + "','" + offer.getDestination() + "','" + Service.makeSqlDateString(offer.getStartDate()) + "','" + Service.makeSqlDateString(offer.getEndDate()) + "','" + offer.getText() + "', -1, 0,0, 0, 0, 0, NULL, NULL)";
-        Service.execCommand(command);
+        String command = "Insert Into Packages (PackageID, ConsumerID, ProducerID, SourceAddress, DestinationAddress, EventDate, FinishDate, Status, GetterID, SourceLatitude, SourceLongitude, DestinationLatitude, DestinationLongitude, TransferProofPhoto, DeliveryProofPhoto)" +
+                "Values ((Select Max(PackageID) From Packages) + 1," + offer.getPersonID() + "," + id + ",'" + offer.getSource() + "','" + offer.getDestination() + "','" + DateWorker.makeSqlDateString(offer.getStartDate()) + "','" + DateWorker.makeSqlDateString(offer.getEndDate()) + "', -1, 0,0, 0, 0, 0, NULL, NULL)";
+        DBManager.execCommand(command);
     }
 
     public Package() {
@@ -70,33 +70,75 @@ public class Package implements Serializable {
 
     public static Package getPackageByID(int ID) throws Exception {
         String query = "Select * From Packages Where PackageID = " + ID;
-        return Service.getPackageByQuery(query);
+        return DBManager.getPackageByQuery(query);
     }
 
     public static void setStatus(int status, int packageID) throws Exception {
         String query = "Update Packages Set Status = " + status + " Where PackageID = " + packageID;
-        Service.execCommand(query);
+        DBManager.execCommand(query);
     }
 
-    public static void deletePackage(int packageID, int personID, int personID2) throws Exception {
+    public static void deletePackage(int packageID) throws Exception {
         String command = "Delete From Packages Where PackageID = " + packageID;
-        Service.execCommand(command);
+        DBManager.execCommand(command);
     }
 
     public static void setTransferProof(int packageID, String transferProofPhoto) throws Exception {
         String query = "Update Packages Set TransferProofPhoto = ? Where PackageID = " + packageID;
-        Service.loadPhoto(query, javax.xml.bind.DatatypeConverter.parseBase64Binary(transferProofPhoto));
+        DBManager.loadPhoto(query, javax.xml.bind.DatatypeConverter.parseBase64Binary(transferProofPhoto));
     }
 
     public static void setDeliveryProof(int packageID, String deliveryProofPhoto) throws Exception {
         String query = "Update Packages Set TransferProofPhoto = ? Where PackageID = " + packageID;
-        Service.loadPhoto(query, javax.xml.bind.DatatypeConverter.parseBase64Binary(deliveryProofPhoto));
+        DBManager.loadPhoto(query, javax.xml.bind.DatatypeConverter.parseBase64Binary(deliveryProofPhoto));
     }
 
     public static int getProducerIDByPackageID(int packageID) throws Exception {
         String paramName = "ProducerID";
         String query = "Select " + paramName + " From Packages Where PackageID = " + packageID;
-        return Service.getIntByQuery(query, paramName);
+        return DBManager.getIntByQuery(query, paramName);
+    }
+
+    public static Package parsePackageFromResultSet(ResultSet resultSet) throws Exception {
+        Package _package = new Package();
+        _package.setConsumerID(resultSet.getInt("ConsumerID"));
+        _package.setProducerID(resultSet.getInt("ProducerID"));
+        _package.setGetterID(resultSet.getInt("GetterID"));
+        _package.setPackageID(resultSet.getInt("PackageID"));
+        _package.setStatus(resultSet.getInt("Status"));
+
+        _package.setSourceLatitude(resultSet.getFloat("SourceLatitude"));
+        _package.setDestinationLatitude(resultSet.getFloat("DestinationLatitude"));
+        _package.setSourceLongitude(resultSet.getFloat("SourceLongitude"));
+        _package.setDestinationLongitude(resultSet.getFloat("DestinationLongitude"));
+        _package.setDestinationAddress(resultSet.getString("DestinationAddress"));
+        _package.setSourceAddress(resultSet.getString("SourceAddress"));
+
+        byte[] deliveryPhotoProof = resultSet.getBytes("DeliveryProofPhoto");
+        if (deliveryPhotoProof != null) {
+            _package.setDeliveryProofPhoto(javax.xml.bind.DatatypeConverter.printBase64Binary(deliveryPhotoProof));
+        }
+
+        byte[] transferPhotoProof = resultSet.getBytes("TransferProofPhoto");
+        if (transferPhotoProof != null) {
+            _package.setTransferProofPhoto(javax.xml.bind.DatatypeConverter.printBase64Binary(transferPhotoProof));
+
+        }
+
+        _package.setEventDate(resultSet.getTimestamp("EventDate"));
+        _package.setFinishDate(resultSet.getTimestamp("FinishDate"));
+
+        _package.setProducer(User.getUserByID(_package.getProducerID()));
+        _package.setConsumer(User.getUserByID(_package.getConsumerID()));
+
+        if (_package.getStatus() != -1) {
+            _package.setGetter(User.getUserByID(_package.getGetterID()));
+            _package.getGetter().clear();
+        }
+
+        _package.getConsumer().clear();
+        _package.getProducer().clear();
+        return _package;
     }
 
     public void setStatus(int status) {
@@ -139,10 +181,6 @@ public class Package implements Serializable {
         this.packageID = packageID;
     }
 
-    public void setText(String text) {
-        this.text = text;
-    }
-
     public void setDefaultClass(DefaultClass defaultClass) {
         this.defaultClass = defaultClass;
     }
@@ -157,10 +195,6 @@ public class Package implements Serializable {
 
     public int getPackageID() {
         return packageID;
-    }
-
-    public String getText() {
-        return text;
     }
 
     public DefaultClass getDefaultClass() {

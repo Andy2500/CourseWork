@@ -1,4 +1,4 @@
-package ru.hse.coursework.models.Service;
+package ru.hse.coursework.models;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;

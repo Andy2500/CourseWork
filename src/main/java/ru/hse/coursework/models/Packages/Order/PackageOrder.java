@@ -1,11 +1,13 @@
 package ru.hse.coursework.models.Packages.Order;
 
-import ru.hse.coursework.models.Service.DefaultClass;
-import ru.hse.coursework.models.Service.Service;
+import ru.hse.coursework.models.DefaultClass;
 import ru.hse.coursework.models.User.User;
+import ru.hse.coursework.service.DBManager;
+import ru.hse.coursework.service.DateWorker;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -43,22 +45,22 @@ public class PackageOrder implements Serializable {
         this.watches = 0;
 
         String command = "Insert Into Orders (OrderID, PersonID, Source, Destination, StartDate, EndDate, Text, PublishDate, Watches)" +
-                "Values ((Select Max(OrderID) From Orders) + 1," + personID + ",'" + source + "', '" + destination + "',' " + Service.makeSqlDateString(startDate) + "',' " + Service.makeSqlDateString(endDate) + "',' " + text + "','" + Service.getNowMomentInUTC() + "', 0)";
-        Service.execCommand(command);
+                "Values ((Select Max(OrderID) From Orders) + 1," + personID + ",'" + source + "', '" + destination + "',' " + DateWorker.makeSqlDateString(startDate) + "',' " + DateWorker.makeSqlDateString(endDate) + "',' " + text + "','" + DateWorker.getNowMomentInUTC() + "', 0)";
+        DBManager.execCommand(command);
     }
 
     public static PackageOrder getOrderByID(int ID) throws Exception {
         String query = "Update Orders Set Watches = Watches + 1 Where OrderID = " + ID;
-        Service.execCommand(query);
+        DBManager.execCommand(query);
         query = "Select * From Orders Where OrderID = " + ID;
-        return Service.getOrderByQuery(query);
+        return DBManager.getOrderByQuery(query);
     }
 
     public static void deletePackageOrder(int packageID, int personID) throws Exception {
         String command = "Delete From Orders Where OrderID = " + packageID;
-        Service.execCommand(command);
+        DBManager.execCommand(command);
         command = "Delete From OrderRequests Where OrderID = " + packageID;
-        Service.execCommand(command);
+        DBManager.execCommand(command);
     }
 
     public static Orders getOrdersByRequests(ArrayList<OrderRequest> requests) throws Exception {
@@ -72,7 +74,27 @@ public class PackageOrder implements Serializable {
             }
         }
 
-        return Service.getOrdersByQuery(query);
+        return DBManager.getOrdersByQuery(query);
+    }
+
+    public static PackageOrder parseOrderFromResultSet(ResultSet resultSet) throws Exception {
+        PackageOrder order = new PackageOrder();
+
+        order.setOrderID(resultSet.getInt("OrderID"));
+        order.setText(resultSet.getString("Text"));
+        order.setPersonID(resultSet.getInt("PersonID"));
+        order.setStartDate(resultSet.getTimestamp("StartDate"));
+        order.setEndDate(resultSet.getTimestamp("EndDate"));
+        order.setDestination(resultSet.getString("Destination"));
+        order.setSource(resultSet.getString("Source"));
+        order.setPublishDate(resultSet.getTimestamp("PublishDate"));
+        order.setWatches(resultSet.getInt("Watches"));
+
+        order.setRequests(OrderRequest.getRequestsByOrderID(order.getOrderID()));
+        order.setPerson(User.getUserByID(order.getPersonID()));
+
+        order.getPerson().clear();
+        return order;
     }
 
     public void setDefaultClass(DefaultClass defaultClass) {
