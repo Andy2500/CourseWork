@@ -11,11 +11,6 @@ public class Users {
     private ArrayList<User> users;
     private DefaultClass defaultClass;
 
-    public Users(ArrayList<User> users, DefaultClass defaultClass) {
-        this.users = users;
-        this.defaultClass = defaultClass;
-    }
-
     public Users() {
     }
 

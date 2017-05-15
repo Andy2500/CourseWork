@@ -21,8 +21,7 @@ public class UserController {
                              @FormParam("hashpsd") String hashpsd,
                              @FormParam("email") String email,
                              @FormParam("name") String name,
-                             @FormParam("phone") String phone,
-                             @FormParam("new") String photo) {
+                             @FormParam("phone") String phone) {
         try {
             User.exists(login, phone, email);
             login = login.toLowerCase();
@@ -51,7 +50,7 @@ public class UserController {
             User user = User.getUserByLogin(login);
 
             if (!user.getHashpsd().equals(hashpsd)) {
-                throw new Exception("hashpsd error");
+                throw new Exception("Неверный пароль");
             }
 
             User.setLastOnlineDate(user.getPersonID());
@@ -170,7 +169,7 @@ public class UserController {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     public UserProfile getUserProfile(@FormParam("token") String token,
-                                      @FormParam("userID") int personID) {
+                                      @FormParam("personID") int personID) {
         try {
             User.getUserByToken(token);
             UserProfile userProfile = UserProfile.getUserProfileByID(personID);

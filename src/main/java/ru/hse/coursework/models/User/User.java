@@ -68,21 +68,21 @@ public class User implements Serializable {
         User user = DBManager.getUserByQuery(query);
 
         if (user.getPersonID() != 0) {
-            throw new Exception("Login Error");
+            throw new Exception("Пользователь с таким логином уже существует!");
         }
 
         query = "Select * From Users Where Phone = '" + phone + "'";
         user = DBManager.getUserByQuery(query);
 
         if (user.getPersonID() != 0) {
-            throw new Exception("Phone Error");
+            throw new Exception("Пользователь с таким номером телефона уже существует!");
         }
 
         query = "Select * From Users Where Email = '" + email + "'";
         user = DBManager.getUserByQuery(query);
 
         if (user.getPersonID() != 0) {
-            throw new Exception("Email Error");
+            throw new Exception("Пользователь с таким адресом электронной почты уже существует!");
         }
     }
 
@@ -118,7 +118,7 @@ public class User implements Serializable {
         User user = DBManager.getUserByQuery(query);
 
         if (user.getPersonID() == 0) {
-            throw new Exception("ID Error");
+            throw new Exception("Такого пользователя не существует");
         }
 
         return user;
@@ -130,7 +130,7 @@ public class User implements Serializable {
         User user = DBManager.getUserByQuery(query);
 
         if (user.getPersonID() == 0) {
-            throw new Exception("token Error");
+            throw new Exception("token error");
         }
 
         return user;
@@ -142,7 +142,7 @@ public class User implements Serializable {
         User user = DBManager.getUserByQuery(query);
 
         if (user.getPersonID() == 0) {
-            throw new Exception("Login Error");
+            throw new Exception("Неверный логин");
         }
         return user;
     }
@@ -155,7 +155,7 @@ public class User implements Serializable {
     public static void setEmail(User user, String email, String last) throws Exception {
         //запись в базу данных
         if (!user.email.equals(last)) {
-            throw new Exception("Last Email Error");
+            throw new Exception("Неверно введен предыдущий адрес электронной почты");
         } else {
             user.email = email;
             String command = " Update Users Set Email = '" + email + "' Where PersonID = " + user.personID;
@@ -176,7 +176,7 @@ public class User implements Serializable {
     public static void setHashpsd(User user, String hashpsd, String last) throws Exception {
 
         if (!user.hashpsd.equals(last)) {
-            throw new Exception("Last Psd Error");
+            throw new Exception("Неверно введен предыдущий пароль");
         } else {
             user.hashpsd = hashpsd;
             String command = "Update Users Set HashPassword = '" + hashpsd + "' Where PersonID=" + user.personID;
@@ -186,7 +186,7 @@ public class User implements Serializable {
 
     public static void setPhone(User user, String phone, String last) throws Exception {
         if (!user.phone.equals(last)) {
-            throw new Exception("Last Email Error");
+            throw new Exception("Неверно введен предыдущий адрес электронной почты");
         } else {
             user.phone = phone;
             String command = "Update Users Set Phone = '" + phone + "' Where PersonID=" + user.personID;

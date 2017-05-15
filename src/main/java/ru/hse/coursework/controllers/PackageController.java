@@ -244,16 +244,16 @@ public class PackageController {
                                       @FormParam("sourceLongitude") float sourceLongitude,
                                       @FormParam("destinationLatitude") float destinationLatitude,
                                       @FormParam("destinationLongitude") float destinationLongitude,
-                                      @FormParam("sourceAdress") String sourceAdress,
-                                      @FormParam("destinationAdress") String destinationAdress,
+                                      @FormParam("sourceAddress") String sourceAddress,
+                                      @FormParam("destinationAddress") String destinationAddress,
                                       @FormParam("eventDate") String eventDate,
                                       @FormParam("finishDate") String finishDate,
                                       @FormParam("text") String text) {
         try {
             User user = User.getUserByToken(token);
-            sourceAdress = sourceAdress.replace("\'", "\\'");
-            destinationAdress = destinationAdress.replace("\'", "\\'");
-            new Package(consumerID, producerID, getterID, sourceLatitude, sourceLongitude, destinationLatitude, destinationLongitude, sourceAdress, destinationAdress, dateFromString(eventDate), dateFromString(finishDate));
+            sourceAddress = sourceAddress.replace("\'", "\\'");
+            destinationAddress = destinationAddress.replace("\'", "\\'");
+            new Package(consumerID, producerID, getterID, sourceLatitude, sourceLongitude, destinationLatitude, destinationLongitude, sourceAddress, destinationAddress, dateFromString(eventDate), dateFromString(finishDate));
 
             User.setLastOnlineDate(user.getPersonID());
             return new DefaultClass(true, "");
@@ -278,18 +278,18 @@ public class PackageController {
                                         @FormParam("sourceLongitude") float sourceLongitude,
                                         @FormParam("destinationLatitude") float destinationLatitude,
                                         @FormParam("destinationLongitude") float destinationLongitude,
-                                        @FormParam("sourceAdress") String sourceAdress,
-                                        @FormParam("destinationAdress") String destinationAdress,
+                                        @FormParam("sourceAddress") String sourceAddress,
+                                        @FormParam("destinationAddress") String destinationAddress,
                                         @FormParam("eventDate") String eventDate,
                                         @FormParam("finishDate") String finishDate,
                                         @FormParam("text") String text,
                                         @FormParam("lastPackageID") int lastPackageID) {
         try {
             User user = User.getUserByToken(token);
-            sourceAdress = sourceAdress.replace("\'", "\\'");
-            destinationAdress = destinationAdress.replace("\'", "\\'");
+            sourceAddress = sourceAddress.replace("\'", "\\'");
+            destinationAddress = destinationAddress.replace("\'", "\\'");
             Package.deletePackage(lastPackageID);
-            new Package(consumerID, producerID, getterID, sourceLatitude, sourceLongitude, destinationLatitude, destinationLongitude, sourceAdress, destinationAdress, dateFromString(eventDate), dateFromString(finishDate));
+            new Package(consumerID, producerID, getterID, sourceLatitude, sourceLongitude, destinationLatitude, destinationLongitude, sourceAddress, destinationAddress, dateFromString(eventDate), dateFromString(finishDate));
 
             User.setLastOnlineDate(user.getPersonID());
             return new DefaultClass(true, "");

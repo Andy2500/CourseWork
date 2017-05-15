@@ -42,10 +42,15 @@ public class Dialog implements Serializable {
         Dialog dialog = new Dialog();
 
         dialog.setDialogID(resultSet.getInt("DialogID"));
+
+        if (dialog.getDialogID() == 0)
+            throw new Exception("Такого диалога не существует");
+
         dialog.setPersonID_1(resultSet.getInt("PersonID_1"));
         dialog.setPersonID_2(resultSet.getInt("PersonID_2"));
 
         dialog.setMessages(Message.getMessagesByDialogID(dialog.getDialogID()));
+
         return dialog;
     }
 
