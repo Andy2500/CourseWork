@@ -2,7 +2,6 @@ package ru.hse.coursework.controllers;
 
 import ru.hse.coursework.models.DefaultClass;
 import ru.hse.coursework.models.User.User;
-import ru.hse.coursework.models.User.UserInfo;
 import ru.hse.coursework.models.User.UserProfile;
 import ru.hse.coursework.models.User.Users;
 import ru.hse.coursework.service.TokenBuilder;
@@ -13,39 +12,53 @@ import javax.ws.rs.core.MediaType;
 @Path("/user")
 public class UserController {
 
+    /**
+     * Метод для регистрации пользователей
+     * Путь:  /user/reg/
+     *
+     * @param login   - логин пользователя
+     * @param hashpsd - MD5-хеш пароля пользователя
+     * @param email   - почта пользователя
+     * @param name    - имя пользователя
+     * @param phone   - телефон пользователя
+     * @return DefaultClass
+     */
     @POST
     @Path("/reg/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public UserInfo register(@FormParam("login") String login,
-                             @FormParam("hashpsd") String hashpsd,
-                             @FormParam("email") String email,
-                             @FormParam("name") String name,
-                             @FormParam("phone") String phone) {
+    public DefaultClass register(@FormParam("login") String login,
+                                 @FormParam("hashpsd") String hashpsd,
+                                 @FormParam("email") String email,
+                                 @FormParam("name") String name,
+                                 @FormParam("phone") String phone) {
         try {
             User.exists(login, phone, email);
-            login = login.toLowerCase();
             email = email.toLowerCase();
             phone = phone.toLowerCase();
 
             String token = TokenBuilder.makeToken(login + "10" + name + "10" + phone);
             new User(login, email, name, hashpsd, phone, token);
 
-            User user = User.getUserByToken(token);
-            User.setToken(user.getPersonID(), token);
-            User.setLastOnlineDate(user.getPersonID());
-
-            return new UserInfo(user.getPersonID(), new DefaultClass(true, user.getToken()));
+            return new DefaultClass(true, token);
         } catch (Exception ex) {
-            return new UserInfo(0, new DefaultClass(false, ex.getMessage()));
+            return new DefaultClass(false, ex.getMessage());
         }
     }
 
+    /**
+     * Метод для авторизации пользователя
+     * Путь:  /user/log/
+     *
+     * @param login   - логин пользователя
+     * @param hashpsd - MD5-хеш пароля пользователя
+     * @return DefaultClass
+     */
     @POST
     @Path("/log/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public UserInfo login(@FormParam("login") String login, @FormParam("hashpsd") String hashpsd) {
+    public DefaultClass login(@FormParam("login") String login, @FormParam("hashpsd") String hashpsd) {
         try {
             User user = User.getUserByLogin(login);
 
@@ -54,12 +67,21 @@ public class UserController {
             }
 
             User.setLastOnlineDate(user.getPersonID());
-            return new UserInfo(user.getPersonID(), new DefaultClass(true, user.getToken()));
+            return new DefaultClass(true, user.getToken());
         } catch (Exception ex) {
-            return new UserInfo(0, new DefaultClass(false, ex.getMessage()));
+            return new DefaultClass(false, ex.getMessage());
         }
     }
 
+    /**
+     * Метод для смены пароля
+     * Путь:  /user/chpsd/
+     *
+     * @param token   - токен пользователя
+     * @param lastpsd - MD5-хеш предыдущего значения пароля пользователя
+     * @param newpsd  - MD5-хеш значения пароля пользователя
+     * @return DefaultClass
+     */
     @POST
     @Path("/chpsd/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -76,6 +98,15 @@ public class UserController {
         }
     }
 
+    /**
+     * Метод для смены адреса электронной почты
+     * Путь:  /user/chm/
+     *
+     * @param token     - токен пользователя
+     * @param lastEmail - предыдущего значение адреса электронной почты пользователя
+     * @param newEmail  - новое значение адреса электронной почты пользователя
+     * @return DefaultClass
+     */
     @POST
     @Path("/chm/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -94,6 +125,15 @@ public class UserController {
         }
     }
 
+    /**
+     * Метод для смены номера телефона
+     * Путь:  /user/chphon/
+     *
+     * @param token     - токен пользователя
+     * @param lastPhone - предыдущее значения телефона пользователя
+     * @param newPhone  - новое значения телефона пользователя
+     * @return DefaultClass
+     */
     @POST
     @Path("/chphon/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -112,6 +152,14 @@ public class UserController {
         }
     }
 
+    /**
+     * Метод для изменения фотографии пользователя
+     * Путь:  /user/chphot/
+     *
+     * @param token - токен пользователя
+     * @param photo - новое фото пользователя в формате строки base64
+     * @return DefaultClass
+     */
     @POST
     @Path("/chphot/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -130,6 +178,14 @@ public class UserController {
     }
 
 
+    /**
+     * Метод для изменения логина пользователя
+     * Путь:  /user/chlog/
+     *
+     * @param token - токен пользователя
+     * @param login - логин пользователя
+     * @return DefaultClass
+     */
     @POST
     @Path("/chlog/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -147,6 +203,14 @@ public class UserController {
         }
     }
 
+    /**
+     * Метод для смены имени пользователя
+     * Путь:  /user/chname/
+     *
+     * @param token - токен пользователя
+     * @param name  - новое имя пользователя
+     * @return DefaultClass
+     */
     @POST
     @Path("/chname/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -164,6 +228,14 @@ public class UserController {
         }
     }
 
+    /**
+     * Метод для получения профиля пользователя
+     * Путь:  /user/gupf/
+     *
+     * @param token    - токен пользователя
+     * @param personID - ID пользователя
+     * @return Сущность User и DefaultClass
+     */
     @POST
     @Path("/gupf/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -184,6 +256,13 @@ public class UserController {
         }
     }
 
+    /**
+     * Метод для получения своего профиля
+     * Путь:  /user/gpf/
+     *
+     * @param token - токен пользователя
+     * @return Cущность User и DefaultClass
+     */
     @POST
     @Path("/gpf/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -203,6 +282,15 @@ public class UserController {
         }
     }
 
+    /**
+     * Метод для сохранения последней локации пользователя
+     * Путь:  /user/sul/
+     *
+     * @param token     - токен пользователя
+     * @param latitude  - широта местонахождения пользователя
+     * @param longitude - долгота местонахождения пользователя
+     * @return DefaultClass
+     */
     @POST
     @Path("/sul/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -220,6 +308,14 @@ public class UserController {
         }
     }
 
+    /**
+     * Метод для загрузки фото документа пользователя
+     * Путь:  /user/sudp/
+     *
+     * @param token         - токен пользователя
+     * @param documentPhoto - фото документа пользователя
+     * @return DefaultClass
+     */
     @POST
     @Path("/sudp/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -236,6 +332,14 @@ public class UserController {
         }
     }
 
+    /**
+     * Метод для поиска пользователей по логину
+     * Путь:  /user/sfuwl/
+     *
+     * @param token - токен пользователя
+     * @param login - логин пользователя для поиска
+     * @return Массив из сущностей User и DefaultClass
+     */
     @POST
     @Path("/sfuwl/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -245,7 +349,6 @@ public class UserController {
         try {
             User.getUserByToken(token);
 
-            login = login.toLowerCase();
             Users users = Users.getUsersWithLogin(login);
             users.setDefaultClass(new DefaultClass(true, ""));
             return users;

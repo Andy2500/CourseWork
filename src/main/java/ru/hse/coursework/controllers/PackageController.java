@@ -21,6 +21,18 @@ import static ru.hse.coursework.service.DateWorker.dateFromString;
 @Path("/pack")
 public class PackageController {
 
+    /**
+     * Метод для создания предложения
+     * Путь: /pack/mof
+     *
+     * @param token       - токен пользователя - токен пользователя
+     * @param source      - пункт отправления
+     * @param destination - пункт доставки
+     * @param startDate   - дата отправления
+     * @param endDate     - дата доставки
+     * @param text        - подробное описание - подробное описание
+     * @return DefaultClass
+     */
     @POST
     @Path("/mof/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -30,11 +42,10 @@ public class PackageController {
                                   @FormParam("destination") String destination,
                                   @FormParam("startDate") String startDate,
                                   @FormParam("endDate") String endDate,
-                                  @FormParam("text") String text,
-                                  @FormParam("length") float length) {
+                                  @FormParam("text") String text) {
         try {
             User user = User.getUserByToken(token);
-            new PackageOffer(user.getPersonID(), source, destination, dateFromString(startDate), dateFromString(endDate), text, length);
+            new PackageOffer(user.getPersonID(), source, destination, dateFromString(startDate), dateFromString(endDate), text);
             User.setLastOnlineDate(user.getPersonID());
 
             return new DefaultClass(true, "");
@@ -44,9 +55,20 @@ public class PackageController {
         }
     }
 
+    /**
+     * Метод для создания заказа
+     * Путь: /pack/mor
+     *
+     * @param token       - токен пользователя
+     * @param source      - пункт отправления
+     * @param destination - пункт доставки
+     * @param startDate   - дата отправления
+     * @param endDate     - дата доставки
+     * @param text        - подробное описание
+     * @return DefaultClass
+     */
     @POST
     @Path("/mor/")
-
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     public DefaultClass makeOrder(@FormParam("token") String token,
@@ -54,11 +76,10 @@ public class PackageController {
                                   @FormParam("destination") String destination,
                                   @FormParam("startDate") String startDate,
                                   @FormParam("endDate") String endDate,
-                                  @FormParam("text") String text,
-                                  @FormParam("length") int length) {
+                                  @FormParam("text") String text) {
         try {
             User user = User.getUserByToken(token);
-            new PackageOrder(user.getPersonID(), source, destination, dateFromString(startDate), dateFromString(endDate), text, length);
+            new PackageOrder(user.getPersonID(), source, destination, dateFromString(startDate), dateFromString(endDate), text);
             User.setLastOnlineDate(user.getPersonID());
 
             return new DefaultClass(true, "");
@@ -68,6 +89,14 @@ public class PackageController {
         }
     }
 
+    /**
+     * Метод для удаления заказа
+     * Путь: /pack/dor
+     *
+     * @param token   - токен пользователя
+     * @param orderID - ID заказа
+     * @return DefaultClass
+     */
     @POST
     @Path("/dor/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -86,6 +115,14 @@ public class PackageController {
         }
     }
 
+    /**
+     * Метод для удаления предложения
+     * Путь: /pack/dof
+     *
+     * @param token   - токен пользователя
+     * @param offerID - ID предложения
+     * @return DefaultClass
+     */
     @POST
     @Path("/dof/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -104,7 +141,15 @@ public class PackageController {
         }
     }
 
-    //соглашение на сделку(отправка реквеста)
+
+    /**
+     * Метод для создания запроса на исполнение
+     * Путь: /pack/corr
+     *
+     * @param token   - токен пользователя
+     * @param orderID - ID заказа
+     * @return DefaultClass
+     */
     @POST
     @Path("/corr/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -124,6 +169,14 @@ public class PackageController {
         }
     }
 
+    /**
+     * Метод для удаление запроса на предложение
+     * Путь: /pack/dofr
+     *
+     * @param token     - токен пользователя
+     * @param requestID - ID запроса
+     * @return DefaultClass
+     */
     @POST
     @Path("/dofr/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -142,6 +195,14 @@ public class PackageController {
         }
     }
 
+    /**
+     * Метод для удаления запроса на заказ
+     * Путь: /pack/dorr
+     *
+     * @param token     - токен пользователя
+     * @param requestID - ID запроса
+     * @return DefaultClass
+     */
     @POST
     @Path("/dorr/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -160,6 +221,14 @@ public class PackageController {
         }
     }
 
+    /**
+     * Метод для создания запроса на предложение
+     * Путь: /pack/cofr
+     *
+     * @param token   - токен пользователя
+     * @param offerID - ID предложения
+     * @return DefaultClass
+     */
     @POST
     @Path("/cofr/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -178,7 +247,14 @@ public class PackageController {
         }
     }
 
-//заключение сделки(вы создатель вам предложили)
+    /**
+     * Метод для одобрения запроса на предложение
+     * Путь: /pack/aofr
+     *
+     * @param token     - токен пользователя
+     * @param requestID - ID запроса
+     * @return DefaultClass
+     */
 
     @POST
     @Path("/aofr/")
@@ -204,6 +280,16 @@ public class PackageController {
         }
     }
 
+    /**
+     * Метод для одобрения запроса на заказ
+     * Путь: /pack/aorr
+     *
+     * @param token     - токен пользователя
+     * @param requestID - ID запроса
+     * @return DefaultClass - где:
+     * operationOutput - правильно ли прошла операция,
+     * token - либо сообщение об ошибки, либо ""
+     */
     @POST
     @Path("/aorr/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -230,7 +316,23 @@ public class PackageController {
 
 
     /**
-     * Создание сделки
+     * Метод для создания сделки
+     * Путь: /pack/cp
+     *
+     * @param token                - токен пользователя
+     * @param consumerID           - ID заказчика
+     * @param producerID           - ID исполнителя
+     * @param getterID             - ID получателя
+     * @param sourceLatitude       - Широта места встречи
+     * @param sourceLongitude      - Долгота места встречи
+     * @param destinationLatitude  - Широта места доставки
+     * @param destinationLongitude - Долгота места доставки
+     * @param sourceAddress        - Адрес места встречи
+     * @param destinationAddress   - Адрес места доставки
+     * @param eventDate            - Дата встречи
+     * @param finishDate           - Дата доставки
+     * @param text                 - подробное описание
+     * @return DefaultClass
      */
     @POST
     @Path("/cp/")
@@ -264,7 +366,23 @@ public class PackageController {
     }
 
     /**
-     * Создание сделки
+     * Метод для настройки сделки
+     * Путь: /pack/rcp
+     *
+     * @param token                - токен пользователя
+     * @param consumerID           - ID заказчика
+     * @param producerID           - ID исполнителя
+     * @param getterID             - ID получателя
+     * @param sourceLatitude       - Широта места встречи
+     * @param sourceLongitude      - Долгота места встречи
+     * @param destinationLatitude  - Широта места доставки
+     * @param destinationLongitude - Долгота места доставки
+     * @param sourceAddress        - Адрес места встречи
+     * @param destinationAddress   - Адрес места доставки
+     * @param eventDate            - Дата встречи
+     * @param finishDate           - Дата доставки
+     * @param lastPackageID        - ID Сделки, которую настроили
+     * @return DefaultClass
      */
     @POST
     @Path("/rcp/")
@@ -282,7 +400,6 @@ public class PackageController {
                                         @FormParam("destinationAddress") String destinationAddress,
                                         @FormParam("eventDate") String eventDate,
                                         @FormParam("finishDate") String finishDate,
-                                        @FormParam("text") String text,
                                         @FormParam("lastPackageID") int lastPackageID) {
         try {
             User user = User.getUserByToken(token);
@@ -299,6 +416,14 @@ public class PackageController {
         }
     }
 
+    /**
+     * Метод для удаления сделки
+     * Путь: /pack/dp
+     *
+     * @param token     - токен пользователя
+     * @param packageID - ID сделки
+     * @return DefaultClass - где:
+     */
     @POST
     @Path("/dp/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -318,6 +443,15 @@ public class PackageController {
         }
     }
 
+    /**
+     * Метод для подтверждения передачи посылки
+     * Путь: /pack/tp
+     *
+     * @param token      - токен пользователя
+     * @param packageID  - ID сделки
+     * @param photoProof - подтверждение(фото) передачи посылки в формате base64
+     * @return DefaultClass
+     */
     @POST
     @Path("/tp/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -340,6 +474,15 @@ public class PackageController {
         }
     }
 
+    /**
+     * Метод для подтверждения доставки посылки
+     * Путь: /pack/pd
+     *
+     * @param token      - токен пользователя
+     * @param packageID  - ID сделки
+     * @param photoProof - подтверждение(фото) доставки в формате base64
+     * @return DefaultClass
+     */
     @POST
     @Path("/pd/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -365,6 +508,14 @@ public class PackageController {
         }
     }
 
+    /**
+     * Метод для закрытия сделки
+     * Путь: /pack/clp
+     *
+     * @param token     - токен пользователя
+     * @param packageID - ID сделки
+     * @return DefaultClass
+     */
     @POST
     @Path("/clp/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -384,6 +535,13 @@ public class PackageController {
         }
     }
 
+    /**
+     * Метод для получения информации о предложении
+     * Путь: /pack/gofi
+     *
+     * @param token   - токен пользователя
+     * @param offerID - ID предложения
+     */
     @POST
     @Path("/gofi/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -407,6 +565,13 @@ public class PackageController {
         }
     }
 
+    /**
+     * Метод для получения информации о заказе
+     * Путь: /pack/gori
+     *
+     * @param token   - токен пользователя
+     * @param orderID - ID заказа
+     */
     @POST
     @Path("/gori/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -428,6 +593,13 @@ public class PackageController {
         }
     }
 
+    /**
+     * Метод для получения информации о сделке
+     * Путь: /pack/gpi
+     *
+     * @param token     - токен пользователя
+     * @param packageID - ID сделки
+     */
     @POST
     @Path("/gpi/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -449,6 +621,16 @@ public class PackageController {
         }
     }
 
+    /**
+     * Метод для поиска предложений
+     * Путь: /pack/gofby
+     *
+     * @param token       - токен пользователя
+     * @param source      - пункт отправления
+     * @param destination - пункт доставки
+     * @param startDate   - дата отправления
+     * @param endDate     - дата доставки
+     */
     @POST
     @Path("/gofby/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -474,6 +656,16 @@ public class PackageController {
         }
     }
 
+    /**
+     * Метод для поиска заказов
+     * Путь: /pack/gorby
+     *
+     * @param token       - токен пользователя
+     * @param source      - пункт отправления
+     * @param destination - пункт доставки
+     * @param startDate   - дата отправления
+     * @param endDate     - дата доставки
+     */
     @POST
     @Path("/gorby/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -500,6 +692,12 @@ public class PackageController {
         }
     }
 
+    /**
+     * Метод для получения заказов пользователя
+     * Путь: /pack/guor
+     *
+     * @param token - токен пользователя
+     */
     @POST
     @Path("/guor/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -520,6 +718,12 @@ public class PackageController {
         }
     }
 
+    /**
+     * Метод для получения предожений пользователя
+     * Путь: /pack/guof
+     *
+     * @param token - токен пользователя
+     */
     @POST
     @Path("/guof/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -540,6 +744,12 @@ public class PackageController {
         }
     }
 
+    /**
+     * Метод для получения сделок пользователя
+     * Путь: /pack/gup
+     *
+     * @param token - токен пользователя
+     */
     @POST
     @Path("/gup/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -560,6 +770,12 @@ public class PackageController {
         }
     }
 
+    /**
+     * Метод для получения заказов, на которые были оставлены запросы
+     * Путь: /pack/gorbur
+     *
+     * @param token - токен пользователя
+     */
     @POST
     @Path("/gorbur/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -586,6 +802,13 @@ public class PackageController {
         }
     }
 
+    /**
+     * Метод для получения предложений, на которые были оставлены запросы
+     * Путь: /pack/gofbur/
+     *
+     * @param token - токен пользователя
+     * @return массив сущностей Offer и Default Class
+     */
     @POST
     @Path("/gofbur/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)

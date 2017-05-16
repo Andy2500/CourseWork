@@ -35,7 +35,7 @@ public class PackageOrder implements Serializable {
     public PackageOrder() {
     }
 
-    public PackageOrder(int personID, String source, String destination, Date startDate, Date endDate, String text, float length) throws Exception {
+    public PackageOrder(int personID, String source, String destination, Date startDate, Date endDate, String text) throws Exception {
         this.source = source;
         this.destination = destination;
         this.startDate = startDate;

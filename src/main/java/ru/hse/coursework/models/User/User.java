@@ -30,7 +30,7 @@ public class User implements Serializable {
     private int countOfResponses;
     private int sumOfResponses;
 
-    private int status; //1 - заблокирован, 0 - не подтвержден, 1 - подтвержден, 2 - исполнитель, 3 - модератор
+    private int status; //-1 - заблокирован, 0 - не подтвержден, 1 - подтвержден, 2 - исполнитель, 3 - модератор
 
     private float lastLatitude;
     private float lastLongitude;

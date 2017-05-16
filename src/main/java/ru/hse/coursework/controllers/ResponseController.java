@@ -11,7 +11,15 @@ import javax.ws.rs.core.MediaType;
 @Path("/res")
 public class ResponseController {
 
-
+    /**
+     * Путь:  /res/mr
+     *
+     * @param token    - токен пользователя
+     * @param personID - ID пользователя
+     * @param text     - текст
+     * @param mark     - оценка
+     * @return DefaultClass
+     */
     @POST
     @Path("/mr/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -19,8 +27,7 @@ public class ResponseController {
     public DefaultClass makeResponse(@FormParam("token") String token,
                                      @FormParam("personID") int personID,
                                      @FormParam("text") String text,
-                                     @FormParam("mark") int mark,
-                                     @FormParam("packageID") int packageID) {
+                                     @FormParam("mark") int mark) {
         try {
             User user = User.getUserByToken(token);
             new Response(user.getPersonID(), personID, text, mark);
@@ -30,6 +37,13 @@ public class ResponseController {
         }
     }
 
+    /**
+     * Путь:  /res/gri
+     *
+     * @param token      - токен пользователя
+     * @param responseID - ID отзыва
+     * @return Сущность Response
+     */
     @POST
     @Path("/gri/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -50,6 +64,14 @@ public class ResponseController {
         }
     }
 
+    /**
+     * Путь:  /res/cr
+     *
+     * @param token      - токен пользователя
+     * @param responseID - ID отзыва
+     * @param text       - текст комментария
+     * @return DefaultClass
+     */
     @POST
     @Path("/cr/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -69,6 +91,13 @@ public class ResponseController {
         }
     }
 
+    /**
+     * Путь:  /res/dc
+     *
+     * @param token     - токен пользователя
+     * @param commentID - ID комментария
+     * @return DefaultClass
+     */
     @POST
     @Path("/dc/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)

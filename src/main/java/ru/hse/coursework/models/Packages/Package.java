@@ -89,7 +89,7 @@ public class Package implements Serializable {
     }
 
     public static void setDeliveryProof(int packageID, String deliveryProofPhoto) throws Exception {
-        String query = "Update Packages Set TransferProofPhoto = ? Where PackageID = " + packageID;
+        String query = "Update Packages Set DeliveryProofPhoto = ? Where PackageID = " + packageID;
         DBManager.loadPhoto(query, javax.xml.bind.DatatypeConverter.parseBase64Binary(deliveryProofPhoto));
     }
 

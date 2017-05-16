@@ -11,7 +11,16 @@ import javax.ws.rs.core.MediaType;
 @Path("/dispute")
 public class DisputesController {
 
-
+    /**
+     * Метод создания спора
+     * Путь:  /dispute/crd/
+     *
+     * @param token     - токен пользователя
+     * @param packageID - ID сделки
+     * @param type      - тип спора
+     * @param text      - подробное описание
+     * @return DefaultClass
+     */
     @POST
     @Path("/crd/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -31,6 +40,14 @@ public class DisputesController {
     }
 
 
+    /**
+     * Метод закрытия спора
+     * Путь:  /dispute/cld/
+     *
+     * @param token     - токен пользователя
+     * @param disputeID - ID спора
+     * @return DefaultClass
+     */
     @POST
     @Path("/cld/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -47,6 +64,13 @@ public class DisputesController {
         }
     }
 
+    /**
+     * Метод получения списка споров пользователя
+     * Путь:  /dispute/gud/
+     *
+     * @param token - токен пользователя
+     * @return массив сущностей Dispute и DefaultClass
+     */
     @POST
     @Path("/gud/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -65,6 +89,13 @@ public class DisputesController {
         }
     }
 
+    /**
+     * Метод получения открытых споров
+     * Путь:  /dispute/gad/
+     *
+     * @param token - токен пользователя
+     * @return массив сущностей Dispute и DefaultClass
+     */
     @POST
     @Path("/gad/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)

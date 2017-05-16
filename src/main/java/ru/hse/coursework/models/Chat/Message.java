@@ -34,10 +34,6 @@ public class Message implements Serializable {
         DBManager.execCommand(command);
     }
 
-    public static ArrayList<Message> getLastMessagesByDialogID(int dialogID) throws Exception {
-        String query = "Select * From Messages Where Watched = 0 AND DialogID = " + dialogID + "";
-        return DBManager.getMessagesByQuery(query);
-    }
 
     public static ArrayList<Message> getMessagesByDialogID(int ID) throws Exception {
         String query = "Select * From Messages Where DialogID =" + ID;

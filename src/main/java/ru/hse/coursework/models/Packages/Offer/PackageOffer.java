@@ -34,7 +34,7 @@ public class PackageOffer implements Serializable {
     public PackageOffer() {
     }
 
-    public PackageOffer(int personID, String source, String destination, Date startDate, Date endDate, String text, float length) throws Exception {
+    public PackageOffer(int personID, String source, String destination, Date startDate, Date endDate, String text) throws Exception {
         this.source = source;
         this.destination = destination;
         this.startDate = startDate;
@@ -49,9 +49,7 @@ public class PackageOffer implements Serializable {
     }
 
     public static PackageOffer getOfferByID(int ID) throws Exception {
-        String query = "Update Offers Set Watches = Watches + 1 Where OfferID = " + ID;
-        DBManager.execCommand(query);
-        query = "Select * From Offers Where OfferID = " + ID;
+        String query = "Select * From Offers Where OfferID = " + ID;
         return DBManager.getOfferByQuery(query);
     }
 
@@ -87,7 +85,7 @@ public class PackageOffer implements Serializable {
         offer.setDestination(resultSet.getString("Destination"));
         offer.setSource(resultSet.getString("Source"));
         offer.setPublishDate(resultSet.getTimestamp("PublishDate"));
-        offer.setWatches(resultSet.getInt("Watches"));
+        offer.setWatches(resultSet.getInt("Watches") + 1);
 
         offer.setRequests(OfferRequest.getRequestsByOfferID(offer.getOfferID()));
         offer.setPerson(User.getUserByID(offer.getPersonID()));

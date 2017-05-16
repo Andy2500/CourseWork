@@ -9,6 +9,14 @@ import javax.ws.rs.core.MediaType;
 
 @Path("/moder")
 public class ModeratorController {
+    /**
+     * Метод для блокировки пользователя
+     * Путь:  /moder/bu
+     *
+     * @param token  - токен пользователя
+     * @param userID - ID пользователя для блокировки
+     * @return DefaultClass
+     */
     @POST
     @Path("/bu/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -26,6 +34,14 @@ public class ModeratorController {
         }
     }
 
+    /**
+     * Метод для подтверждения пользователя
+     * Путь:  /moder/cu
+     *
+     * @param token  -
+     * @param userID - ID пользователя для подтверждения
+     * @return DefaultClass
+     */
     @POST
     @Path("/cu/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -43,6 +59,13 @@ public class ModeratorController {
         }
     }
 
+    /**
+     * Метод для получения списка пользователей, которые ждут подтверждения
+     * Путь:  /moder/gufc/
+     *
+     * @param token - токен пользователя
+     * @return массив сущностей User и DefaultClass
+     */
     @POST
     @Path("/gufc/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
