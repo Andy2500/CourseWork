@@ -51,7 +51,7 @@ public class Comment implements Serializable {
         comment.setText(resultSet.getString("Text"));
         comment.setCommentID(resultSet.getInt("CommentID"));
         comment.setResponseID(resultSet.getInt("ResponseID"));
-        comment.setCommenter(User.getUserByID(comment.getPersonID()));
+        comment.setCommenter(User.getUserByID(comment.getPersonID(), false, false, true));
         comment.setDate(resultSet.getTimestamp("Date"));
 
         comment.getCommenter().clear();

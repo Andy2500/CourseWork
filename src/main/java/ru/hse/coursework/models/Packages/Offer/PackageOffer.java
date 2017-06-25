@@ -88,7 +88,7 @@ public class PackageOffer implements Serializable {
         offer.setWatches(resultSet.getInt("Watches") + 1);
 
         offer.setRequests(OfferRequest.getRequestsByOfferID(offer.getOfferID()));
-        offer.setPerson(User.getUserByID(offer.getPersonID()));
+        offer.setPerson(User.getUserByID(offer.getPersonID(), false, false, true));
 
         offer.getPerson().clear();
         return offer;

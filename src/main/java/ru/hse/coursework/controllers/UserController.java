@@ -33,7 +33,7 @@ public class UserController {
                                  @FormParam("name") String name,
                                  @FormParam("phone") String phone) {
         try {
-            User.exists(login, phone, email);
+            User.exists(login.toLowerCase(), phone.toLowerCase(), email.toLowerCase());
             email = email.toLowerCase();
             phone = phone.toLowerCase();
 
@@ -60,7 +60,7 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON)
     public DefaultClass login(@FormParam("login") String login, @FormParam("hashpsd") String hashpsd) {
         try {
-            User user = User.getUserByLogin(login);
+            User user = User.getUserByLogin(login, true, false, false);
 
             if (!user.getHashpsd().equals(hashpsd)) {
                 throw new Exception("Неверный пароль");
@@ -90,7 +90,7 @@ public class UserController {
                                   @FormParam("last") String lastpsd,
                                   @FormParam("new") String newpsd) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             User.setHashpsd(user, newpsd, lastpsd);
             return new DefaultClass(true, "");
         } catch (Exception ex) {
@@ -115,7 +115,7 @@ public class UserController {
                                     @FormParam("last") String lastEmail,
                                     @FormParam("new") String newEmail) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             User.setEmail(user, newEmail, lastEmail);
 
             return new DefaultClass(true, "");
@@ -142,7 +142,7 @@ public class UserController {
                                     @FormParam("last") String lastPhone,
                                     @FormParam("new") String newPhone) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             User.setPhone(user, newPhone, lastPhone);
 
             return new DefaultClass(true, "");
@@ -167,7 +167,7 @@ public class UserController {
     public DefaultClass changePhoto(@FormParam("token") String token,
                                     @FormParam("new") String photo) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             User.setPhoto(user.getPersonID(), photo);
 
             return new DefaultClass(true, "");
@@ -193,7 +193,7 @@ public class UserController {
     public DefaultClass changeLogin(@FormParam("token") String token,
                                     @FormParam("new") String login) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             User.setLogin(user.getPersonID(), login);
 
             return new DefaultClass(true, "");
@@ -218,7 +218,7 @@ public class UserController {
     public DefaultClass changeName(@FormParam("token") String token,
                                    @FormParam("new") String name) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             User.setName(user.getPersonID(), name);
 
             return new DefaultClass(true, "");
@@ -243,7 +243,7 @@ public class UserController {
     public UserProfile getUserProfile(@FormParam("token") String token,
                                       @FormParam("personID") int personID) {
         try {
-            User.getUserByToken(token);
+            User.getUserByToken(token, false, false, false);
             UserProfile userProfile = UserProfile.getUserProfileByID(personID);
             userProfile.setDefaultClass(new DefaultClass(true, ""));
 
@@ -269,12 +269,11 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON)
     public UserProfile getProfile(@FormParam("token") String token) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, true, false, false);
             UserProfile userProfile = UserProfile.getUserProfileByUser(user);
             userProfile.setDefaultClass(new DefaultClass(true, ""));
 
             return userProfile;
-
         } catch (Exception ex) {
             UserProfile userProfile = new UserProfile();
             userProfile.setDefaultClass(new DefaultClass(false, ex.getMessage()));
@@ -299,7 +298,7 @@ public class UserController {
                                          @FormParam("latitude") float latitude,
                                          @FormParam("longitude") float longitude) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             User.setCoordinates(user.getPersonID(), longitude, latitude);
             return new DefaultClass(true, "");
 
@@ -323,7 +322,7 @@ public class UserController {
     public DefaultClass saveUserDocumentPhoto(@FormParam("token") String token,
                                               @FormParam("documentPhoto") String documentPhoto) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             User.setDocumentPhoto(user.getPersonID(), documentPhoto);
             return new DefaultClass(true, "");
 
@@ -347,7 +346,7 @@ public class UserController {
     public Users searchForUserWithLogin(@FormParam("token") String token,
                                         @FormParam("login") String login) {
         try {
-            User.getUserByToken(token);
+            User.getUserByToken(token, false, false, false);
 
             Users users = Users.getUsersWithLogin(login);
             users.setDefaultClass(new DefaultClass(true, ""));

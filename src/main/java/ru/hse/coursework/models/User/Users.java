@@ -16,12 +16,12 @@ public class Users {
 
     public static Users getUsersForConfirm() throws Exception {
         String query = "Select * From Users Where Status = 0";
-        return DBManager.getUsersByQuery(query);
+        return DBManager.getUsersByQuery(query, true, false, false);
     }
 
     public static Users getUsersWithLogin(String login) throws Exception {
         String query = "Select * From Users Where Login Like '%" + login + "%'";
-        return DBManager.getUsersByQuery(query);
+        return DBManager.getUsersByQuery(query, false, true, false);
     }
 
     public ArrayList<User> getUsers() {

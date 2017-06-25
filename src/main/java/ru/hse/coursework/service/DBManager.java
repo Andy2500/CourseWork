@@ -27,19 +27,25 @@ import java.util.ArrayList;
 
 public class DBManager {
 
-    public static Connection getConnection() throws SQLServerException {
-        SQLServerDataSource ds = new SQLServerDataSource();
-        ds.setServerName("coursew.database.windows.net");
-        ds.setPortNumber(1433);
-        ds.setDatabaseName("CourseWID");
-        ds.setEncrypt(true);
-        ds.setPassword("hsepassword16)");
-        ds.setUser("HSEADMIN");
-        ds.setHostNameInCertificate("*.database.windows.net");
-        ds.setTrustServerCertificate(false);
-        ds.setLoginTimeout(1000);
+    public static Connection connection = null;
 
-        return ds.getConnection();
+    public static Connection getConnection() throws SQLServerException {
+        if (connection == null) {
+            SQLServerDataSource ds = new SQLServerDataSource();
+            ds.setServerName("coursew.database.windows.net");
+            ds.setPortNumber(1433);
+            ds.setDatabaseName("CourseWID");
+            ds.setEncrypt(true);
+            ds.setPassword("hsepassword16)");
+            ds.setUser("HSEADMIN");
+            ds.setHostNameInCertificate("*.database.windows.net");
+            ds.setTrustServerCertificate(false);
+            ds.setLoginTimeout(1000);
+
+            connection = ds.getConnection();
+        }
+
+        return connection;
     }
 
     public static void execCommand(String command) throws Exception {
@@ -63,38 +69,56 @@ public class DBManager {
     }
 
 
-    public static User getUserByQuery(String query) throws Exception {
+    public static User getFullUserInfoByQuery(String query) throws Exception {
         User user = new User();
         ResultSet resultSet = getSelectResultSet(query);
 
         if (resultSet.next()) {
-            user = User.parseUserFromResultSet(resultSet);
+            user = User.parseFullUserInfoFromResultSet(resultSet);
         }
 
         return user;
     }
 
-    public static Users getUsersByQuery(String query) throws Exception {
+    public static User getUserEntryByQuery(String query, Boolean withDocumentPhoto, Boolean withPhoto, Boolean withToken) throws Exception {
+        User user = new User();
+        ResultSet resultSet = getSelectResultSet(query);
+
+        if (resultSet.next()) {
+            user = User.parseUserEntryFromResultSet(resultSet, withDocumentPhoto, withPhoto, withToken);
+        }
+
+        return user;
+    }
+
+    public static Users getUsersByQuery(String query, Boolean withDocumentPhoto, Boolean withPhoto, Boolean withToken) throws Exception {
         Users users = new Users();
         users.setUsers(new ArrayList<User>());
 
         ResultSet resultSet = getSelectResultSet(query);
 
         while (resultSet.next()) {
-            User user = User.parseUserFromResultSet(resultSet);
+            User user = User.parseUserEntryFromResultSet(resultSet, withDocumentPhoto, withPhoto, withToken);
             users.getUsers().add(user);
         }
 
         return users;
     }
 
+    public static Boolean userByQueryExists(String query) throws Exception {
+        if (getSelectResultSet(query).next()) {
+            return true;
+        }
+
+        return false;
+    }
 
     public static ArrayList<Response> getResponsesByQuery(String query) throws Exception {
         ArrayList<Response> responses = new ArrayList<>();
         ResultSet resultSet = getSelectResultSet(query);
 
         while (resultSet.next()) {
-            responses.add(Response.parseResponseFromResultSet(resultSet));
+            responses.add(Response.parseResponseFromResultSet(resultSet, false));
         }
 
         return responses;
@@ -105,7 +129,7 @@ public class DBManager {
         Response response = new Response();
 
         if (resultSet.next()) {
-            response = Response.parseResponseFromResultSet(resultSet);
+            response = Response.parseResponseFromResultSet(resultSet, true);
         }
 
         return response;
@@ -168,11 +192,9 @@ public class DBManager {
         while (resultSet.next()) {
             dialog = Dialog.parseDialogFromResultSet(resultSet);
             if (type) {
-                dialog.setPerson(User.getUserByID(personID));
+                dialog.setPerson(User.getUserByID(personID, false, false, true));
             }
-
         }
-
         return dialog;
     }
 
@@ -185,9 +207,9 @@ public class DBManager {
             Dialog dialog = Dialog.parseDialogFromResultSet(resultSet);
 
             if (dialog.getPersonID_1() != personID) {
-                dialog.setPerson(User.getUserByID(dialog.getPersonID_1()));
+                dialog.setPerson(User.getUserByID(dialog.getPersonID_1(), false, false, true));
             } else {
-                dialog.setPerson(User.getUserByID(dialog.getPersonID_2()));
+                dialog.setPerson(User.getUserByID(dialog.getPersonID_2(), false, false, true));
             }
 
             dialogs.add(dialog);
@@ -270,7 +292,7 @@ public class DBManager {
 
     public static OfferRequest getOfferRequestByQuery(String query) throws Exception {
         ResultSet resultSet = getSelectResultSet(query);
-        OfferRequest request = new OfferRequest();
+        OfferRequest request;
 
         if (resultSet.next()) {
             request = OfferRequest.parseOfferRequestFromResultSet(resultSet);
@@ -282,7 +304,7 @@ public class DBManager {
 
     public static OrderRequest getOrderRequestByQuery(String query) throws Exception {
         ResultSet resultSet = getSelectResultSet(query);
-        OrderRequest request = new OrderRequest();
+        OrderRequest request;
 
         if (resultSet.next()) {
             request = OrderRequest.parseOrderRequestFromResultSet(resultSet);

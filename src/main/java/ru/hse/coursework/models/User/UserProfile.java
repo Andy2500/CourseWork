@@ -17,7 +17,7 @@ public class UserProfile implements Serializable {
 
     public static UserProfile getUserProfileByID(int ID) throws Exception {
         UserProfile userProfile = new UserProfile();
-        userProfile.user = User.getUserByID(ID);
+        userProfile.user = User.getUserByID(ID, true, false, true);
         userProfile.user.clear();
         String query = "Select * From Responses Where PersonID = " + ID;
         userProfile.responses = DBManager.getResponsesByQuery(query);

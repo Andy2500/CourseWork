@@ -128,11 +128,11 @@ public class Package implements Serializable {
         _package.setEventDate(resultSet.getTimestamp("EventDate"));
         _package.setFinishDate(resultSet.getTimestamp("FinishDate"));
 
-        _package.setProducer(User.getUserByID(_package.getProducerID()));
-        _package.setConsumer(User.getUserByID(_package.getConsumerID()));
+        _package.setProducer(User.getUserByID(_package.getProducerID(), false, false, true));
+        _package.setConsumer(User.getUserByID(_package.getConsumerID(), false, false, true));
 
         if (_package.getStatus() != -1) {
-            _package.setGetter(User.getUserByID(_package.getGetterID()));
+            _package.setGetter(User.getUserByID(_package.getGetterID(), false, false, true));
             _package.getGetter().clear();
         }
 

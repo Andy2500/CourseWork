@@ -44,7 +44,7 @@ public class PackageController {
                                   @FormParam("endDate") String endDate,
                                   @FormParam("text") String text) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             new PackageOffer(user.getPersonID(), source, destination, dateFromString(startDate), dateFromString(endDate), text);
             User.setLastOnlineDate(user.getPersonID());
 
@@ -78,7 +78,7 @@ public class PackageController {
                                   @FormParam("endDate") String endDate,
                                   @FormParam("text") String text) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             new PackageOrder(user.getPersonID(), source, destination, dateFromString(startDate), dateFromString(endDate), text);
             User.setLastOnlineDate(user.getPersonID());
 
@@ -104,7 +104,7 @@ public class PackageController {
     public DefaultClass deleteOrderByID(@FormParam("token") String token,
                                         @FormParam("orderID") int orderID) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             PackageOrder.deletePackageOrder(orderID, user.getPersonID());
             User.setLastOnlineDate(user.getPersonID());
 
@@ -130,7 +130,7 @@ public class PackageController {
     public DefaultClass deleteOfferByID(@FormParam("token") String token,
                                         @FormParam("offerID") int offerID) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             PackageOffer.deletePackageOffer(offerID, user.getPersonID());
             User.setLastOnlineDate(user.getPersonID());
 
@@ -157,7 +157,7 @@ public class PackageController {
     public DefaultClass createOrderRequest(@FormParam("token") String token,
                                            @FormParam("orderID") int orderID) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             new OrderRequest(user.getPersonID(), orderID);
             User.setLastOnlineDate(user.getPersonID());
 
@@ -184,7 +184,7 @@ public class PackageController {
     public DefaultClass deleteOfferRequest(@FormParam("token") String token,
                                            @FormParam("requestID") int requestID) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             OfferRequest.deleteRequest(requestID);
             User.setLastOnlineDate(user.getPersonID());
 
@@ -210,7 +210,7 @@ public class PackageController {
     public DefaultClass deleteOrderRequest(@FormParam("token") String token,
                                            @FormParam("requestID") int requestID) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             OrderRequest.deleteRequest(requestID);
             User.setLastOnlineDate(user.getPersonID());
 
@@ -236,7 +236,7 @@ public class PackageController {
     public DefaultClass createOfferRequest(@FormParam("token") String token,
                                            @FormParam("offerID") int offerID) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             new OfferRequest(user.getPersonID(), offerID);
             User.setLastOnlineDate(user.getPersonID());
 
@@ -263,7 +263,7 @@ public class PackageController {
     public DefaultClass acceptOfferRequest(@FormParam("token") String token,
                                            @FormParam("requestID") int requestID) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             OfferRequest request = OfferRequest.getRequestByID(requestID);
             PackageOffer offer = PackageOffer.getOfferByID(request.getOfferID());
             new Package(offer, request.getPersonID());
@@ -297,7 +297,7 @@ public class PackageController {
     public DefaultClass acceptOrderRequest(@FormParam("token") String token,
                                            @FormParam("requestID") int requestID) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
 
             OrderRequest request = OrderRequest.getRequestByID(requestID);
             PackageOrder order = PackageOrder.getOrderByID(request.getOrderID());
@@ -352,7 +352,7 @@ public class PackageController {
                                       @FormParam("finishDate") String finishDate,
                                       @FormParam("text") String text) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             sourceAddress = sourceAddress.replace("\'", "\\'");
             destinationAddress = destinationAddress.replace("\'", "\\'");
             new Package(consumerID, producerID, getterID, sourceLatitude, sourceLongitude, destinationLatitude, destinationLongitude, sourceAddress, destinationAddress, dateFromString(eventDate), dateFromString(finishDate));
@@ -402,7 +402,7 @@ public class PackageController {
                                         @FormParam("finishDate") String finishDate,
                                         @FormParam("lastPackageID") int lastPackageID) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             sourceAddress = sourceAddress.replace("\'", "\\'");
             destinationAddress = destinationAddress.replace("\'", "\\'");
             Package.deletePackage(lastPackageID);
@@ -431,7 +431,7 @@ public class PackageController {
     public DefaultClass deletePackage(@FormParam("token") String token,
                                       @FormParam("packageID") int packageID) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
 
             Package.deletePackage(packageID);
 
@@ -460,7 +460,7 @@ public class PackageController {
                                         @FormParam("packageID") int packageID,
                                         @FormParam("photoProof") String photoProof) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
 
             Package.setStatus(1, packageID);
             Package.setTransferProof(packageID, photoProof);
@@ -491,7 +491,7 @@ public class PackageController {
                                       @FormParam("packageID") int packageID,
                                       @FormParam("photoProof") String photoProof) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
 
             Package.setStatus(2, packageID);
             Package.setDeliveryProof(packageID, photoProof);
@@ -523,7 +523,7 @@ public class PackageController {
     public DefaultClass closePackage(@FormParam("token") String token,
                                      @FormParam("packageID") int packageID) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
 
             Package.setStatus(3, packageID);
 
@@ -549,7 +549,7 @@ public class PackageController {
     public PackageOffer getOfferInfo(@FormParam("token") String token,
                                      @FormParam("offerID") int offerID) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
 
             PackageOffer offer = PackageOffer.getOfferByID(offerID);
             offer.setDefaultClass(new DefaultClass(true, ""));
@@ -579,7 +579,7 @@ public class PackageController {
     public PackageOrder getOrderInfo(@FormParam("token") String token,
                                      @FormParam("orderID") int orderID) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             PackageOrder order = PackageOrder.getOrderByID(orderID);
             order.setDefaultClass(new DefaultClass(true, ""));
 
@@ -607,7 +607,7 @@ public class PackageController {
     public Package getPackageInfo(@FormParam("token") String token,
                                   @FormParam("packageID") int packageID) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             Package _package = Package.getPackageByID(packageID);
             _package.setDefaultClass(new DefaultClass(true, ""));
 
@@ -641,7 +641,7 @@ public class PackageController {
                                     @FormParam("startDate") String startDate,
                                     @FormParam("endDate") String endDate) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             source = source.replace("\'", "\\'");
             Offers offers = Offers.getOffersByParams(source, destination, dateFromString(startDate), dateFromString(endDate));
             offers.setDefaultClass(new DefaultClass(true, ""));
@@ -676,7 +676,7 @@ public class PackageController {
                                     @FormParam("startDate") String startDate,
                                     @FormParam("endDate") String endDate) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             source = source.replace("\'", "\\'");
             destination = destination.replace("\'", "\\'");
             Orders orders = Orders.getOrdersByParams(source, destination, DateWorker.dateFromString(startDate), DateWorker.dateFromString(endDate));
@@ -704,7 +704,7 @@ public class PackageController {
     @Produces(MediaType.APPLICATION_JSON)
     public Orders getUserOrders(@FormParam("token") String token) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             Orders orders = Orders.getOrdersByUserID(user.getPersonID());
             orders.setDefaultClass(new DefaultClass(true, ""));
 
@@ -730,7 +730,7 @@ public class PackageController {
     @Produces(MediaType.APPLICATION_JSON)
     public Offers getUserOffers(@FormParam("token") String token) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             Offers offers = Offers.getOffersByUserID(user.getPersonID());
             offers.setDefaultClass(new DefaultClass(true, ""));
 
@@ -756,7 +756,7 @@ public class PackageController {
     @Produces(MediaType.APPLICATION_JSON)
     public Packages getUserPackages(@FormParam("token") String token) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             Packages packages = Packages.getPackagesByUserID(user.getPersonID());
             packages.setDefaultClass(new DefaultClass(true, ""));
 
@@ -782,7 +782,7 @@ public class PackageController {
     @Produces(MediaType.APPLICATION_JSON)
     public Orders getOrdersByUserRequest(@FormParam("token") String token) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             ArrayList<OrderRequest> requests = OrderRequest.getRequestsByPersonID(user.getPersonID());
             if (requests.size() > 0) {
                 Orders orders = PackageOrder.getOrdersByRequests(requests);
@@ -815,7 +815,7 @@ public class PackageController {
     @Produces(MediaType.APPLICATION_JSON)
     public Offers getOffersByUserRequest(@FormParam("token") String token) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             ArrayList<OfferRequest> requests = OfferRequest.getRequestsByPersonID(user.getPersonID());
             if (requests.size() > 0) {
                 Offers offers = PackageOffer.getOffersByRequests(requests);

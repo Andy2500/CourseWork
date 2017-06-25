@@ -28,7 +28,7 @@ public class ChatController {
     public Dialog getDialog(@FormParam("token") String token,
                             @FormParam("personID") int personID) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             Dialog dialog = Dialog.getDialogByPersonIDs(user.getPersonID(), personID, false, 0);
             if (dialog.getDialogID() == 0) {
                 new Dialog(user.getPersonID(), personID);
@@ -62,7 +62,7 @@ public class ChatController {
                                     @FormParam("dialogID") int dialogID,
                                     @FormParam("text") String text) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             new Message(user.getPersonID(), dialogID, text);
             User.setLastOnlineDate(user.getPersonID());
 
@@ -85,7 +85,7 @@ public class ChatController {
     @Produces(MediaType.APPLICATION_JSON)
     public Dialogs getUserDialogs(@FormParam("token") String token) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             Dialogs dialogs = Dialogs.getDialogsByPersonID(user.getPersonID());
             dialogs.setDefaultClass(new DefaultClass(true, ""));
             User.setLastOnlineDate(user.getPersonID());

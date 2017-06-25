@@ -29,7 +29,7 @@ public class ResponseController {
                                      @FormParam("text") String text,
                                      @FormParam("mark") int mark) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             new Response(user.getPersonID(), personID, text, mark);
             return new DefaultClass(true, token);
         } catch (Exception ex) {
@@ -51,7 +51,7 @@ public class ResponseController {
     public Response getResponseInfo(@FormParam("token") String token,
                                     @FormParam("responseID") int responseID) {
         try {
-            User.getUserByToken(token);
+            User.getUserByToken(token, false, false, true);
             Response response = Response.getResponseByID(responseID);
 
             response.setDefaultClass(new DefaultClass(true, token));
@@ -80,7 +80,7 @@ public class ResponseController {
                                         @FormParam("responseID") int responseID,
                                         @FormParam("text") String text) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             new Comment(responseID, user.getPersonID(), text);
 
             User.setLastOnlineDate(user.getPersonID());
@@ -105,7 +105,7 @@ public class ResponseController {
     public DefaultClass deleteComment(@FormParam("token") String token,
                                       @FormParam("commentID") int commentID) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
 
             User.setLastOnlineDate(user.getPersonID());
             Comment.deleteComment(commentID);

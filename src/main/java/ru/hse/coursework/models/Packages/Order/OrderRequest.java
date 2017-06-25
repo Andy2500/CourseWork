@@ -55,7 +55,7 @@ public class OrderRequest implements Serializable {
         request.setPersonID(resultSet.getInt("PersonID"));
         request.setOrderID(resultSet.getInt("OrderID"));
 
-        request.setPerson(User.getUserByID(request.getPersonID()));
+        request.setPerson(User.getUserByID(request.getPersonID(), false, false, true));
 
         request.getPerson().clear();
         return request;

@@ -60,7 +60,7 @@ public class OfferRequest implements Serializable {
         request.setPersonID(resultSet.getInt("PersonID"));
         request.setOfferID(resultSet.getInt("OfferID"));
 
-        request.setPerson(User.getUserByID(request.getPersonID()));
+        request.setPerson(User.getUserByID(request.getPersonID(), false, false, true));
 
         request.getPerson().clear();
         return request;

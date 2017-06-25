@@ -18,7 +18,6 @@ public class Dispute {
     private String text;
 
     private Date publishDate;
-
     private User person;
 
     public Dispute() {
@@ -48,7 +47,7 @@ public class Dispute {
         dispute.setPackageID(resultSet.getInt("PackageID"));
         dispute.setPersonID(resultSet.getInt("PersonID"));
         dispute.setText(resultSet.getString("Text"));
-        dispute.setPerson(User.getUserByID(dispute.getPersonID()));
+        dispute.setPerson(User.getUserByID(dispute.getPersonID(), false, false, true));
         return dispute;
     }
 

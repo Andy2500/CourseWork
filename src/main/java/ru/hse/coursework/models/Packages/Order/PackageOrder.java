@@ -91,7 +91,7 @@ public class PackageOrder implements Serializable {
         order.setWatches(resultSet.getInt("Watches"));
 
         order.setRequests(OrderRequest.getRequestsByOrderID(order.getOrderID()));
-        order.setPerson(User.getUserByID(order.getPersonID()));
+        order.setPerson(User.getUserByID(order.getPersonID(), false, false, true));
 
         order.getPerson().clear();
         return order;

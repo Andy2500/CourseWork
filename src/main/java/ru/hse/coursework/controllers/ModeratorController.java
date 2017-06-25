@@ -24,7 +24,7 @@ public class ModeratorController {
     public DefaultClass blockUser(@FormParam("token") String token,
                                   @FormParam("userID") int userID) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             User.setStatus(userID, -1);
             User.setLastOnlineDate(user.getPersonID());
             return new DefaultClass(true, "");
@@ -49,7 +49,7 @@ public class ModeratorController {
     public DefaultClass confirmUser(@FormParam("token") String token,
                                     @FormParam("userID") int userID) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             User.setStatus(userID, 1);
             User.setLastOnlineDate(user.getPersonID());
             return new DefaultClass(true, "");
@@ -72,7 +72,7 @@ public class ModeratorController {
     @Produces(MediaType.APPLICATION_JSON)
     public Users getUsersForConfirm(@FormParam("token") String token) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, false);
             Users users = Users.getUsersForConfirm();
             User.setLastOnlineDate(user.getPersonID());
             users.setDefaultClass(new DefaultClass(true, ""));

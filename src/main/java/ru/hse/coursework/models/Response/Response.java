@@ -52,13 +52,17 @@ public class Response implements Serializable {
         return response;
     }
 
-    public static Response parseResponseFromResultSet(ResultSet resultSet) throws Exception {
+    public static Response parseResponseFromResultSet(ResultSet resultSet, boolean withComments) throws Exception {
         Response response = new Response();
         response.setResponseID(resultSet.getInt("ResponseID"));
-        response.setComments(Comment.getCommentsByResponseID(response.getResponseID()));
+
+        if (withComments) {
+            response.setComments(Comment.getCommentsByResponseID(response.getResponseID()));
+        }
+
         response.setPersonID(resultSet.getInt("PersonID"));
         response.setCriticID(resultSet.getInt("CriticID"));
-        response.setCritic(User.getUserByID(response.getCriticID()));
+        response.setCritic(User.getUserByID(response.getCriticID(), false, false, true));
         response.setMark(resultSet.getInt("Mark"));
         response.setText(resultSet.getString("Text"));
         response.setDate(resultSet.getTimestamp("Date"));

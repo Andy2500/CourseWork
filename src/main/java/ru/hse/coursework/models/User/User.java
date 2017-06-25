@@ -65,23 +65,17 @@ public class User implements Serializable {
 
     public static void exists(String login, String phone, String email) throws Exception {
         String query = "Select * From Users Where Login = '" + login + "'";
-        User user = DBManager.getUserByQuery(query);
-
-        if (user.getPersonID() != 0) {
+        if (DBManager.userByQueryExists(query)) {
             throw new Exception("Пользователь с таким логином уже существует!");
         }
 
         query = "Select * From Users Where Phone = '" + phone + "'";
-        user = DBManager.getUserByQuery(query);
-
-        if (user.getPersonID() != 0) {
+        if (DBManager.userByQueryExists(query)) {
             throw new Exception("Пользователь с таким номером телефона уже существует!");
         }
 
         query = "Select * From Users Where Email = '" + email + "'";
-        user = DBManager.getUserByQuery(query);
-
-        if (user.getPersonID() != 0) {
+        if (DBManager.userByQueryExists(query)) {
             throw new Exception("Пользователь с таким адресом электронной почты уже существует!");
         }
     }
@@ -113,38 +107,39 @@ public class User implements Serializable {
     }
 
     //получение пользователя по ID
-    public static User getUserByID(int ID) throws Exception {
+    public static User getUserByID(int ID, boolean full, boolean withDocumentPhoto, boolean withPhoto) throws Exception {
         String query = "Select * From Users Where PersonID = " + ID;
-        User user = DBManager.getUserByQuery(query);
-
-        if (user.getPersonID() == 0) {
-            throw new Exception("Такого пользователя не существует");
-        }
-
-        return user;
+        return checkUser(query, "Такого пользователя не существует", full, withDocumentPhoto, withPhoto, false);
     }
 
     //получение пользователя по токену
-    public static User getUserByToken(String token) throws Exception {
+    public static User getUserByToken(String token, boolean full, boolean withDocumentPhoto, boolean withPhoto) throws Exception {
         String query = "Select * From Users Where Token = '" + token + "'";
-        User user = DBManager.getUserByQuery(query);
-
-        if (user.getPersonID() == 0) {
-            throw new Exception("token error");
-        }
-
-        return user;
+        return checkUser(query, "token error", full, withDocumentPhoto, withPhoto, false);
     }
 
     //получение пользователя по ID
-    public static User getUserByLogin(String login) throws Exception {
+    public static User getUserByLogin(String login, boolean full, boolean withDocumentPhoto, boolean withPhoto) throws Exception {
         String query = "Select * From Users Where Login = '" + login + "'";
-        User user = DBManager.getUserByQuery(query);
+        return checkUser(query, "Пользователя с таким логином не существует", full, withDocumentPhoto, withPhoto, true);
+    }
 
-        if (user.getPersonID() == 0) {
-            throw new Exception("Неверный логин");
+    public static User checkUser(String query, String exMessage, boolean full, boolean withDocumentPhoto, boolean withPhoto, boolean withToken) throws Exception {
+        if (full) {
+            User user = DBManager.getFullUserInfoByQuery(query);
+
+            if (user.getPersonID() == 0)
+                throw new Exception(exMessage);
+
+            return user;
+        } else {
+            User user = DBManager.getUserEntryByQuery(query, withDocumentPhoto, withPhoto, withToken);
+
+            if (user.getPersonID() == 0)
+                throw new Exception(exMessage);
+
+            return user;
         }
-        return user;
     }
 
     public static void setLogin(int personID, String login) throws Exception {
@@ -224,7 +219,7 @@ public class User implements Serializable {
         return DBManager.getIntByQuery(query, "");
     }
 
-    public static User parseUserFromResultSet(ResultSet resultSet) throws Exception {
+    public static User parseFullUserInfoFromResultSet(ResultSet resultSet) throws Exception {
         User user = new User();
 
         byte[] ph = resultSet.getBytes("Photo");
@@ -252,6 +247,35 @@ public class User implements Serializable {
         }
         if (docPhoto != null) {
             user.setDocumentPhoto(javax.xml.bind.DatatypeConverter.printBase64Binary(docPhoto));
+        }
+
+        return user;
+    }
+
+    public static User parseUserEntryFromResultSet(ResultSet resultSet, Boolean withDocumentPhoto, Boolean withPhoto, Boolean withToken) throws Exception {
+        User user = new User();
+
+        user.setPersonID(resultSet.getInt("PersonID"));
+        user.setLogin(resultSet.getString("Login"));
+        user.setName(resultSet.getString("Name"));
+        user.setStatus(resultSet.getInt("Status"));
+
+        if (withToken) {
+            user.setToken(resultSet.getString("Token"));
+        }
+
+        if (withPhoto) {
+            byte[] ph = resultSet.getBytes("Photo");
+            if (ph != null) {
+                user.setPhoto(javax.xml.bind.DatatypeConverter.printBase64Binary(ph));
+            }
+        }
+
+        if (withDocumentPhoto) {
+            byte[] docPhoto = resultSet.getBytes("DocumentPhoto");
+            if (docPhoto != null) {
+                user.setDocumentPhoto(javax.xml.bind.DatatypeConverter.printBase64Binary(docPhoto));
+            }
         }
 
         return user;

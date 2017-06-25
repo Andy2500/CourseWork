@@ -30,7 +30,7 @@ public class DisputesController {
                                       @FormParam("type") int type,
                                       @FormParam("text") String text) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, true);
             new Dispute(packageID, type, user.getPersonID(), text);
             return new DefaultClass(true, "");
 
@@ -55,7 +55,7 @@ public class DisputesController {
     public DefaultClass closeDispute(@FormParam("token") String token,
                                      @FormParam("disputeID") int disputeID) {
         try {
-            User.getUserByToken(token);
+            User.getUserByToken(token, false, false, true);
             Dispute.changeStatus(disputeID, 1);
             return new DefaultClass(true, "");
 
@@ -77,7 +77,7 @@ public class DisputesController {
     @Produces(MediaType.APPLICATION_JSON)
     public Disputes getUserDisputes(@FormParam("token") String token) {
         try {
-            User user = User.getUserByToken(token);
+            User user = User.getUserByToken(token, false, false, true);
             Disputes disputes = Disputes.getDisputesByPersonID(user.getPersonID());
             disputes.setDefaultClass(new DefaultClass(true, ""));
             return disputes;
@@ -102,7 +102,7 @@ public class DisputesController {
     @Produces(MediaType.APPLICATION_JSON)
     public Disputes getAllDisputes(@FormParam("token") String token) {
         try {
-            User.getUserByToken(token);
+            User.getUserByToken(token, false, false, true);
             Disputes disputes = Disputes.getAllDisputes();
             disputes.setDefaultClass(new DefaultClass(true, ""));
             return disputes;
